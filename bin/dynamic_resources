@@ -1,0 +1,24 @@
+#!/bin/sh
+
+function get_max_clients {
+  QOS_MAX_MEMORY_IN_BYTES=`cat /sys/fs/cgroup/memory/memory.limit_in_bytes`
+  DEFAULT_MEMORY_CEILING=$((2**60-1))
+
+  if [ $QOS_MAX_MEMORY_IN_BYTES -lt $DEFAULT_MEMORY_CEILING ]; then
+    if [ -z $CONTAINER_HEAP_PERCENT ]; then
+      CONTAINER_HEAP_PERCENT=0.50
+    fi
+
+    CALCULATED_CLIENTS=$PHP_FPM_MAX_CHILDREN
+
+    PHP_FPM_REQUEST_MAX_MEMORY_IN_BYTES=$(echo "${PHP_FPM_REQUEST_MAX_MEMORY_IN_MEGABYTES} 1000000" | awk '{ printf "%d", $1 * $2 }')
+	  MAX_CONTAINER_MEMORY=$(echo "${QOS_MAX_MEMORY_IN_BYTES} ${CONTAINER_HEAP_PERCENT}" | awk '{ printf "%d", $1 * $2 }')
+
+    while [ $(($CALCULATED_CLIENTS * $PHP_FPM_REQUEST_MAX_MEMORY_IN_BYTES)) -gt $MAX_CONTAINER_MEMORY ]
+    do
+      CALCULATED_CLIENTS=$(($CALCULATED_CLIENTS-1))
+    done
+
+    echo $CALCULATED_CLIENTS
+  fi
+}

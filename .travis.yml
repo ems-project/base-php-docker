@@ -1,0 +1,68 @@
+language: minimal
+
+services:
+  - docker
+
+before_install:
+  - echo "Stage [Test] - Step [before_install] ..."
+  - sudo add-apt-repository ppa:duggan/bats --yes
+  - sudo apt-get update -qq
+  - sudo apt-get install -qq bats
+  - curl -L https://github.com/docker/compose/releases/download/${DOCKER_COMPOSE_VERSION}/docker-compose-`uname -s`-`uname -m` > docker-compose
+  - chmod +x docker-compose
+  - sudo mv docker-compose /usr/local/bin
+  - docker pull appropriate/curl:latest
+  - docker pull arminc/clair-db:latest 
+  - docker pull arminc/clair-local-scan:latest
+  - docker pull zebby76/clair-scanner:latest
+  - docker network create docker_default
+
+script:
+  - echo "Stage [Test] - Step [script] ..."
+  - bats test/build.bats
+  - bats test/scan.bats
+  - bats test/tests.bats
+
+after_script:
+  - echo "Stage [Test] - Step [after_script] ..."
+  - docker images
+  - test -f clair-report.log && echo "-------------------------------"
+  - test -f clair-report.log && echo "-- Clair Report Docker Image --"
+  - test -f clair-report.log && echo "-------------------------------"
+  - test -f clair-report.log && cat clair-report.log
+  - test -f clair-report.json && cat clair-report.json
+
+after_success:
+  - echo "Stage [Test] - Step [after_success] ..."
+  - test $TRAVIS_BRANCH = "$PHP_VERSION_MINOR_VERSION" && test $TRAVIS_PULL_REQUEST = "false" && echo "$DOCKER_PASSWORD" | docker login -u "$DOCKER_USERNAME" --password-stdin
+  - test $TRAVIS_BRANCH = "$PHP_VERSION_MINOR_VERSION" && test $TRAVIS_PULL_REQUEST = "false" && docker tag ${PHP_DOCKER_IMAGE_NAME}:rc ${PHP_DOCKER_IMAGE_NAME}:$TRAVIS_COMMIT
+  - test $TRAVIS_BRANCH = "$PHP_VERSION_MINOR_VERSION" && test $TRAVIS_PULL_REQUEST = "false" && docker tag ${PHP_DOCKER_IMAGE_NAME}:rc ${PHP_DOCKER_IMAGE_NAME}:$DOCKER_TAG
+  - test $TRAVIS_BRANCH = "$PHP_VERSION_MINOR_VERSION" && test $TRAVIS_PULL_REQUEST = "false" && docker tag ${PHP_DOCKER_IMAGE_NAME}:rc ${PHP_DOCKER_IMAGE_NAME}:$PHP_VERSION
+  - test $TRAVIS_BRANCH = "$PHP_VERSION_MINOR_VERSION" && test $TRAVIS_PULL_REQUEST = "false" && docker tag ${PHP_DOCKER_IMAGE_NAME}:rc ${PHP_DOCKER_IMAGE_NAME}:$PHP_VERSION_MINOR_VERSION
+  - test $TRAVIS_BRANCH = "$PHP_VERSION_MINOR_VERSION" && test $TRAVIS_PULL_REQUEST = "false" && docker tag ${PHP_DOCKER_IMAGE_NAME}:rc ${PHP_DOCKER_IMAGE_NAME}:latest
+  - test $TRAVIS_BRANCH = "$PHP_VERSION_MINOR_VERSION" && test $TRAVIS_PULL_REQUEST = "false" && docker push ${PHP_DOCKER_IMAGE_NAME}:$TRAVIS_COMMIT
+  - test $TRAVIS_BRANCH = "$PHP_VERSION_MINOR_VERSION" && test $TRAVIS_PULL_REQUEST = "false" && docker push ${PHP_DOCKER_IMAGE_NAME}:$DOCKER_TAG
+  - test $TRAVIS_BRANCH = "$PHP_VERSION_MINOR_VERSION" && test $TRAVIS_PULL_REQUEST = "false" && docker push ${PHP_DOCKER_IMAGE_NAME}:$PHP_VERSION
+  - test $TRAVIS_BRANCH = "$PHP_VERSION_MINOR_VERSION" && test $TRAVIS_PULL_REQUEST = "false" && docker push ${PHP_DOCKER_IMAGE_NAME}:$PHP_VERSION_MINOR_VERSION
+  - test $TRAVIS_BRANCH = "$PHP_VERSION_MINOR_VERSION" && test $TRAVIS_PULL_REQUEST = "false" && docker push ${PHP_DOCKER_IMAGE_NAME}:latest
+
+addons:
+  apt:
+    packages:
+      - docker-ce
+      - pass
+
+notifications:
+  email: false
+
+env:
+  global:
+    - DOCKER_COMPOSE_VERSION=1.25.4
+    - AWS_CLI_VERSION=1.16.207
+    - PHP_VERSION=7.3.15
+    - PHP_VERSION_MINOR_VERSION=${PHP_VERSION%.*}
+    - RELEASE_NUMBER=${TRAVIS_BUILD_NUMBER}
+    - VCS_REF=${TRAVIS_COMMIT}
+    - BUILD_DATE=`date -u +"%Y-%m-%dT%H:%M:%SZ"`
+    - DOCKER_TAG="${PHP_VERSION}-${RELEASE_NUMBER}"
+    - PHP_DOCKER_IMAGE_NAME="docker.io/elasticms/base-php-fpm"

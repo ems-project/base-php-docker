@@ -1,0 +1,5 @@
+generalwhitelist: #Approve CVE for any image
+  CVE-2016-4074: jq
+#images:
+#  alpine: #Approve CVE only for ubuntu image, regardles of the version
+#    CVE-2016-4074: jq

@@ -1,0 +1,29 @@
+#!/bin/bash
+
+# Contains the fill_in_template_file_using_env function
+# Source this file to include it in your current context
+
+function fill_in_template_file_using_env (){
+
+    # Replaces template placeholders with environment variables
+    # Usage: $1 = path to file
+
+    template_file=$1
+
+    if [ ! -f "$1" ]; then
+        echo "[WARNING] Cannot replace template placeholders : file '$template_file' does not exist. Ignoring file."
+    else
+        # Use printenv to access <NAME>=<VALUE> pairs
+        # Using 'read -r' hear instead of 'read name value <<< "$line"' as
+        # - read name value <<< "$line" splits on words and value will be everything behind the first = until the second =, and
+        # - actual values can have = inside their value
+        printenv | while read -r env_line; do
+            # Cut both name + value from printenv output here for safety as as value=${!name} can lead to bad substitution
+            name=$(cut --delimiter '=' --field 1 <<< "$env_line")
+            value=$(cut --delimiter '=' --field 2- <<< "$env_line")
+            #echo sed -i "s|\${${name}}|${value}|g" "$template_file"
+            sed -i "s|\${${name}}|${value}|g" "$template_file"
+            [ $? -eq 0 ] || echo "[WARNING] Something went wrong when replacing '$name' with '$value' in '$template_file' (see previous line for more details)"
+        done
+    fi
+}
