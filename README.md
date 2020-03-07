@@ -1,4 +1,4 @@
-# Base php-fpm Docker image [![Build Status](https://travis-ci.org/ems-project/docker-php-fpm.svg?branch=7.3)](https://travis-ci.org/ems-project/docker-php-fpm)
+# Base php-fpm Docker image [![Build Status](https://travis-ci.org/ems-project/docker-php-fpm.svg?branch=7.4)](https://travis-ci.org/ems-project/docker-php-fpm)
 
 Docker base image is the basic image on which you add layers (which are basically filesystem changes) and create a final image containing your App.  
 

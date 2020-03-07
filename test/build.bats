@@ -6,7 +6,7 @@ load "helpers/dataloaders"
 load "lib/batslib"
 load "lib/output"
 
-export PHP_VERSION=${PHP_VERSION:-7.3.15}
+export PHP_VERSION=${PHP_VERSION:-7.4.3}
 export RELEASE_NUMBER=${RELEASE_NUMBER:-snapshot}
 export BUILD_DATE=${BUILD_DATE:-snapshot}
 export VCS_REF=${VCS_REF:-snapshot}
