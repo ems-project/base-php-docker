@@ -61,6 +61,7 @@ RUN mkdir -p /home/default /opt/etc /opt/bin/container-entrypoint.d /opt/src \
                                       libjpeg-turbo freetype libpng libwebp libxpm mailx coreutils \
                                       mysql-client jq wget icu-libs libxml2 python3 \
     && mkdir -p /var/run/php-fpm \
+    && cp "$PHP_INI_DIR/php.ini-production" "$PHP_INI_DIR/php.ini" \
     && echo "Setup timezone ..." \
     && cp /usr/share/zoneinfo/Europe/Brussels /etc/localtime \
     && echo "Europe/Brussels" > /etc/timezone \
