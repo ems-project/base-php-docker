@@ -33,7 +33,7 @@ ENV MAIL_SMTP_SERVER="" \
 COPY etc/php/ /usr/local/etc/
 COPY bin/ /usr/local/bin/
 
-RUN mkdir -p /home/default /opt/etc /opt/bin/container-entrypoint.d /opt/src \
+RUN mkdir -p /home/default /opt/etc /opt/bin/container-entrypoint.d /opt/src /var/lock \
     && chmod +x /usr/local/bin/apk-list \
                 /usr/local/bin/container-entrypoint \
                 /usr/local/bin/wait-for-it \
