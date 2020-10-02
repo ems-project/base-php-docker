@@ -1,6 +1,6 @@
 ARG VERSION_ARG=""
 
-FROM php:${VERSION_ARG}-fpm-alpine3.11
+FROM php:${VERSION_ARG}-fpm-alpine3.12
 
 ARG RELEASE_ARG=""
 ARG BUILD_DATE_ARG=""
