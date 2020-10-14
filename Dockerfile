@@ -47,7 +47,7 @@ RUN mkdir -p /home/default /opt/etc /opt/bin/container-entrypoint.d /opt/src /va
                                             pdo_pgsql simplexml ldap gd ldap mysqli pdo_mysql \
                                             zip opcache \
     && pecl install APCu-5.1.17 \
-    && pecl install redis-4.3.0 \
+    && pecl install redis-5.3.1 \
     && docker-php-ext-enable apcu redis \
     && runDeps="$( \
        scanelf --needed --nobanner --format '%n#p' --recursive /usr/local/lib/php/extensions \
