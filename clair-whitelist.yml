@@ -2,6 +2,7 @@ generalwhitelist: #Approve CVE for any image
   CVE-2016-4074: jq
   CVE-2020-8169: curl
   CVE-2020-8177: curl
+  CVE-2020-26159: oniguruma
 #images:
 #  alpine: #Approve CVE only for ubuntu image, regardles of the version
 #    CVE-2016-4074: jq
