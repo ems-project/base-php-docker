@@ -23,6 +23,9 @@ export BATS_STORAGE_SERVICE_NAME="mysql"
 
 export BATS_PHP_DOCKER_IMAGE_NAME="${PHP_DOCKER_IMAGE_NAME:-docker.io/elasticms/base-php-fpm}:rc"
 
-@test "[$TEST_FILE] Starting PHP [ ${BATS_PHP_DOCKER_IMAGE_NAME} ] Docker image build" {
-  command docker-compose -f docker-compose.yml build --pull --no-cache php-fpm
+docker-compose -f docker-compose.yml build --compress --pull php-fpm >&2
+
+@test "[$TEST_FILE] Check Docker image build" {
+  run docker inspect --type=image ${BATS_PHP_DOCKER_IMAGE_NAME}
+  [ "$status" -eq 0 ]
 }
