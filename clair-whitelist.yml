@@ -1,3 +1,0 @@
-generalwhitelist: #Approve CVE for any image
-  CVE-2016-4074: jq
-

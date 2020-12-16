@@ -19,18 +19,14 @@ export BATS_CONTAINER_HEAP_PERCENT="${BATS_CONTAINER_HEAP_PERCENT:-0.80}"
 
 export BATS_STORAGE_SERVICE_NAME="mysql"
 
-export BATS_MYSQL_VOLUME_NAME=${BATS_MYSQL_VOLUME_NAME:-mysql}
-export BATS_CLAIR_LOCAL_SCANNER_CONFIG_VOLUME_NAME=${BATS_CLAIR_LOCAL_SCANNER_CONFIG_VOLUME_NAME:-clair_local_scanner}
 export BATS_PHP_SCRIPTS_VOLUME_NAME=${BATS_PHP_SCRIPTS_VOLUME_NAME:-php_scripts}
 export BATS_PHP_SOCKET_VOLUME_NAME=${BATS_PHP_SOCKET_VOLUME_NAME:-php_socket}
 export BATS_SOURCES_VOLUME_NAME=${BATS_SOURCES_VOLUME_NAME:-php_sources}
 export BATS_NGINX_CONFIG_VOLUME_NAME=${BATS_NGINX_CONFIG_VOLUME_NAME:-nginx_config}
 
-export BATS_PHP_DOCKER_IMAGE_NAME="${PHP_DOCKER_IMAGE_NAME:-docker.io/elasticms/base-php-fpm}:rc"
+export BATS_PHP_DOCKER_IMAGE_NAME="${PHP_DOCKER_IMAGE_NAME:-docker.io/elasticms/base-php-fpm:latest}"
 
 @test "[$TEST_FILE] Create Docker external volumes (local)" {
-  command docker volume create -d local ${BATS_MYSQL_VOLUME_NAME}
-  command docker volume create -d local ${BATS_CLAIR_LOCAL_SCANNER_CONFIG_VOLUME_NAME}
   command docker volume create -d local ${BATS_PHP_SCRIPTS_VOLUME_NAME}
   command docker volume create -d local ${BATS_PHP_SOCKET_VOLUME_NAME}
   command docker volume create -d local ${BATS_SOURCES_VOLUME_NAME}
@@ -74,7 +70,7 @@ export BATS_PHP_DOCKER_IMAGE_NAME="${PHP_DOCKER_IMAGE_NAME:-docker.io/elasticms/
 }
 
 @test "[$TEST_FILE] Starting LAMP stack services (nginx,mysql,php)" {
-  command docker-compose -f docker-compose.yml up -d php-fpm mysql nginx
+  command docker-compose -f ${BATS_TEST_DIRNAME%/}/docker-compose.php-fpm.yml up -d php-fpm mysql nginx
 }
 
 @test "[$TEST_FILE] Check for startup messages in containers logs" {
@@ -109,17 +105,15 @@ export BATS_PHP_DOCKER_IMAGE_NAME="${PHP_DOCKER_IMAGE_NAME:-docker.io/elasticms/
   assert_output -l -r "Check MySQL Connection Done."
 }
 
-#@test "[$TEST_FILE] Stop all and delete test containers" {
-#  command docker-compose -f docker-compose.yml stop
-#  command docker-compose -f docker-compose.yml rm -v -f  
-#}
-#
-#@test "[$TEST_FILE] Cleanup Docker external volumes (local)" {
-#  command docker volume rm ${BATS_MYSQL_VOLUME_NAME}
-#  command docker volume rm ${BATS_CLAIR_LOCAL_SCANNER_CONFIG_VOLUME_NAME}
-#  command docker volume rm ${BATS_PHP_SCRIPTS_VOLUME_NAME}
-#  command docker volume rm ${BATS_PHP_SOCKET_VOLUME_NAME}
-#  command docker volume rm ${BATS_SOURCES_VOLUME_NAME}
-#  command docker volume rm ${BATS_NGINX_CONFIG_VOLUME_NAME}
-#}
+@test "[$TEST_FILE] Stop all and delete test containers" {
+  command docker-compose -f ${BATS_TEST_DIRNAME%/}/docker-compose.php-fpm.yml stop
+  command docker-compose -f ${BATS_TEST_DIRNAME%/}/docker-compose.php-fpm.yml rm -v -f  
+}
+
+@test "[$TEST_FILE] Cleanup Docker external volumes (local)" {
+  command docker volume rm ${BATS_PHP_SCRIPTS_VOLUME_NAME}
+  command docker volume rm ${BATS_PHP_SOCKET_VOLUME_NAME}
+  command docker volume rm ${BATS_SOURCES_VOLUME_NAME}
+  command docker volume rm ${BATS_NGINX_CONFIG_VOLUME_NAME}
+}
 
