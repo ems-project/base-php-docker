@@ -1,0 +1,8 @@
+general:
+  vulnerabilities:
+    - CVE-2020-1971
+  bestPracticeViolations:
+#    - CIS-DI-0005
+#    - DKL-LI-0003
+#    - CIS-DI-0006
+#    - DKL-DI-0006
