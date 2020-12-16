@@ -37,16 +37,16 @@ jobs:
         run: |
           docker network create docker_default
           docker pull appropriate/curl:latest
-          DOCKERHUB_PHPFPM_PRD_IMAGENAME=docker.io/zebby76/base-php-fpm
-          DOCKERHUB_PHPFPM_DEV_IMAGENAME=docker.io/zebby76/base-php-dev
+          DOCKERHUB_PHPFPM_PRD_IMAGENAME=docker.io/elasticms/base-php-fpm
+          DOCKERHUB_PHPFPM_DEV_IMAGENAME=docker.io/elasticms/base-php-dev
           GHCR_PHPFPM_PRD_IMAGENAME=ghcr.io/${{ github.repository_owner }}/base-php-fpm
           GHCR_PHPFPM_DEV_IMAGENAME=ghcr.io/${{ github.repository_owner }}/base-php-dev
-          DOCKERHUB_APACHE_PRD_IMAGENAME=docker.io/zebby76/base-apache-fpm
-          DOCKERHUB_APACHE_DEV_IMAGENAME=docker.io/zebby76/base-apache-dev
+          DOCKERHUB_APACHE_PRD_IMAGENAME=docker.io/elasticms/base-apache-fpm
+          DOCKERHUB_APACHE_DEV_IMAGENAME=docker.io/elasticms/base-apache-dev
           GHCR_APACHE_PRD_IMAGENAME=ghcr.io/${{ github.repository_owner }}/base-apache-fpm
           GHCR_APACHE_DEV_IMAGENAME=ghcr.io/${{ github.repository_owner }}/base-apache-dev
-          DOCKERHUB_NGINX_PRD_IMAGENAME=docker.io/zebby76/base-nginx-fpm
-          DOCKERHUB_NGINX_DEV_IMAGENAME=docker.io/zebby76/base-nginx-dev
+          DOCKERHUB_NGINX_PRD_IMAGENAME=docker.io/elasticms/base-nginx-fpm
+          DOCKERHUB_NGINX_DEV_IMAGENAME=docker.io/elasticms/base-nginx-dev
           GHCR_NGINX_PRD_IMAGENAME=ghcr.io/${{ github.repository_owner }}/base-nginx-fpm
           GHCR_NGINX_DEV_IMAGENAME=ghcr.io/${{ github.repository_owner }}/base-nginx-dev
           VERSION_MAJOR_MINOR_PATCH=${{ env.PHP_VERSION }}
