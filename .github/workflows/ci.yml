@@ -1,13 +1,9 @@
 name: Continuous Docker Image Build
 
 on:
-  schedule:
-    - cron: '0 10 * * *' # everyday at 10am
   push:
     branches:
-      - '7.4'
-    tags:
-      - 'v*'
+      - '8.0'
   pull_request:
 
 jobs:
