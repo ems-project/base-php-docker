@@ -73,7 +73,7 @@ jobs:
         id: meta_ghcr_phpfpm_prd
         uses: crazy-max/ghaction-docker-meta@v1
         with:
-          images: "${{ steps.prep.outputs.ghcr_phpfpm_prd_image }}"
+          images: "${{ steps.prep.outputs.ghcr_phpfpm_prd_image }} elasticms/base-php-fpm"
           tag-sha: false
           tag-edge: true
           tag-latest: false
@@ -88,7 +88,7 @@ jobs:
         id: meta_ghcr_phpfpm_dev
         uses: crazy-max/ghaction-docker-meta@v1
         with:
-          images: "${{ steps.prep.outputs.ghcr_phpfpm_dev_image }}"
+          images: "${{ steps.prep.outputs.ghcr_phpfpm_dev_image }} elasticms/base-php-dev"
           tag-sha: false
           tag-edge: true
           tag-latest: false
@@ -131,7 +131,7 @@ jobs:
         id: meta_ghcr_apache_prd
         uses: crazy-max/ghaction-docker-meta@v1
         with:
-          images: "${{ steps.prep.outputs.ghcr_apache_prd_image }}"
+          images: "${{ steps.prep.outputs.ghcr_apache_prd_image }} elasticms/base-apache-fpm"
           tag-sha: false
           tag-edge: true
           tag-latest: false
@@ -146,7 +146,7 @@ jobs:
         id: meta_ghcr_apache_dev
         uses: crazy-max/ghaction-docker-meta@v1
         with:
-          images: "${{ steps.prep.outputs.ghcr_apache_dev_image }}"
+          images: "${{ steps.prep.outputs.ghcr_apache_dev_image }} elasticms/base-apache-dev"
           tag-sha: false
           tag-edge: true
           tag-latest: false
@@ -185,11 +185,11 @@ jobs:
             ${{ steps.prep.outputs.version_major }}
             latest
 
-      - name: Fill GHCR Docker Prod PHP-APACHE Image metadata
+      - name: Fill GHCR Docker Prod PHP-NGINX Image metadata
         id: meta_ghcr_nginx_prd
         uses: crazy-max/ghaction-docker-meta@v1
         with:
-          images: "${{ steps.prep.outputs.ghcr_nginx_prd_image }}"
+          images: "${{ steps.prep.outputs.ghcr_nginx_prd_image }} elasticms/base-nginx-fpm"
           tag-sha: false
           tag-edge: true
           tag-latest: false
@@ -204,7 +204,7 @@ jobs:
         id: meta_ghcr_nginx_dev
         uses: crazy-max/ghaction-docker-meta@v1
         with:
-          images: "${{ steps.prep.outputs.ghcr_nginx_dev_image }}"
+          images: "${{ steps.prep.outputs.ghcr_nginx_dev_image }} elasticms/base-nginx-dev"
           tag-sha: false
           tag-edge: true
           tag-latest: false
@@ -308,12 +308,12 @@ jobs:
       - name: Scan GHCR PHP-FPM Prod Docker Image
         uses: azure/container-scan@v0
         with:
-          image-name: "${{ steps.prep.outputs.ghcr_phpfpm_prd_image }}:${{ steps.meta_ghcr_phpfpm_prd.outputs.version }}"
+          image-name: "elasticms/base-php-fpm:${{ steps.meta_ghcr_phpfpm_prd.outputs.version }}"
 
       - name: Scan GHCR PHP-FPM Dev Docker Image
         uses: azure/container-scan@v0
         with:
-          image-name: "${{ steps.prep.outputs.ghcr_phpfpm_dev_image }}:${{ steps.meta_ghcr_phpfpm_dev.outputs.version }}"
+          image-name: "elasticms/base-php-dev:${{ steps.meta_ghcr_phpfpm_dev.outputs.version }}"
 
       - name: Check GHCR PHP-FPM Prod Docker Image
         if: github.event_name != 'pull_request'
@@ -364,12 +364,12 @@ jobs:
       - name: Scan GHCR PHP-APACHE Prod Docker Image
         uses: azure/container-scan@v0
         with:
-          image-name: "${{ steps.prep.outputs.ghcr_apache_prd_image }}:${{ steps.meta_ghcr_apache_prd.outputs.version }}"
+          image-name: "elasticms/base-apache-fpm:${{ steps.meta_ghcr_apache_prd.outputs.version }}"
 
       - name: Scan GHCR PHP-APACHE Dev Docker Image
         uses: azure/container-scan@v0
         with:
-          image-name: "${{ steps.prep.outputs.ghcr_apache_dev_image }}:${{ steps.meta_ghcr_apache_dev.outputs.version }}"
+          image-name: "elasticms/base-apache-dev:${{ steps.meta_ghcr_apache_dev.outputs.version }}"
 
       - name: Check GHCR PHP-APACHE Prod Docker Image
         if: github.event_name != 'pull_request'
@@ -420,12 +420,12 @@ jobs:
       - name: Scan GHCR PHP-NGINX Prod Docker Image
         uses: azure/container-scan@v0
         with:
-          image-name: "${{ steps.prep.outputs.ghcr_nginx_prd_image }}:${{ steps.meta_ghcr_nginx_prd.outputs.version }}"
+          image-name: "elasticms/base-nginx-fpm:${{ steps.meta_ghcr_nginx_prd.outputs.version }}"
 
       - name: Scan GHCR PHP-NGINX Dev Docker Image
         uses: azure/container-scan@v0
         with:
-          image-name: "${{ steps.prep.outputs.ghcr_nginx_dev_image }}:${{ steps.meta_ghcr_nginx_dev.outputs.version }}"
+          image-name: "elasticms/base-nginx-dev:${{ steps.meta_ghcr_nginx_dev.outputs.version }}"
 
       - name: Check GHCR PHP-NGINX Prod Docker Image
         if: github.event_name != 'pull_request'
