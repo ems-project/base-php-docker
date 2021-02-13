@@ -58,12 +58,6 @@ jobs:
           VERSION_MAJOR_MINOR_PATCH=${{ env.PHP_VERSION }}
           VERSION_MAJOR_MINOR=${VERSION_MAJOR_MINOR_PATCH%.*}
           VERSION_MAJOR=${VERSION_MAJOR_MINOR%.*}
-          echo ::set-output name=local_phpfpm_prd_image::${PHPFPM_PRD_IMAGENAME=base-php-fpm}
-          echo ::set-output name=local_phpfpm_dev_image::${PHPFPM_DEV_IMAGENAME=base-php-dev}
-          echo ::set-output name=local_apache_prd_image::${APACHE_PRD_IMAGENAME=base-apache-fpm}
-          echo ::set-output name=local_apache_dev_image::${APACHE_DEV_IMAGENAME=base-apache-dev}
-          echo ::set-output name=local_nginx_prd_image::${NGINX_PRD_IMAGENAME=base-nginx-fpm}
-          echo ::set-output name=local_nginx_dev_image::${NGINX_DEV_IMAGENAME=base-nginx-dev}
           echo ::set-output name=dockerhub_phpfpm_prd_image::${DOCKERHUB_PHPFPM_PRD_IMAGENAME}
           echo ::set-output name=dockerhub_phpfpm_dev_image::${DOCKERHUB_PHPFPM_DEV_IMAGENAME}
           echo ::set-output name=ghcr_phpfpm_prd_image::${GHCR_PHPFPM_PRD_IMAGENAME}
@@ -85,9 +79,7 @@ jobs:
         id: meta_ghcr_phpfpm_prd
         uses: crazy-max/ghaction-docker-meta@v1
         with:
-          images: |
-            ${{ steps.prep.outputs.ghcr_phpfpm_prd_image }}
-            ${{ steps.prep.outputs.local_phpfpm_prd_image }}
+          images: "${{ steps.prep.outputs.ghcr_phpfpm_prd_image }}"
           tag-sha: false
           tag-edge: true
           tag-latest: false
@@ -102,9 +94,7 @@ jobs:
         id: meta_ghcr_phpfpm_dev
         uses: crazy-max/ghaction-docker-meta@v1
         with:
-          images: |
-            ${{ steps.prep.outputs.ghcr_phpfpm_dev_image }}
-            ${{ steps.prep.outputs.local_phpfpm_dev_image }}
+          images: "${{ steps.prep.outputs.ghcr_phpfpm_dev_image }}"
           tag-sha: false
           tag-edge: true
           tag-latest: false
@@ -147,9 +137,7 @@ jobs:
         id: meta_ghcr_apache_prd
         uses: crazy-max/ghaction-docker-meta@v1
         with:
-          images: |
-            ${{ steps.prep.outputs.ghcr_apache_prd_image }}
-            ${{ steps.prep.outputs.local_apache_prd_image }}
+          images: "${{ steps.prep.outputs.ghcr_apache_prd_image }}"
           tag-sha: false
           tag-edge: true
           tag-latest: false
@@ -164,9 +152,7 @@ jobs:
         id: meta_ghcr_apache_dev
         uses: crazy-max/ghaction-docker-meta@v1
         with:
-          images: |
-            ${{ steps.prep.outputs.ghcr_apache_dev_image }}
-            ${{ steps.prep.outputs.local_apache_dev_image }}
+          images: "${{ steps.prep.outputs.ghcr_apache_dev_image }}"
           tag-sha: false
           tag-edge: true
           tag-latest: false
@@ -209,9 +195,7 @@ jobs:
         id: meta_ghcr_nginx_prd
         uses: crazy-max/ghaction-docker-meta@v1
         with:
-          images: |
-            ${{ steps.prep.outputs.ghcr_nginx_prd_image }}
-            ${{ steps.prep.outputs.local_nginx_prd_image }}
+          images: "${{ steps.prep.outputs.ghcr_nginx_prd_image }}"
           tag-sha: false
           tag-edge: true
           tag-latest: false
@@ -226,9 +210,7 @@ jobs:
         id: meta_ghcr_nginx_dev
         uses: crazy-max/ghaction-docker-meta@v1
         with:
-          images: |
-            ${{ steps.prep.outputs.ghcr_nginx_dev_image }}
-            ${{ steps.prep.outputs.local_nginx_dev_image }}
+          images: "${{ steps.prep.outputs.ghcr_nginx_dev_image }}"
           tag-sha: false
           tag-edge: true
           tag-latest: false
@@ -308,7 +290,6 @@ jobs:
             RELEASE_ARG=${{ env.CI_RUN_ID }}
             VCS_REF_ARG=${{ env.CI_SHA }}
             BUILD_DATE_ARG=${{ steps.prep.outputs.build_date }}
-          push: ${{ github.event_name != 'pull_request' }}
           tags: ${{ steps.meta_ghcr_phpfpm_prd.outputs.tags }}
           labels: ${{ steps.meta_ghcr_phpfpm_prd.outputs.labels }}
 
@@ -325,19 +306,18 @@ jobs:
             RELEASE_ARG=${{ env.CI_RUN_ID }}
             VCS_REF_ARG=${{ env.CI_SHA }}
             BUILD_DATE_ARG=${{ steps.prep.outputs.build_date }}
-          push: ${{ github.event_name != 'pull_request' }}
           tags: ${{ steps.meta_ghcr_phpfpm_dev.outputs.tags }}
           labels: ${{ steps.meta_ghcr_phpfpm_dev.outputs.labels }}
 
       - name: Scan GHCR PHP-FPM Prod Docker Image
         uses: azure/container-scan@v0
         with:
-          image-name: "${{ steps.prep.outputs.local_phpfpm_prd_image }}:${{ steps.meta_ghcr_phpfpm_prd.outputs.version }}"
+          image-name: "${{ steps.prep.outputs.ghcr_phpfpm_prd_image }}:${{ steps.meta_ghcr_phpfpm_prd.outputs.version }}"
 
       - name: Scan GHCR PHP-FPM Dev Docker Image
         uses: azure/container-scan@v0
         with:
-          image-name: "${{ steps.prep.outputs.local_phpfpm_dev_image }}:${{ steps.meta_ghcr_phpfpm_dev.outputs.version }}"
+          image-name: "${{ steps.prep.outputs.ghcr_phpfpm_dev_image }}:${{ steps.meta_ghcr_phpfpm_dev.outputs.version }}"
 
       - name: Check GHCR PHP-FPM Prod Docker Image
         if: github.event_name != 'pull_request'
@@ -364,7 +344,6 @@ jobs:
             RELEASE_ARG=${{ env.CI_RUN_ID }}
             VCS_REF_ARG=${{ env.CI_SHA }}
             BUILD_DATE_ARG=${{ steps.prep.outputs.build_date }}
-          push: ${{ github.event_name != 'pull_request' }}
           tags: ${{ steps.meta_ghcr_apache_prd.outputs.tags }}
           labels: ${{ steps.meta_ghcr_apache_prd.outputs.labels }}
 
@@ -381,19 +360,18 @@ jobs:
             RELEASE_ARG=${{ env.CI_RUN_ID }}
             VCS_REF_ARG=${{ env.CI_SHA }}
             BUILD_DATE_ARG=${{ steps.prep.outputs.build_date }}
-          push: ${{ github.event_name != 'pull_request' }}
           tags: ${{ steps.meta_ghcr_apache_dev.outputs.tags }}
           labels: ${{ steps.meta_ghcr_apache_dev.outputs.labels }}
 
       - name: Scan GHCR PHP-APACHE Prod Docker Image
         uses: azure/container-scan@v0
         with:
-          image-name: "${{ steps.prep.outputs.local_apache_prd_image }}:${{ steps.meta_ghcr_apache_prd.outputs.version }}"
+          image-name: "${{ steps.prep.outputs.ghcr_apache_prd_image }}:${{ steps.meta_ghcr_apache_prd.outputs.version }}"
 
       - name: Scan GHCR PHP-APACHE Dev Docker Image
         uses: azure/container-scan@v0
         with:
-          image-name: "${{ steps.prep.outputs.local_apache_dev_image }}:${{ steps.meta_ghcr_apache_dev.outputs.version }}"
+          image-name: "${{ steps.prep.outputs.ghcr_apache_dev_image }}:${{ steps.meta_ghcr_apache_dev.outputs.version }}"
 
       - name: Check GHCR PHP-APACHE Prod Docker Image
         if: github.event_name != 'pull_request'
@@ -420,7 +398,6 @@ jobs:
             RELEASE_ARG=${{ env.CI_RUN_ID }}
             VCS_REF_ARG=${{ env.CI_SHA }}
             BUILD_DATE_ARG=${{ steps.prep.outputs.build_date }}
-          push: ${{ github.event_name != 'pull_request' }}
           tags: ${{ steps.meta_ghcr_nginx_prd.outputs.tags }}
           labels: ${{ steps.meta_ghcr_nginx_prd.outputs.labels }}
 
@@ -437,19 +414,18 @@ jobs:
             RELEASE_ARG=${{ env.CI_RUN_ID }}
             VCS_REF_ARG=${{ env.CI_SHA }}
             BUILD_DATE_ARG=${{ steps.prep.outputs.build_date }}
-          push: ${{ github.event_name != 'pull_request' }}
           tags: ${{ steps.meta_ghcr_nginx_dev.outputs.tags }}
           labels: ${{ steps.meta_ghcr_nginx_dev.outputs.labels }}
 
       - name: Scan GHCR PHP-NGINX Prod Docker Image
         uses: azure/container-scan@v0
         with:
-          image-name: "${{ steps.prep.outputs.local_nginx_prd_image }}:${{ steps.meta_ghcr_nginx_prd.outputs.version }}"
+          image-name: "${{ steps.prep.outputs.ghcr_nginx_prd_image }}:${{ steps.meta_ghcr_nginx_prd.outputs.version }}"
 
       - name: Scan GHCR PHP-NGINX Dev Docker Image
         uses: azure/container-scan@v0
         with:
-          image-name: "${{ steps.prep.outputs.local_nginx_dev_image }}:${{ steps.meta_ghcr_nginx_dev.outputs.version }}"
+          image-name: "${{ steps.prep.outputs.ghcr_nginx_dev_image }}:${{ steps.meta_ghcr_nginx_dev.outputs.version }}"
 
       - name: Check GHCR PHP-NGINX Prod Docker Image
         if: github.event_name != 'pull_request'
