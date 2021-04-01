@@ -77,177 +77,147 @@ jobs:
 
       - name: Fill GHCR Docker Prod PHP-FPM Image metadata
         id: meta_ghcr_phpfpm_prd
-        uses: crazy-max/ghaction-docker-meta@v1
+        uses: crazy-max/ghaction-docker-meta@v2.1.1
         with:
           images: "${{ steps.prep.outputs.ghcr_phpfpm_prd_image }}"
-          tag-sha: false
-          tag-edge: true
-          tag-latest: false
-          tag-custom: |
-            ${{ env.CI_SHA_SHORT }}
-            ${{ steps.prep.outputs.version_major_minor_patch }}
-            ${{ steps.prep.outputs.version_major_minor }}
-            ${{ steps.prep.outputs.version_major }}
-            latest
-
+          tags: |
+            type=edge
+            type=raw,value=${{ env.CI_SHA_SHORT }}
+            type=raw,value=${{ steps.prep.outputs.version_major_minor_patch }}
+            type=raw,value=${{ steps.prep.outputs.version_major_minor }}
+            type=raw,value=${{ steps.prep.outputs.version_major }}
+            type=raw,value=latest
+            
       - name: Fill GHCR Docker Dev PHP-FPM Image metadata
         id: meta_ghcr_phpfpm_dev
-        uses: crazy-max/ghaction-docker-meta@v1
+        uses: crazy-max/ghaction-docker-meta@v2.1.1
         with:
           images: "${{ steps.prep.outputs.ghcr_phpfpm_dev_image }}"
-          tag-sha: false
-          tag-edge: true
-          tag-latest: false
-          tag-custom: |
-            ${{ env.CI_SHA_SHORT }}
-            ${{ steps.prep.outputs.version_major_minor_patch }}
-            ${{ steps.prep.outputs.version_major_minor }}
-            ${{ steps.prep.outputs.version_major }}
-            latest
+          tags: |
+            type=edge
+            type=raw,value=${{ env.CI_SHA_SHORT }}
+            type=raw,value=${{ steps.prep.outputs.version_major_minor_patch }}
+            type=raw,value=${{ steps.prep.outputs.version_major_minor }}
+            type=raw,value=${{ steps.prep.outputs.version_major }}
+            type=raw,value=latest
 
       - name: Fill DockerHub Docker PHP-FPM Prod Image metadata
         id: meta_dockerhub_phpfpm_prd
-        uses: crazy-max/ghaction-docker-meta@v1
+        uses: crazy-max/ghaction-docker-meta@v2.1.1
         with:
           images: "${{ steps.prep.outputs.dockerhub_phpfpm_prd_image }}"
-          tag-sha: false
-          tag-edge: false
-          tag-latest: false
-          tag-custom: |
-            ${{ steps.prep.outputs.version_major_minor_patch }}
-            ${{ steps.prep.outputs.version_major_minor }}
-            ${{ steps.prep.outputs.version_major }}
-            latest
+          tags: |
+            type=raw,value=${{ steps.prep.outputs.version_major_minor_patch }}
+            type=raw,value=${{ steps.prep.outputs.version_major_minor }}
+            type=raw,value=${{ steps.prep.outputs.version_major }}
+            type=raw,value=latest
 
       - name: Fill DockerHub Docker PHP-FPM Dev Image metadata
         id: meta_dockerhub_phpfpm_dev
-        uses: crazy-max/ghaction-docker-meta@v1
+        uses: crazy-max/ghaction-docker-meta@v2.1.1
         with:
           images: "${{ steps.prep.outputs.dockerhub_phpfpm_dev_image }}"
-          tag-sha: false
-          tag-edge: false
-          tag-latest: false
-          tag-custom: |
-            ${{ steps.prep.outputs.version_major_minor_patch }}
-            ${{ steps.prep.outputs.version_major_minor }}
-            ${{ steps.prep.outputs.version_major }}
-            latest
+          tags: |
+            type=raw,value=${{ steps.prep.outputs.version_major_minor_patch }}
+            type=raw,value=${{ steps.prep.outputs.version_major_minor }}
+            type=raw,value=${{ steps.prep.outputs.version_major }}
+            type=raw,value=latest
 
       - name: Fill GHCR Docker Prod PHP-APACHE Image metadata
         id: meta_ghcr_apache_prd
-        uses: crazy-max/ghaction-docker-meta@v1
+        uses: crazy-max/ghaction-docker-meta@v2.1.1
         with:
           images: "${{ steps.prep.outputs.ghcr_apache_prd_image }}"
-          tag-sha: false
-          tag-edge: true
-          tag-latest: false
-          tag-custom: |
-            ${{ env.CI_SHA_SHORT }}
-            ${{ steps.prep.outputs.version_major_minor_patch }}
-            ${{ steps.prep.outputs.version_major_minor }}
-            ${{ steps.prep.outputs.version_major }}
-            latest
+          tags: |
+            type=edge
+            type=raw,value=${{ env.CI_SHA_SHORT }}
+            type=raw,value=${{ steps.prep.outputs.version_major_minor_patch }}
+            type=raw,value=${{ steps.prep.outputs.version_major_minor }}
+            type=raw,value=${{ steps.prep.outputs.version_major }}
+            type=raw,value=latest
 
       - name: Fill GHCR Docker Dev PHP-APACHE Image metadata
         id: meta_ghcr_apache_dev
-        uses: crazy-max/ghaction-docker-meta@v1
+        uses: crazy-max/ghaction-docker-meta@v2.1.1
         with:
           images: "${{ steps.prep.outputs.ghcr_apache_dev_image }}"
-          tag-sha: false
-          tag-edge: true
-          tag-latest: false
-          tag-custom: |
-            ${{ env.CI_SHA_SHORT }}
-            ${{ steps.prep.outputs.version_major_minor_patch }}
-            ${{ steps.prep.outputs.version_major_minor }}
-            ${{ steps.prep.outputs.version_major }}
-            latest
+          tags: |
+            type=edge
+            type=raw,value=${{ env.CI_SHA_SHORT }}
+            type=raw,value=${{ steps.prep.outputs.version_major_minor_patch }}
+            type=raw,value=${{ steps.prep.outputs.version_major_minor }}
+            type=raw,value=${{ steps.prep.outputs.version_major }}
+            type=raw,value=latest
 
       - name: Fill DockerHub Docker PHP-APACHE Prod Image metadata
         id: meta_dockerhub_apache_prd
-        uses: crazy-max/ghaction-docker-meta@v1
+        uses: crazy-max/ghaction-docker-meta@v2.1.1
         with:
           images: "${{ steps.prep.outputs.dockerhub_apache_prd_image }}"
-          tag-sha: false
-          tag-edge: false
-          tag-latest: false
-          tag-custom: |
-            ${{ steps.prep.outputs.version_major_minor_patch }}
-            ${{ steps.prep.outputs.version_major_minor }}
-            ${{ steps.prep.outputs.version_major }}
-            latest
+          tags: |
+            type=raw,value=${{ steps.prep.outputs.version_major_minor_patch }}
+            type=raw,value=${{ steps.prep.outputs.version_major_minor }}
+            type=raw,value=${{ steps.prep.outputs.version_major }}
+            type=raw,value=latest
 
       - name: Fill DockerHub Docker PHP-APACHE Dev Image metadata
         id: meta_dockerhub_apache_dev
-        uses: crazy-max/ghaction-docker-meta@v1
+        uses: crazy-max/ghaction-docker-meta@v2.1.1
         with:
           images: "${{ steps.prep.outputs.dockerhub_apache_dev_image }}"
-          tag-sha: false
-          tag-edge: false
-          tag-latest: false
-          tag-custom: |
-            ${{ steps.prep.outputs.version_major_minor_patch }}
-            ${{ steps.prep.outputs.version_major_minor }}
-            ${{ steps.prep.outputs.version_major }}
-            latest
+          tags: |
+            type=raw,value=${{ steps.prep.outputs.version_major_minor_patch }}
+            type=raw,value=${{ steps.prep.outputs.version_major_minor }}
+            type=raw,value=${{ steps.prep.outputs.version_major }}
+            type=raw,value=latest
 
       - name: Fill GHCR Docker Prod PHP-NGINX Image metadata
         id: meta_ghcr_nginx_prd
-        uses: crazy-max/ghaction-docker-meta@v1
+        uses: crazy-max/ghaction-docker-meta@v2.1.1
         with:
           images: "${{ steps.prep.outputs.ghcr_nginx_prd_image }}"
-          tag-sha: false
-          tag-edge: true
-          tag-latest: false
-          tag-custom: |
-            ${{ env.CI_SHA_SHORT }}
-            ${{ steps.prep.outputs.version_major_minor_patch }}
-            ${{ steps.prep.outputs.version_major_minor }}
-            ${{ steps.prep.outputs.version_major }}
-            latest
+          tags: |
+            type=edge
+            type=raw,value=${{ env.CI_SHA_SHORT }}
+            type=raw,value=${{ steps.prep.outputs.version_major_minor_patch }}
+            type=raw,value=${{ steps.prep.outputs.version_major_minor }}
+            type=raw,value=${{ steps.prep.outputs.version_major }}
+            type=raw,value=latest
 
       - name: Fill GHCR Docker Dev PHP-NGINX Image metadata
         id: meta_ghcr_nginx_dev
-        uses: crazy-max/ghaction-docker-meta@v1
+        uses: crazy-max/ghaction-docker-meta@v2.1.1
         with:
           images: "${{ steps.prep.outputs.ghcr_nginx_dev_image }}"
-          tag-sha: false
-          tag-edge: true
-          tag-latest: false
-          tag-custom: |
-            ${{ env.CI_SHA_SHORT }}
-            ${{ steps.prep.outputs.version_major_minor_patch }}
-            ${{ steps.prep.outputs.version_major_minor }}
-            ${{ steps.prep.outputs.version_major }}
-            latest
+          tags: |
+            type=edge
+            type=raw,value=${{ env.CI_SHA_SHORT }}
+            type=raw,value=${{ steps.prep.outputs.version_major_minor_patch }}
+            type=raw,value=${{ steps.prep.outputs.version_major_minor }}
+            type=raw,value=${{ steps.prep.outputs.version_major }}
+            type=raw,value=latest
 
       - name: Fill DockerHub Docker PHP-NGINX Prod Image metadata
         id: meta_dockerhub_nginx_prd
-        uses: crazy-max/ghaction-docker-meta@v1
+        uses: crazy-max/ghaction-docker-meta@v2.1.1
         with:
           images: "${{ steps.prep.outputs.dockerhub_nginx_prd_image }}"
-          tag-sha: false
-          tag-edge: false
-          tag-latest: false
-          tag-custom: |
-            ${{ steps.prep.outputs.version_major_minor_patch }}
-            ${{ steps.prep.outputs.version_major_minor }}
-            ${{ steps.prep.outputs.version_major }}
-            latest
+          tags: |
+            type=raw,value=${{ steps.prep.outputs.version_major_minor_patch }}
+            type=raw,value=${{ steps.prep.outputs.version_major_minor }}
+            type=raw,value=${{ steps.prep.outputs.version_major }}
+            type=raw,value=latest
 
       - name: Fill DockerHub Docker PHP-NGINX Dev Image metadata
         id: meta_dockerhub_nginx_dev
-        uses: crazy-max/ghaction-docker-meta@v1
+        uses: crazy-max/ghaction-docker-meta@v2.1.1
         with:
           images: "${{ steps.prep.outputs.dockerhub_nginx_dev_image }}"
-          tag-sha: false
-          tag-edge: false
-          tag-latest: false
-          tag-custom: |
-            ${{ steps.prep.outputs.version_major_minor_patch }}
-            ${{ steps.prep.outputs.version_major_minor }}
-            ${{ steps.prep.outputs.version_major }}
-            latest
+          tags: |
+            type=raw,value=${{ steps.prep.outputs.version_major_minor_patch }}
+            type=raw,value=${{ steps.prep.outputs.version_major_minor }}
+            type=raw,value=${{ steps.prep.outputs.version_major }}
+            type=raw,value=latest
 
       - name: Login to GHCR
         if: github.event_name != 'pull_request'
