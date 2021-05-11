@@ -114,6 +114,12 @@ RUN echo "Install and Configure required extra PHP packages ..." \
     && apk add --no-cache --virtual .php-dev-phpext-rundeps $runDeps \
     && apk add --no-cache --virtual .php-dev-rundeps git npm \
     && apk del .build-deps \
+    && echo "Configure Xdebug ..." \
+    && echo '[xdebug]' >> /usr/local/etc/php/conf.d/xdebug-default.ini \
+    && echo 'xdebug.mode=debug' >> /usr/local/etc/php/conf.d/xdebug-default.ini \
+    && echo 'xdebug.start_with_request=yes' >> /usr/local/etc/php/conf.d/xdebug-default.ini \
+    && echo 'xdebug.client_port=9003' >> /usr/local/etc/php/conf.d/xdebug-default.ini \
+    && echo 'xdebug.client_host=host.docker.internal' >> /usr/local/etc/php/conf.d/xdebug-default.ini \
     && cp "$PHP_INI_DIR/php.ini-development" "$PHP_INI_DIR/php.ini" \
     && rm -rf /var/cache/apk/* \
     && echo "Download and install Composer ..." \
@@ -135,6 +141,8 @@ RUN echo "Install and Configure required extra PHP packages ..." \
     && chown -Rf 1001:0 /home/default \
     && chmod -R ug+rw /home/default \
     && find /home/default -type d -exec chmod ug+x {} \; 
+
+EXPOSE 9003
 
 USER 1001
 
