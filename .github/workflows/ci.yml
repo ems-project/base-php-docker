@@ -639,7 +639,7 @@ jobs:
           echo "{\"text\":\"" > mattermost.json
           echo "# :php: New version of [Base PHP](https://github.com/ems-project/docker-php-fpm) Docker image(s) has been pushed in DockerHub Registry" >> mattermost.json
           echo "| :docker: Docker image Name(s) | Flavor(s) |" >> mattermost.json
-          echo "| :--- |" >> mattermost.json
+          echo "| :--- | :--- |" >> mattermost.json
           echo "| ${{ steps.prep.outputs.dockerhub_phpfpm_prd_image }}:${{ steps.prep.outputs.version_major_minor_patch }}` | PHP Only |" >> mattermost.json
           echo "| ${{ steps.prep.outputs.dockerhub_phpfpm_prd_image }}:${{ steps.prep.outputs.version_major_minor }}` | PHP Only |" >> mattermost.json
           echo "| ${{ steps.prep.outputs.dockerhub_phpfpm_prd_image }}:${{ steps.prep.outputs.version_major }}` | PHP Only |" >> mattermost.json
