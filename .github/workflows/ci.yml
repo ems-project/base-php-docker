@@ -647,6 +647,6 @@ jobs:
           echo "| ${{ steps.prep.outputs.dockerhub_nginx_dev_image }}:${{ steps.meta_dockerhub_nginx_dev.outputs.version }}` | :php: :nginx: :php-composer: |" >> mattermost.json
           echo "\"}" >> mattermost.json
 
-      - uses: mattermost/action-mattermost-notify@v1.1.0
+      - uses: mattermost/action-mattermost-notify@master
         env:
           MATTERMOST_WEBHOOK_URL: ${{ secrets.MATTERMOST_WEBHOOK_URL }}
