@@ -634,6 +634,7 @@ jobs:
           docker pull ${{ steps.prep.outputs.dockerhub_nginx_dev_image }}:${{ steps.prep.outputs.version_major_minor_patch }}
 
       - name: Create the Mattermost Message
+        if: github.event_name != 'pull_request'
         run: |
           echo "{\"text\":\"" > mattermost.json
           echo "# :php: New version of [Base PHP](https://github.com/ems-project/docker-php-fpm) Docker image(s) has been pushed in DockerHub Registry" >> mattermost.json
@@ -647,6 +648,8 @@ jobs:
           echo "| ${{ steps.prep.outputs.dockerhub_nginx_dev_image }}:${{ steps.meta_dockerhub_nginx_dev.outputs.version }}` | :php: :nginx: :php-composer: |" >> mattermost.json
           echo "\"}" >> mattermost.json
 
-      - uses: mattermost/action-mattermost-notify@master
+      - name: Send Mattermost Message
+        uses: mattermost/action-mattermost-notify@master
+        if: github.event_name != 'pull_request'
         env:
           MATTERMOST_WEBHOOK_URL: ${{ secrets.MATTERMOST_WEBHOOK_URL }}
