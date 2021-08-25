@@ -87,7 +87,7 @@ jobs:
             type=raw,value=${{ steps.prep.outputs.version_major_minor }}
             type=raw,value=${{ steps.prep.outputs.version_major }}
             type=raw,value=latest
-            
+
       - name: Fill GHCR Docker Dev PHP-FPM Image metadata
         id: meta_ghcr_phpfpm_dev
         uses: crazy-max/ghaction-docker-meta@v3
@@ -386,19 +386,19 @@ jobs:
           image-name: "${{ steps.prep.outputs.ghcr_nginx_dev_image }}:${{ env.CI_SHA_SHORT }}"
 
       - name: Test PHP-FPM Prod Docker Image
-        env: 
+        env:
           PHP_DOCKER_IMAGE_NAME: ${{ steps.prep.outputs.ghcr_phpfpm_prd_image }}:${{ env.CI_SHA_SHORT }}
         run: |
           bats -r test/tests.php-fpm.bats
 
       - name: Test PHP-APACHE Prod Docker Image
-        env: 
+        env:
           PHP_DOCKER_IMAGE_NAME: ${{ steps.prep.outputs.ghcr_apache_prd_image }}:${{ env.CI_SHA_SHORT }}
         run: |
           bats -r test/tests.apache.bats
 
       - name: Test PHP-NGINX Prod Docker Image
-        env: 
+        env:
           PHP_DOCKER_IMAGE_NAME: ${{ steps.prep.outputs.ghcr_nginx_prd_image }}:${{ env.CI_SHA_SHORT }}
         run: |
           bats -r test/tests.nginx.bats
@@ -639,14 +639,33 @@ jobs:
           echo "{\"text\":\"" > mattermost.json
           echo "# :php: New version of [Base PHP](https://github.com/ems-project/docker-php-fpm) Docker image(s) has been pushed in DockerHub Registry" >> mattermost.json
           echo "| :docker: Docker image Name(s) | Flavor(s) |" >> mattermost.json
-          echo "| :--- |" >> mattermost.json
-          echo "| ${{ steps.prep.outputs.dockerhub_phpfpm_prd_image }}:${{ steps.meta_dockerhub_phpfpm_prd.outputs.version }}` | :php: |" >> mattermost.json
-          echo "| ${{ steps.prep.outputs.dockerhub_phpfpm_dev_image }}:${{ steps.meta_dockerhub_phpfpm_dev.outputs.version }}` | :php: :php-composer: |" >> mattermost.json
-          echo "| ${{ steps.prep.outputs.dockerhub_apache_prd_image }}:${{ steps.meta_dockerhub_apache_prd.outputs.version }}` | :php: :apache-httpd: |" >> mattermost.json
-          echo "| ${{ steps.prep.outputs.dockerhub_apache_dev_image }}:${{ steps.meta_dockerhub_apache_prd.outputs.version }}` | :php: :apache-httpd: :php-composer: |" >> mattermost.json
-          echo "| ${{ steps.prep.outputs.dockerhub_nginx_prd_image }}:${{ steps.meta_dockerhub_nginx_prd.outputs.version }}` | :php: :nginx: |" >> mattermost.json
-          echo "| ${{ steps.prep.outputs.dockerhub_nginx_dev_image }}:${{ steps.meta_dockerhub_nginx_dev.outputs.version }}` | :php: :nginx: :php-composer: |" >> mattermost.json
+          echo "| :--- | :--- |" >> mattermost.json
+          echo "| ${{ steps.prep.outputs.dockerhub_phpfpm_prd_image }}:${{ steps.prep.outputs.version_major_minor_patch }} | PHP Only |" >> mattermost.json
+          echo "| ${{ steps.prep.outputs.dockerhub_phpfpm_prd_image }}:${{ steps.prep.outputs.version_major_minor }} | PHP Only |" >> mattermost.json
+          echo "| ${{ steps.prep.outputs.dockerhub_phpfpm_prd_image }}:${{ steps.prep.outputs.version_major }} | PHP Only |" >> mattermost.json
+          echo "| ${{ steps.prep.outputs.dockerhub_phpfpm_prd_image }}:latest | PHP Only |" >> mattermost.json
+          echo "| ${{ steps.prep.outputs.dockerhub_phpfpm_dev_image }}:${{ steps.prep.outputs.version_major_minor_patch }} | PHP + Composer |" >> mattermost.json
+          echo "| ${{ steps.prep.outputs.dockerhub_phpfpm_dev_image }}:${{ steps.prep.outputs.version_major_minor }} | PHP + Composer |" >> mattermost.json
+          echo "| ${{ steps.prep.outputs.dockerhub_phpfpm_dev_image }}:${{ steps.prep.outputs.version_major }} | PHP + Composer |" >> mattermost.json
+          echo "| ${{ steps.prep.outputs.dockerhub_phpfpm_dev_image }}:latest | PHP + Composer |" >> mattermost.json
+          echo "| ${{ steps.prep.outputs.dockerhub_apache_prd_image }}:${{ steps.prep.outputs.version_major_minor_patch }} | PHP + Apache WebServer |" >> mattermost.json
+          echo "| ${{ steps.prep.outputs.dockerhub_apache_prd_image }}:${{ steps.prep.outputs.version_major_minor }} | PHP + Apache WebServer |" >> mattermost.json
+          echo "| ${{ steps.prep.outputs.dockerhub_apache_prd_image }}:${{ steps.prep.outputs.version_major }} | PHP + Apache WebServer |" >> mattermost.json
+          echo "| ${{ steps.prep.outputs.dockerhub_apache_prd_image }}:latest | PHP + Apache WebServer |" >> mattermost.json
+          echo "| ${{ steps.prep.outputs.dockerhub_apache_dev_image }}:${{ steps.prep.outputs.version_major_minor_patch }} | PHP + Apache WebServer + Composer |" >> mattermost.json
+          echo "| ${{ steps.prep.outputs.dockerhub_apache_dev_image }}:${{ steps.prep.outputs.version_major_minor }} | PHP + Apache WebServer + Composer |" >> mattermost.json
+          echo "| ${{ steps.prep.outputs.dockerhub_apache_dev_image }}:${{ steps.prep.outputs.version_major }} | PHP + Apache WebServer + Composer |" >> mattermost.json
+          echo "| ${{ steps.prep.outputs.dockerhub_apache_dev_image }}:latest | PHP + Apache WebServer + Composer |" >> mattermost.json
+          echo "| ${{ steps.prep.outputs.dockerhub_nginx_prd_image }}:${{ steps.prep.outputs.version_major_minor_patch }} | PHP + NGinx WebServer |" >> mattermost.json
+          echo "| ${{ steps.prep.outputs.dockerhub_nginx_prd_image }}:${{ steps.prep.outputs.version_major_minor }} | PHP + NGinx WebServer |" >> mattermost.json
+          echo "| ${{ steps.prep.outputs.dockerhub_nginx_prd_image }}:${{ steps.prep.outputs.version_major }} | PHP + NGinx WebServer |" >> mattermost.json
+          echo "| ${{ steps.prep.outputs.dockerhub_nginx_prd_image }}:latest | PHP + NGinx WebServer |" >> mattermost.json
+          echo "| ${{ steps.prep.outputs.dockerhub_nginx_dev_image }}:${{ steps.prep.outputs.version_major_minor_patch }} | PHP + NGinx WebServer + Composer |" >> mattermost.json
+          echo "| ${{ steps.prep.outputs.dockerhub_nginx_dev_image }}:${{ steps.prep.outputs.version_major_minor }} | PHP + NGinx WebServer + Composer |" >> mattermost.json
+          echo "| ${{ steps.prep.outputs.dockerhub_nginx_dev_image }}:${{ steps.prep.outputs.version_major }} | PHP + NGinx WebServer + Composer |" >> mattermost.json
+          echo "| ${{ steps.prep.outputs.dockerhub_nginx_dev_image }}:latest | PHP + NGinx WebServer + Composer |" >> mattermost.json
           echo "\"}" >> mattermost.json
+          cat mattermost.json
 
       - name: Send Mattermost Message
         uses: mattermost/action-mattermost-notify@master
