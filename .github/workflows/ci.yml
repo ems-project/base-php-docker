@@ -623,9 +623,9 @@ jobs:
           docker buildx imagetools inspect ${{ steps.prep.outputs.dockerhub_phpfpm_prd_image }}:${{ steps.meta_dockerhub_phpfpm_prd.outputs.version }}
           docker buildx imagetools inspect ${{ steps.prep.outputs.dockerhub_phpfpm_dev_image }}:${{ steps.meta_dockerhub_phpfpm_dev.outputs.version }}
           docker buildx imagetools inspect ${{ steps.prep.outputs.dockerhub_apache_prd_image }}:${{ steps.meta_dockerhub_apache_prd.outputs.version }}
-          docker buildx imagetools inspect ${{ steps.prep.outputs.dockerhub_apache_dev_image }}:${{ steps.meta_dockerhub_apache_prd.outputs.version }}
+          docker buildx imagetools inspect ${{ steps.prep.outputs.dockerhub_apache_dev_image }}:${{ steps.meta_dockerhub_apache_dev.outputs.version }}
           docker buildx imagetools inspect ${{ steps.prep.outputs.dockerhub_nginx_prd_image }}:${{ steps.meta_dockerhub_nginx_prd.outputs.version }}
-          docker buildx imagetools inspect ${{ steps.prep.outputs.dockerhub_nginx_dev_image }}:${{ steps.meta_dockerhub_nginx_prd.outputs.version }}
+          docker buildx imagetools inspect ${{ steps.prep.outputs.dockerhub_nginx_dev_image }}:${{ steps.meta_dockerhub_nginx_dev.outputs.version }}
           docker pull ${{ steps.prep.outputs.dockerhub_phpfpm_prd_image }}:${{ steps.prep.outputs.version_major_minor_patch }}
           docker pull ${{ steps.prep.outputs.dockerhub_phpfpm_dev_image }}:${{ steps.prep.outputs.version_major_minor_patch }}
           docker pull ${{ steps.prep.outputs.dockerhub_apache_prd_image }}:${{ steps.prep.outputs.version_major_minor_patch }}
@@ -633,3 +633,20 @@ jobs:
           docker pull ${{ steps.prep.outputs.dockerhub_nginx_prd_image }}:${{ steps.prep.outputs.version_major_minor_patch }}
           docker pull ${{ steps.prep.outputs.dockerhub_nginx_dev_image }}:${{ steps.prep.outputs.version_major_minor_patch }}
 
+      - name: Create the Mattermost Message
+        run: |
+          echo "{\"text\":\"" > mattermost.json
+          echo "# :php: New version of [Base PHP](https://github.com/ems-project/docker-php-fpm) Docker image(s) has been pushed in DockerHub Registry" >> mattermost.json
+          echo "| :docker: Docker image Name(s) | Flavor(s) |" >> mattermost.json
+          echo "| :--- |" >> mattermost.json
+          echo "| ${{ steps.prep.outputs.dockerhub_phpfpm_prd_image }}:${{ steps.meta_dockerhub_phpfpm_prd.outputs.version }}` | :php: |" >> mattermost.json
+          echo "| ${{ steps.prep.outputs.dockerhub_phpfpm_dev_image }}:${{ steps.meta_dockerhub_phpfpm_dev.outputs.version }}` | :php: :php-composer: |" >> mattermost.json
+          echo "| ${{ steps.prep.outputs.dockerhub_apache_prd_image }}:${{ steps.meta_dockerhub_apache_prd.outputs.version }}` | :php: :apache-httpd: |" >> mattermost.json
+          echo "| ${{ steps.prep.outputs.dockerhub_apache_dev_image }}:${{ steps.meta_dockerhub_apache_prd.outputs.version }}` | :php: :apache-httpd: :php-composer: |" >> mattermost.json
+          echo "| ${{ steps.prep.outputs.dockerhub_nginx_prd_image }}:${{ steps.meta_dockerhub_nginx_prd.outputs.version }}` | :php: :nginx: |" >> mattermost.json
+          echo "| ${{ steps.prep.outputs.dockerhub_nginx_dev_image }}:${{ steps.meta_dockerhub_nginx_dev.outputs.version }}` | :php: :nginx: :php-composer: |" >> mattermost.json
+          echo "\"}" >> mattermost.json
+
+      - uses: mattermost/action-mattermost-notify@v1.1.0
+        env:
+          MATTERMOST_WEBHOOK_URL: ${{ secrets.MATTERMOST_WEBHOOK_URL }}
