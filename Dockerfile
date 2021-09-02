@@ -103,7 +103,7 @@ FROM php-fpm-prod AS php-fpm-dev
 USER root
 
 RUN echo "Install and Configure required extra PHP packages ..." \
-    && apk add --update --no-cache --virtual .build-deps $PHPIZE_DEPS autoconf patch \
+    && apk add --update --no-cache --virtual .build-deps $PHPIZE_DEPS autoconf \
     && pecl install xdebug \
     && docker-php-ext-enable xdebug \
     && runDeps="$( \
@@ -113,7 +113,7 @@ RUN echo "Install and Configure required extra PHP packages ..." \
        | awk 'system("[ -e /usr/local/lib/" $1 " ]") == 0 { next } { print "so:" $1 }' \
        )" \
     && apk add --no-cache --virtual .php-dev-phpext-rundeps $runDeps \
-    && apk add --no-cache --virtual .php-dev-rundeps git npm \
+    && apk add --no-cache --virtual .php-dev-rundeps git npm patch \
     && apk del .build-deps \
     && echo "Configure Xdebug ..." \
     && echo '[xdebug]' >> /usr/local/etc/php/conf.d/xdebug-default.ini \
