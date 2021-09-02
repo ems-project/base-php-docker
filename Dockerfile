@@ -103,7 +103,7 @@ FROM php-fpm-prod AS php-fpm-dev
 USER root
 
 RUN echo "Install and Configure required extra PHP packages ..." \
-    && apk add --update --no-cache --virtual .build-deps $PHPIZE_DEPS autoconf \
+    && apk add --update --no-cache --virtual .build-deps $PHPIZE_DEPS autoconf patch \
     && pecl install xdebug \
     && docker-php-ext-enable xdebug \
     && runDeps="$( \
