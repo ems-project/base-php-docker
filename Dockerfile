@@ -22,7 +22,7 @@ USER root
 
 ENV MAIL_SMTP_SERVER="" \
     MAIL_FROM_DOMAIN="" \
-    AWS_CLI_VERSION=1.16.207 \
+    AWS_CLI_VERSION=1.20.58 \
     AWS_CLI_DOWNLOAD_URL="https://github.com/aws/aws-cli/archive" \
     PHP_FPM_MAX_CHILDREN=${PHP_FPM_MAX_CHILDREN:-5} \
     PHP_FPM_REQUEST_MAX_MEMORY_IN_MEGABYTES=${PHP_FPM_REQUEST_MAX_MEMORY_IN_MEGABYTES:-128} \
@@ -60,7 +60,7 @@ RUN mkdir -p /home/default /opt/etc /opt/bin/container-entrypoint.d /opt/src /va
     && apk add --update --upgrade --no-cache --virtual .ems-rundeps curl tzdata \
                                       bash tar gettext ssmtp postgresql-client postgresql-libs \
                                       libjpeg-turbo freetype libpng libwebp libxpm mailx coreutils \
-                                      mysql-client jq wget icu-libs libxml2 python3 py3-pip \
+                                      mysql-client jq wget icu-libs libxml2 python3 py3-pip groff \
     && mkdir -p /var/run/php-fpm \
     && cp "$PHP_INI_DIR/php.ini-production" "$PHP_INI_DIR/php.ini" \
     && echo "Setup timezone ..." \
