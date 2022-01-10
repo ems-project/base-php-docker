@@ -1,5 +1,10 @@
 #!/bin/bash
 
+PHP_FPM_MAX_CHILDREN_AUTO_RESIZING=${PHP_FPM_MAX_CHILDREN_AUTO_RESIZING:-true}
+PHP_FPM_MAX_CHILDREN=${PHP_FPM_MAX_CHILDREN:-40}
+PHP_FPM_REQUEST_MAX_MEMORY_IN_MEGABYTES=${PHP_FPM_REQUEST_MAX_MEMORY_IN_MEGABYTES:-16}
+CONTAINER_HEAP_PERCENT=${CONTAINER_HEAP_PERCENT:-0.80}
+
 function configure {
 
   echo "  Setup SSMTP Configuration File ..."
@@ -16,26 +21,32 @@ function configure {
     echo "    Write permission is NOT granted on $FILE, fill environment variables."
   fi
 
-  echo "  Running in Docker Container.  This script check memory settings against QoS."
-  echo "  Initial settings : "
-  echo "    pm.max_children=${PHP_FPM_MAX_CHILDREN}"
-  echo "    php_value[memory_limit]=${PHP_FPM_REQUEST_MAX_MEMORY_IN_MEGABYTES}"
-  echo "    Ratio=${CONTAINER_HEAP_PERCENT}"
-
-  # calculate and set max_clients
-  . /usr/local/bin/dynamic_resources
-  CALCULATED_CLIENTS=`get_max_clients`
-  if [ -n "$CALCULATED_CLIENTS" ]; then
-    PHP_FPM_MAX_CHILDREN=$CALCULATED_CLIENTS
-    if [ $CALCULATED_CLIENTS -lt 1 ]; then
-      exit 1
-    fi
-  fi
+  if [[ "${PHP_FPM_MAX_CHILDREN_AUTO_RESIZING}" == "true" ]]; then
+    echo "  Running in Docker Container.  This script check memory settings against QoS."
+    echo "  Initial settings : "
+    echo "    pm.max_children=${PHP_FPM_MAX_CHILDREN}"
+    echo "    php_value[memory_limit]=${PHP_FPM_REQUEST_MAX_MEMORY_IN_MEGABYTES}M"
+    echo "    Ratio=${CONTAINER_HEAP_PERCENT}"
   
-  echo "  After calculation : "
-  echo "    pm.max_children=${PHP_FPM_MAX_CHILDREN}"
-  echo "    php_value[memory_limit]=${PHP_FPM_REQUEST_MAX_MEMORY_IN_MEGABYTES}"
-  echo "    Ratio=${CONTAINER_HEAP_PERCENT}"
+    # calculate and set max_clients
+    . /usr/local/bin/dynamic_resources
+    CALCULATED_CLIENTS=`get_max_clients`
+    if [ -n "$CALCULATED_CLIENTS" ]; then
+      PHP_FPM_MAX_CHILDREN=$CALCULATED_CLIENTS
+      if [ $CALCULATED_CLIENTS -lt 1 ]; then
+        exit 1
+      fi
+    fi
+    
+    echo "  After calculation : "
+    echo "    pm.max_children=${PHP_FPM_MAX_CHILDREN}"
+    echo "    php_value[memory_limit]=${PHP_FPM_REQUEST_MAX_MEMORY_IN_MEGABYTES}M"
+    echo "    Ratio=${CONTAINER_HEAP_PERCENT}"
+  fi
+
+  echo "  PHP-FPM Pool Memory Settings : "
+  echo "    > pm.max_children=${PHP_FPM_MAX_CHILDREN}"
+  echo "    > php_value[memory_limit]=${PHP_FPM_REQUEST_MAX_MEMORY_IN_MEGABYTES}M"
 
   echo "  Setup PHP-FPM Pool Configuration File(s) ..."
   PATTERN=/usr/local/etc/php-fpm.d/*
