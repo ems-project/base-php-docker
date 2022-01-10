@@ -124,7 +124,7 @@ export BATS_PHP_DOCKER_IMAGE_NAME="${PHP_DOCKER_IMAGE_NAME:-docker.io/elasticms/
   docker_wait_for_log php-fpm 60 "> php_value\[memory_limit\]=16M"
 }
 
-@test "[$TEST_FILE] Stop PHP-FPM test containers" {
+@test "[$TEST_FILE] Stop PHP-FPM test containers without PHP-FPM Auto-Sizing" {
   command docker-compose -f ${BATS_TEST_DIRNAME%/}/docker-compose.php-fpm.yml stop php-fpm
 }
 
