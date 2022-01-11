@@ -15,8 +15,9 @@ Installation of [Apache 2.4](https://pkgs.alpinelinux.org/package/v3.12/main/x86
 ## PHP-FPM Configuration
 
 You can change the amount of memory that PHP-FPM can use by changing / passing the environment variables ```PHP_FPM_MAX_CHILDREN``` and ```PHP_FPM_REQUEST_MAX_MEMORY_IN_MEGABYTES```.  
-This values can be are overridden automatically by the startup script if a QoS memory limit is applied and detected in your container.  
+These values can be overridden automatically by the startup script if a QoS memory limit is applied and detected in your container.  
 However, this value can be reduced to a percentage by the configuration of the environment variable ```CONTAINER_HEAP_PERCENT``` (default: 80 %).  
+
 
 | Name | Default Value | Description |
 |-|-|-|
