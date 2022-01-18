@@ -43,7 +43,7 @@ RUN mkdir -p /home/default /opt/etc /opt/bin/container-entrypoint.d /opt/src /va
                                                 libjpeg-turbo-dev libpng-dev libwebp-dev libxpm-dev \
                                                 libzip-dev openldap-dev pcre-dev gnupg git bzip2-dev \
                                                 musl-libintl postgresql-dev libxml2-dev \
-    && docker-php-ext-configure gd --with-freetype --with-jpeg \
+    && docker-php-ext-configure gd --with-freetype --with-webp --with-jpeg \
     && docker-php-ext-install -j "$(nproc)" soap iconv bz2 fileinfo gettext intl pcntl pgsql \
                                             pdo_pgsql simplexml ldap gd ldap mysqli pdo_mysql \
                                             zip opcache bcmath exif \
