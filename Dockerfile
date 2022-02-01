@@ -62,8 +62,10 @@ RUN mkdir -p /home/default /opt/etc /opt/bin/container-entrypoint.d /opt/src /va
                                       bash tar gettext ssmtp postgresql-client postgresql-libs \
                                       libjpeg-turbo freetype libpng libwebp libxpm mailx coreutils \
                                       mysql-client jq wget icu-libs libxml2 python3 py3-pip groff supervisor \
+                                      varnish \
+    && rm /etc/supervisord.conf \
     && mkdir -p /var/run/php-fpm /etc/supervisord/supervisord.d \
-    && touch /var/log/supervisord.log /var/run/supervisord.pid \
+    && touch /var/log/supervisord.log /var/run/supervisord.pid /etc/varnish/secret \
     && cp "$PHP_INI_DIR/php.ini-production" "$PHP_INI_DIR/php.ini" \
     && echo "Setup timezone ..." \
     && cp /usr/share/zoneinfo/Europe/Brussels /etc/localtime \
@@ -86,9 +88,11 @@ RUN mkdir -p /home/default /opt/etc /opt/bin/container-entrypoint.d /opt/src /va
     && rm -rf /var/cache/apk/* \
     && echo "Setup permissions on filesystem for non-privileged user ..." \
     && chown -Rf 1001:0 /home/default /opt /etc/ssmtp /usr/local/etc /var/run/php-fpm /var/lock \
-                            /var/log/supervisord.log /etc/supervisord /var/run/supervisord.pid \
+                        /var/log/supervisord.log /etc/supervisord /var/run/supervisord.pid \
+                        /etc/varnish /var/lib/varnish \
     && chmod -R ug+rw /home/default /opt /etc/ssmtp /usr/local/etc /var/run/php-fpm \
                       /var/log/supervisord.log /etc/supervisord /var/run/supervisord.pid \
+                      /etc/varnish /var/lib/varnish \
     && find /opt -type d -exec chmod ug+x {} \; \
     && find /var/lock -type d -exec chmod ug+x {} \; \
     && find /usr/local/etc -type d -exec chmod ug+x {} \; 
@@ -96,6 +100,8 @@ RUN mkdir -p /home/default /opt/etc /opt/bin/container-entrypoint.d /opt/src /va
 USER 1001
 
 ENTRYPOINT ["container-entrypoint"]
+
+EXPOSE 6081/tcp 6082/tcp
 
 HEALTHCHECK --start-period=10s --interval=1m --timeout=5s --retries=5 \
         CMD bash -c '[ -S /var/run/php-fpm/php-fpm.sock ]'

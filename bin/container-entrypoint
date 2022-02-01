@@ -5,7 +5,43 @@ PHP_FPM_MAX_CHILDREN=${PHP_FPM_MAX_CHILDREN:-40}
 PHP_FPM_REQUEST_MAX_MEMORY_IN_MEGABYTES=${PHP_FPM_REQUEST_MAX_MEMORY_IN_MEGABYTES:-16}
 CONTAINER_HEAP_PERCENT=${CONTAINER_HEAP_PERCENT:-0.80}
 
-function configure {
+VARNISH_ENABLED=${VARNISH_ENABLED:-"false"}
+
+function generate-varnish-supervisord-cfg {
+  local -r VARNISH_STORAGE_MALLOC_DEFAULT_SIZE="200M"
+  local -r VARNISH_NCSA_LOG_FORMAT_DEFAULT="%%h %%l %%u %%t %%D \"%%r\" %%s %%b %%{Varnish:hitmiss}x \"%%{User-agent}i\"" # Supervisord uses the % character for its own format strings in the config file. You can still use the % character but you must escape it like %%.
+  local -r VARNISH_TTL_DEFAULT="120"
+  local -r VARNISH_MIN_THREADS_DEFAULT="5"
+  local -r VARNISH_MAX_THREADS_DEFAULT="1000"
+  local -r VARNISH_THREAD_TIMEOUT_DEFAULT="120"
+  local -r VARNISH_VCL_CONF_DEFAULT="/etc/varnish/default.vcl"
+
+  local VARNISH_STORAGE_MALLOC_SIZE=${VARNISH_STORAGE_MALLOC_CUSTOM_SIZE:-"${VARNISH_STORAGE_MALLOC_DEFAULT_SIZE}"}
+  local VARNISH_NCSA_LOG_FORMAT=${VARNISH_NCSA_LOG_FORMAT_CUSTOM:-"${VARNISH_NCSA_LOG_FORMAT_DEFAULT}"}
+  local VARNISH_TTL=${VARNISH_TTL_CUSTOM:-"${VARNISH_TTL_DEFAULT}"}
+  local VARNISH_MIN_THREADS=${VARNISH_MIN_THREADS_CUSTOM:-"${VARNISH_MIN_THREADS_DEFAULT}"}
+  local VARNISH_MAX_THREADS=${VARNISH_MAX_THREADS_CUSTOM:-"${VARNISH_MAX_THREADS_DEFAULT}"}
+  local VARNISH_THREAD_TIMEOUT=${VARNISH_THREAD_TIMEOUT_CUSTOM:-"${VARNISH_THREAD_TIMEOUT_DEFAULT}"}
+  local VARNISH_VCL_CONF=${VARNISH_VCL_CONF_CUSTOM:-"${VARNISH_VCL_CONF_DEFAULT}"}
+
+  cat >/etc/supervisord/supervisord.d/varnish.ini <<EOL
+[program:varnishd]
+command=/usr/sbin/varnishd -F -a 0.0.0.0:6081 -f ${VARNISH_VCL_CONF} -T 0.0.0.0:6082 -t ${VARNISH_TTL} -p thread_pool_min=${VARNISH_MIN_THREADS} -p thread_pool_max=${VARNISH_MAX_THREADS} -p thread_pool_timeout=${VARNISH_THREAD_TIMEOUT} -s malloc,${VARNISH_STORAGE_MALLOC_SIZE} -S /etc/varnish/secret
+autorestart=true
+
+[program:varnishncsa]
+command=/usr/bin/varnishncsa -F "${VARNISH_NCSA_LOG_FORMAT}"
+stdout_logfile=/dev/stdout
+stdout_logfile_maxbytes=0
+stderr_logfile=/dev/stderr
+stderr_logfile_maxbytes=0
+autorestart=true
+startretries=10
+EOL
+
+}
+
+function configure-phpfpm {
 
   echo "  Setup SSMTP Configuration File ..."
   FILE=/etc/ssmtp/ssmtp.conf
@@ -80,8 +116,22 @@ function configure {
 
 }
 
+function configure-varnish {
+
+  if [[ "${VARNISH_ENABLED}" == "true" ]]; then
+    generate-varnish-supervisord-cfg
+
+    if [[ ! -s /etc/varnish/secret ]]; then
+      dd if=/dev/random of=/etc/varnish/secret count=1
+    fi
+
+  fi
+
+}
+
 echo "Configure php-fpm Container ..."
-configure
+configure-phpfpm
+configure-varnish
 echo "php-fpm Container configured succesfully ..."
 
 set -eu

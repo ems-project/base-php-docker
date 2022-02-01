@@ -27,6 +27,8 @@ export BATS_NGINX_CONFIG_VOLUME_NAME=${BATS_NGINX_CONFIG_VOLUME_NAME:-nginx_conf
 
 export BATS_PHP_DOCKER_IMAGE_NAME="${PHP_DOCKER_IMAGE_NAME:-docker.io/elasticms/base-php-fpm:latest}"
 
+export BATS_VARNISH_ENABLED=${BATS_VARNISH_ENABLED:-"false"}
+
 @test "[$TEST_FILE] Create Docker external volumes (local)" {
   command docker volume create -d local ${BATS_PHP_SCRIPTS_VOLUME_NAME}
   command docker volume create -d local ${BATS_PHP_SOCKET_VOLUME_NAME}
