@@ -120,8 +120,11 @@ function configure-phpfpm {
 function configure-varnish {
 
   if [[ "${VARNISH_ENABLED}" == "true" ]]; then
+
+    echo "  Configure Varnish ..."
     generate-varnish-supervisord-cfg
 
+    echo "  Create Varnish secret file ..."
     if [[ ! -s /etc/varnish/secret ]]; then
       dd if=/dev/random of=/etc/varnish/secret count=1
     fi
@@ -130,10 +133,10 @@ function configure-varnish {
 
 }
 
-echo "Configure php-fpm Container ..."
+echo "Configure container ..."
 configure-varnish
 configure-phpfpm
-echo "php-fpm Container configured succesfully ..."
+echo "Container configured succesfully ..."
 
 set -eu
 cmd="$1"; shift
