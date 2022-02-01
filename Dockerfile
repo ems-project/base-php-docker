@@ -163,7 +163,7 @@ COPY src/ /var/www/html/
 RUN apk add --update --no-cache --virtual .php-apache-rundeps apache2 apache2-utils apache2-proxy apache2-ssl supervisor \
     && touch /var/log/supervisord.log \
     && touch /var/run/supervisord.pid \
-    && mkdir -p /run/apache2 /var/run/apache2 /var/log/apache2 /etc/supervisord \
+    && mkdir -p /run/apache2 /var/run/apache2 /var/log/apache2 /etc/supervisord/supervisord.d \
     && rm -rf /var/cache/apk/* \
     && echo "Setup permissions on filesystem for non-privileged user ..." \
     && chown -Rf 1001:0 /etc/apache2 /run/apache2 /var/run/apache2 /var/log/apache2 /var/www/html \
