@@ -22,7 +22,8 @@ function generate-varnish-supervisord-cfg {
   local VARNISH_MIN_THREADS=${VARNISH_MIN_THREADS_CUSTOM:-"${VARNISH_MIN_THREADS_DEFAULT}"}
   local VARNISH_MAX_THREADS=${VARNISH_MAX_THREADS_CUSTOM:-"${VARNISH_MAX_THREADS_DEFAULT}"}
   local VARNISH_THREAD_TIMEOUT=${VARNISH_THREAD_TIMEOUT_CUSTOM:-"${VARNISH_THREAD_TIMEOUT_DEFAULT}"}
-  local VARNISH_VCL_CONF=${VARNISH_VCL_CONF_CUSTOM:-"${VARNISH_VCL_CONF_DEFAULT}"}
+
+  export VARNISH_VCL_CONF=${VARNISH_VCL_CONF_CUSTOM:-"${VARNISH_VCL_CONF_DEFAULT}"}
 
   cat >/etc/supervisord/supervisord.d/varnish.ini <<EOL
 [program:varnishd]
@@ -130,8 +131,8 @@ function configure-varnish {
 }
 
 echo "Configure php-fpm Container ..."
-configure-phpfpm
 configure-varnish
+configure-phpfpm
 echo "php-fpm Container configured succesfully ..."
 
 set -eu
