@@ -16,6 +16,7 @@ LABEL eu.elasticms.base-php-fpm.build-date=$BUILD_DATE_ARG \
       eu.elasticms.base-php-fpm.vendor="sebastian.molle@gmail.com" \
       eu.elasticms.base-php-fpm.version="$VERSION_ARG" \
       eu.elasticms.base-php-fpm.release="$RELEASE_ARG" \
+      eu.elasticms.base-php-fpm.environment="prod" \
       eu.elasticms.base-php-fpm.schema-version="1.0" 
 
 USER root
@@ -100,6 +101,8 @@ CMD ["php-fpm", "-F", "-R"]
 
 FROM php-fpm-prod AS php-fpm-dev
 
+LABEL eu.elasticms.base-php-fpm.environment="dev"
+
 USER root
 
 RUN echo "Install and Configure required extra PHP packages ..." \
@@ -149,6 +152,8 @@ USER 1001
 
 FROM php-fpm-prod AS apache-prod
 
+LABEL eu.elasticms.base-php-fpm.webserver="apache"
+
 USER root
 
 COPY etc/apache2/ /etc/apache2/
@@ -182,6 +187,8 @@ CMD ["/usr/bin/supervisord", "-c", "/etc/supervisord/supervisord.conf"]
 
 FROM php-fpm-dev AS apache-dev
 
+LABEL eu.elasticms.base-php-fpm.webserver="apache"
+
 USER root
 
 COPY etc/apache2/ /etc/apache2/
@@ -214,6 +221,8 @@ HEALTHCHECK --start-period=10s --interval=1m --timeout=5s --retries=5 \
 CMD ["/usr/bin/supervisord", "-c", "/etc/supervisord/supervisord.conf"]
 
 FROM php-fpm-prod AS nginx-prod
+
+LABEL eu.elasticms.base-php-fpm.webserver="nginx"
 
 USER root
 
@@ -252,6 +261,8 @@ HEALTHCHECK --start-period=10s --interval=1m --timeout=5s --retries=5 \
 CMD ["/usr/bin/supervisord", "-c", "/etc/supervisord/supervisord.conf"]
 
 FROM php-fpm-dev AS nginx-dev
+
+LABEL eu.elasticms.base-php-fpm.webserver="nginx"
 
 USER root
 
