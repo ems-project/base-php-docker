@@ -61,8 +61,9 @@ RUN mkdir -p /home/default /opt/etc /opt/bin/container-entrypoint.d /opt/src /va
     && apk add --update --upgrade --no-cache --virtual .ems-rundeps curl tzdata \
                                       bash tar gettext ssmtp postgresql-client postgresql-libs \
                                       libjpeg-turbo freetype libpng libwebp libxpm mailx coreutils \
-                                      mysql-client jq wget icu-libs libxml2 python3 py3-pip groff \
-    && mkdir -p /var/run/php-fpm \
+                                      mysql-client jq wget icu-libs libxml2 python3 py3-pip groff supervisor \
+    && mkdir -p /var/run/php-fpm /etc/supervisord/supervisord.d \
+    && touch /var/log/supervisord.log /var/run/supervisord.pid \
     && cp "$PHP_INI_DIR/php.ini-production" "$PHP_INI_DIR/php.ini" \
     && echo "Setup timezone ..." \
     && cp /usr/share/zoneinfo/Europe/Brussels /etc/localtime \
@@ -85,7 +86,9 @@ RUN mkdir -p /home/default /opt/etc /opt/bin/container-entrypoint.d /opt/src /va
     && rm -rf /var/cache/apk/* \
     && echo "Setup permissions on filesystem for non-privileged user ..." \
     && chown -Rf 1001:0 /home/default /opt /etc/ssmtp /usr/local/etc /var/run/php-fpm /var/lock \
+                            /var/log/supervisord.log /etc/supervisord /var/run/supervisord.pid \
     && chmod -R ug+rw /home/default /opt /etc/ssmtp /usr/local/etc /var/run/php-fpm \
+                      /var/log/supervisord.log /etc/supervisord /var/run/supervisord.pid \
     && find /opt -type d -exec chmod ug+x {} \; \
     && find /var/lock -type d -exec chmod ug+x {} \; \
     && find /usr/local/etc -type d -exec chmod ug+x {} \; 
@@ -160,16 +163,12 @@ COPY etc/apache2/ /etc/apache2/
 COPY etc/supervisord.apache/ /etc/supervisord/
 COPY src/ /var/www/html/
 
-RUN apk add --update --no-cache --virtual .php-apache-rundeps apache2 apache2-utils apache2-proxy apache2-ssl supervisor \
-    && touch /var/log/supervisord.log \
-    && touch /var/run/supervisord.pid \
-    && mkdir -p /run/apache2 /var/run/apache2 /var/log/apache2 /etc/supervisord/supervisord.d \
+RUN apk add --update --no-cache --virtual .php-apache-rundeps apache2 apache2-utils apache2-proxy apache2-ssl \
+    && mkdir -p /run/apache2 /var/run/apache2 /var/log/apache2 \
     && rm -rf /var/cache/apk/* \
     && echo "Setup permissions on filesystem for non-privileged user ..." \
     && chown -Rf 1001:0 /etc/apache2 /run/apache2 /var/run/apache2 /var/log/apache2 /var/www/html \
-                        /var/log/supervisord.log /etc/supervisord /var/run/supervisord.pid \
     && chmod -R ug+rw /etc/apache2 /run/apache2 /var/run/apache2 /var/log/apache2 /var/lock /var/www/html \
-                      /var/log/supervisord.log /etc/supervisord /var/run/supervisord.pid \
     && find /run/apache2 -type d -exec chmod ug+x {} \; \
     && find /etc/apache2 -type d -exec chmod ug+x {} \; \
     && find /run/apache2 -type d -exec chmod ug+x {} \; \
@@ -195,16 +194,12 @@ COPY etc/apache2/ /etc/apache2/
 COPY etc/supervisord.apache/ /etc/supervisord/
 COPY src/ /var/www/html/
 
-RUN apk add --update --no-cache --virtual .php-apache-rundeps apache2 apache2-utils apache2-proxy apache2-ssl supervisor \
-    && touch /var/log/supervisord.log \
-    && touch /var/run/supervisord.pid \
-    && mkdir -p /run/apache2 /var/run/apache2 /var/log/apache2 /etc/supervisord \
+RUN apk add --update --no-cache --virtual .php-apache-rundeps apache2 apache2-utils apache2-proxy apache2-ssl \
+    && mkdir -p /run/apache2 /var/run/apache2 /var/log/apache2 \
     && rm -rf /var/cache/apk/* \
     && echo "Setup permissions on filesystem for non-privileged user ..." \
     && chown -Rf 1001:0 /etc/apache2 /run/apache2 /var/run/apache2 /var/log/apache2 /var/www/html \
-                        /var/log/supervisord.log /etc/supervisord /var/run/supervisord.pid \
     && chmod -R ug+rw /etc/apache2 /run/apache2 /var/run/apache2 /var/log/apache2 /var/lock /var/www/html \
-                      /var/log/supervisord.log /etc/supervisord /var/run/supervisord.pid \
     && find /run/apache2 -type d -exec chmod ug+x {} \; \
     && find /etc/apache2 -type d -exec chmod ug+x {} \; \
     && find /run/apache2 -type d -exec chmod ug+x {} \; \
@@ -230,20 +225,15 @@ COPY etc/nginx/ /etc/nginx/
 COPY etc/supervisord.nginx/ /etc/supervisord/
 COPY src/ /usr/share/nginx/html/
 
-RUN apk add --update --no-cache --virtual .php-nginx-rundeps nginx supervisor \
-    && touch /var/log/supervisord.log \
-    && touch /var/run/supervisord.pid \
+RUN apk add --update --no-cache --virtual .php-nginx-rundeps nginx \
     && mkdir -p /etc/nginx/sites-enabled /var/log/nginx /var/cache/nginx \
                 /var/run/nginx /var/lib/nginx /usr/share/nginx/cache/fcgi /var/tmp/nginx \
-                /etc/supervisord \
     && rm -rf /etc/nginx/conf.d/default.conf /var/cache/apk/* \
     && echo "Setup permissions on filesystem for non-privileged user ..." \
     && chown -Rf 1001:0 /etc/nginx /var/log/nginx /var/run/nginx /var/cache/nginx \
                         /var/lib/nginx /usr/share/nginx /var/tmp/nginx \
-                        /var/log/supervisord.log /etc/supervisord /var/run/supervisord.pid \
     && chmod -R ug+rw /etc/nginx /var/log/nginx /var/run/nginx /var/cache/nginx \
                       /var/lib/nginx /usr/share/nginx /var/tmp/nginx \
-                      /var/log/supervisord.log /etc/supervisord /var/run/supervisord.pid \
     && find /etc/nginx -type d -exec chmod ug+x {} \; \
     && find /var/log/nginx -type d -exec chmod ug+x {} \; \
     && find /var/run/nginx -type d -exec chmod ug+x {} \; \
@@ -270,20 +260,15 @@ COPY etc/nginx/ /etc/nginx/
 COPY etc/supervisord.nginx/ /etc/supervisord/
 COPY src/ /usr/share/nginx/html/
 
-RUN apk add --update --no-cache --virtual .php-nginx-rundeps nginx supervisor \
-    && touch /var/log/supervisord.log \
-    && touch /var/run/supervisord.pid \
+RUN apk add --update --no-cache --virtual .php-nginx-rundeps nginx \
     && mkdir -p /etc/nginx/sites-enabled /var/log/nginx /var/cache/nginx \
                 /var/run/nginx /var/lib/nginx /usr/share/nginx/cache/fcgi /var/tmp/nginx \
-                /etc/supervisord \
     && rm -rf /etc/nginx/conf.d/default.conf /var/cache/apk/* \
     && echo "Setup permissions on filesystem for non-privileged user ..." \
     && chown -Rf 1001:0 /etc/nginx /var/log/nginx /var/run/nginx /var/cache/nginx \
                         /var/lib/nginx /usr/share/nginx /var/tmp/nginx \
-                        /var/log/supervisord.log /etc/supervisord /var/run/supervisord.pid \
     && chmod -R ug+rw /etc/nginx /var/log/nginx /var/run/nginx /var/cache/nginx \
                       /var/lib/nginx /usr/share/nginx /var/tmp/nginx \
-                      /var/log/supervisord.log /etc/supervisord /var/run/supervisord.pid \
     && find /etc/nginx -type d -exec chmod ug+x {} \; \
     && find /var/log/nginx -type d -exec chmod ug+x {} \; \
     && find /var/run/nginx -type d -exec chmod ug+x {} \; \
