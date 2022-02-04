@@ -1,4 +1,4 @@
-version: "2"
+version: "3"
 
 services:
 
@@ -32,6 +32,7 @@ services:
       - DB_USER=${BATS_DB_USER}
       - DB_PASSWORD=${BATS_DB_PASSWORD}
       - DB_NAME=${BATS_DB_NAME}
+      - VARNISH_ENABLED=${BATS_VARNISH_ENABLED}
     links:
       - ${BATS_STORAGE_SERVICE_NAME}:${BATS_STORAGE_SERVICE_NAME}
     depends_on:

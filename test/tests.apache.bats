@@ -23,6 +23,8 @@ export BATS_PHP_SCRIPTS_VOLUME_NAME=${BATS_PHP_SCRIPTS_VOLUME_NAME:-php_scripts}
 
 export BATS_PHP_DOCKER_IMAGE_NAME="${PHP_DOCKER_IMAGE_NAME:-docker.io/elasticms/base-php-apache:latest}"
 
+export BATS_VARNISH_ENABLED=${BATS_VARNISH_ENABLED:-"false"}
+
 @test "[$TEST_FILE] Create Docker external volumes (local)" {
   command docker volume create -d local ${BATS_PHP_SCRIPTS_VOLUME_NAME}
 }
