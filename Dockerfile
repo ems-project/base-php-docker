@@ -43,7 +43,7 @@ RUN mkdir -p /home/default /opt/etc /opt/bin/container-entrypoint.d /opt/src /va
     && apk add --update --no-cache --virtual .build-deps $PHPIZE_DEPS autoconf freetype-dev icu-dev \
                                                 libjpeg-turbo-dev libpng-dev libwebp-dev libxpm-dev \
                                                 libzip-dev openldap-dev pcre-dev gnupg git bzip2-dev \
-                                                musl-libintl postgresql-dev libxml2-dev htmltidy-dev \
+                                                musl-libintl postgresql-dev libxml2-dev tidyhtml-dev \
     && docker-php-ext-configure gd --with-freetype --with-webp --with-jpeg \
     && docker-php-ext-configure tidy --with-tidy \
     && docker-php-ext-install -j "$(nproc)" soap bz2 fileinfo gettext intl pcntl pgsql \
