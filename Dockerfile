@@ -43,11 +43,12 @@ RUN mkdir -p /home/default /opt/etc /opt/bin/container-entrypoint.d /opt/src /va
     && apk add --update --no-cache --virtual .build-deps $PHPIZE_DEPS autoconf freetype-dev icu-dev \
                                                 libjpeg-turbo-dev libpng-dev libwebp-dev libxpm-dev \
                                                 libzip-dev openldap-dev pcre-dev gnupg git bzip2-dev \
-                                                musl-libintl postgresql-dev libxml2-dev \
+                                                musl-libintl postgresql-dev libxml2-dev htmltidy-dev \
     && docker-php-ext-configure gd --with-freetype --with-webp --with-jpeg \
+    && docker-php-ext-configure tidy --with-tidy \
     && docker-php-ext-install -j "$(nproc)" soap bz2 fileinfo gettext intl pcntl pgsql \
                                             pdo_pgsql simplexml ldap gd ldap mysqli pdo_mysql \
-                                            zip opcache bcmath exif \
+                                            zip opcache bcmath exif tidy \
     && pecl install APCu-5.1.19 \
     && pecl install redis-5.3.1 \
     && docker-php-ext-enable apcu redis \
@@ -62,7 +63,7 @@ RUN mkdir -p /home/default /opt/etc /opt/bin/container-entrypoint.d /opt/src /va
                                       bash tar gettext ssmtp postgresql-client postgresql-libs \
                                       libjpeg-turbo freetype libpng libwebp libxpm mailx coreutils \
                                       mysql-client jq wget icu-libs libxml2 python3 py3-pip groff supervisor \
-                                      varnish \
+                                      varnish tidyhtml \
     && rm /etc/supervisord.conf \
     && mkdir -p /var/run/php-fpm /etc/supervisord/supervisord.d \
     && touch /var/log/supervisord.log /var/run/supervisord.pid /etc/varnish/secret \
