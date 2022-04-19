@@ -20,7 +20,7 @@ jobs:
       - uses: actions/checkout@v3.0.1
 
       - name: Fill GitHub Environment Variables
-        uses: FranzDiebold/github-env-vars-action@v2.3.0
+        uses: FranzDiebold/github-env-vars-action@v2.3.1
 
       - name: Setup BATS testing framework
         uses: mig4/setup-bats@v1.2.0
