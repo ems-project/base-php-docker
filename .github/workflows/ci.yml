@@ -5,7 +5,7 @@ on:
     - cron: '0 10 * * *' # everyday at 10am
   push:
     branches:
-      - '7.4'
+      - '8.1'
     tags:
       - 'v*'
   pull_request:
@@ -37,195 +37,97 @@ jobs:
         run: |
           docker network create docker_default
           docker pull appropriate/curl:latest
-          PHPFPM_PRD_IMAGENAME=base-php-fpm
-          PHPFPM_DEV_IMAGENAME=base-php-dev
-          APACHE_PRD_IMAGENAME=base-apache-fpm
-          APACHE_DEV_IMAGENAME=base-apache-dev
-          NGINX_PRD_IMAGENAME=base-nginx-fpm
-          NGINX_DEV_IMAGENAME=base-nginx-dev
-          DOCKERHUB_PHPFPM_PRD_IMAGENAME=docker.io/elasticms/${PHPFPM_PRD_IMAGENAME}
-          DOCKERHUB_PHPFPM_DEV_IMAGENAME=docker.io/elasticms/${PHPFPM_DEV_IMAGENAME}
-          GHCR_PHPFPM_PRD_IMAGENAME=ghcr.io/${{ github.repository_owner }}/${PHPFPM_PRD_IMAGENAME}
-          GHCR_PHPFPM_DEV_IMAGENAME=ghcr.io/${{ github.repository_owner }}/${PHPFPM_DEV_IMAGENAME}
-          DOCKERHUB_APACHE_PRD_IMAGENAME=docker.io/elasticms/${APACHE_PRD_IMAGENAME}
-          DOCKERHUB_APACHE_DEV_IMAGENAME=docker.io/elasticms/${APACHE_DEV_IMAGENAME}
-          GHCR_APACHE_PRD_IMAGENAME=ghcr.io/${{ github.repository_owner }}/${APACHE_PRD_IMAGENAME}
-          GHCR_APACHE_DEV_IMAGENAME=ghcr.io/${{ github.repository_owner }}/${APACHE_DEV_IMAGENAME}
-          DOCKERHUB_NGINX_PRD_IMAGENAME=docker.io/elasticms/${NGINX_PRD_IMAGENAME}
-          DOCKERHUB_NGINX_DEV_IMAGENAME=docker.io/elasticms/${NGINX_DEV_IMAGENAME}
-          GHCR_NGINX_PRD_IMAGENAME=ghcr.io/${{ github.repository_owner }}/${NGINX_PRD_IMAGENAME}
-          GHCR_NGINX_DEV_IMAGENAME=ghcr.io/${{ github.repository_owner }}/${NGINX_DEV_IMAGENAME}
+          PHPFPM_PRD_IMAGENAME=docker.io/elasticms/base-php-fpm
+          PHPFPM_DEV_IMAGENAME=docker.io/elasticms/base-php-dev
+          APACHE_PRD_IMAGENAME=docker.io/elasticms/base-apache-fpm
+          APACHE_DEV_IMAGENAME=docker.io/elasticms/base-apache-dev
+          NGINX_PRD_IMAGENAME=docker.io/elasticms/base-nginx-fpm
+          NGINX_DEV_IMAGENAME=docker.io/elasticms/base-nginx-dev
           VERSION_MAJOR_MINOR_PATCH=${{ env.PHP_VERSION }}
           VERSION_MAJOR_MINOR=${VERSION_MAJOR_MINOR_PATCH%.*}
           VERSION_MAJOR=${VERSION_MAJOR_MINOR%.*}
-          echo ::set-output name=dockerhub_phpfpm_prd_image::${DOCKERHUB_PHPFPM_PRD_IMAGENAME}
-          echo ::set-output name=dockerhub_phpfpm_dev_image::${DOCKERHUB_PHPFPM_DEV_IMAGENAME}
-          echo ::set-output name=ghcr_phpfpm_prd_image::${GHCR_PHPFPM_PRD_IMAGENAME}
-          echo ::set-output name=ghcr_phpfpm_dev_image::${GHCR_PHPFPM_DEV_IMAGENAME}
-          echo ::set-output name=dockerhub_apache_prd_image::${DOCKERHUB_APACHE_PRD_IMAGENAME}
-          echo ::set-output name=dockerhub_apache_dev_image::${DOCKERHUB_APACHE_DEV_IMAGENAME}
-          echo ::set-output name=ghcr_apache_prd_image::${GHCR_APACHE_PRD_IMAGENAME}
-          echo ::set-output name=ghcr_apache_dev_image::${GHCR_APACHE_DEV_IMAGENAME}
-          echo ::set-output name=dockerhub_nginx_prd_image::${DOCKERHUB_NGINX_PRD_IMAGENAME}
-          echo ::set-output name=dockerhub_nginx_dev_image::${DOCKERHUB_NGINX_DEV_IMAGENAME}
-          echo ::set-output name=ghcr_nginx_prd_image::${GHCR_NGINX_PRD_IMAGENAME}
-          echo ::set-output name=ghcr_nginx_dev_image::${GHCR_NGINX_DEV_IMAGENAME}
+          echo ::set-output name=phpfpm_prd_image::${PHPFPM_PRD_IMAGENAME}
+          echo ::set-output name=phpfpm_dev_image::${PHPFPM_DEV_IMAGENAME}
+          echo ::set-output name=apache_prd_image::${APACHE_PRD_IMAGENAME}
+          echo ::set-output name=apache_dev_image::${APACHE_DEV_IMAGENAME}
+          echo ::set-output name=nginx_prd_image::${NGINX_PRD_IMAGENAME}
+          echo ::set-output name=nginx_dev_image::${NGINX_DEV_IMAGENAME}
           echo ::set-output name=version_major_minor_patch::${VERSION_MAJOR_MINOR_PATCH}
           echo ::set-output name=version_major_minor::${VERSION_MAJOR_MINOR}
           echo ::set-output name=version_major::${VERSION_MAJOR}
           echo ::set-output name=build_date::$(date -u +'%Y-%m-%dT%H:%M:%SZ')
 
-      - name: Fill GHCR Docker Prod PHP-FPM Image metadata
-        id: meta_ghcr_phpfpm_prd
+      - name: Fill Docker PHP-FPM Prod Image metadata
+        id: meta_phpfpm_prd
         uses: crazy-max/ghaction-docker-meta@v3
         with:
-          images: "${{ steps.prep.outputs.ghcr_phpfpm_prd_image }}"
+          images: "${{ steps.prep.outputs.phpfpm_prd_image }}"
           tags: |
-            type=edge
             type=raw,value=${{ env.CI_SHA_SHORT }}
             type=raw,value=${{ steps.prep.outputs.version_major_minor_patch }}
             type=raw,value=${{ steps.prep.outputs.version_major_minor }}
             type=raw,value=${{ steps.prep.outputs.version_major }}
             type=raw,value=latest
 
-      - name: Fill GHCR Docker Dev PHP-FPM Image metadata
-        id: meta_ghcr_phpfpm_dev
+      - name: Fill Docker PHP-FPM Dev Image metadata
+        id: meta_phpfpm_dev
         uses: crazy-max/ghaction-docker-meta@v3
         with:
-          images: "${{ steps.prep.outputs.ghcr_phpfpm_dev_image }}"
+          images: "${{ steps.prep.outputs.phpfpm_dev_image }}"
           tags: |
-            type=edge
             type=raw,value=${{ env.CI_SHA_SHORT }}
             type=raw,value=${{ steps.prep.outputs.version_major_minor_patch }}
             type=raw,value=${{ steps.prep.outputs.version_major_minor }}
             type=raw,value=${{ steps.prep.outputs.version_major }}
             type=raw,value=latest
 
-      - name: Fill DockerHub Docker PHP-FPM Prod Image metadata
-        id: meta_dockerhub_phpfpm_prd
+      - name: Fill Docker PHP-APACHE Prod Image metadata
+        id: meta_apache_prd
         uses: crazy-max/ghaction-docker-meta@v3
         with:
-          images: "${{ steps.prep.outputs.dockerhub_phpfpm_prd_image }}"
+          images: "${{ steps.prep.outputs.apache_prd_image }}"
           tags: |
-            type=raw,value=${{ steps.prep.outputs.version_major_minor_patch }}
-            type=raw,value=${{ steps.prep.outputs.version_major_minor }}
-            type=raw,value=${{ steps.prep.outputs.version_major }}
-            type=raw,value=latest
-
-      - name: Fill DockerHub Docker PHP-FPM Dev Image metadata
-        id: meta_dockerhub_phpfpm_dev
-        uses: crazy-max/ghaction-docker-meta@v3
-        with:
-          images: "${{ steps.prep.outputs.dockerhub_phpfpm_dev_image }}"
-          tags: |
-            type=raw,value=${{ steps.prep.outputs.version_major_minor_patch }}
-            type=raw,value=${{ steps.prep.outputs.version_major_minor }}
-            type=raw,value=${{ steps.prep.outputs.version_major }}
-            type=raw,value=latest
-
-      - name: Fill GHCR Docker Prod PHP-APACHE Image metadata
-        id: meta_ghcr_apache_prd
-        uses: crazy-max/ghaction-docker-meta@v3
-        with:
-          images: "${{ steps.prep.outputs.ghcr_apache_prd_image }}"
-          tags: |
-            type=edge
             type=raw,value=${{ env.CI_SHA_SHORT }}
             type=raw,value=${{ steps.prep.outputs.version_major_minor_patch }}
             type=raw,value=${{ steps.prep.outputs.version_major_minor }}
             type=raw,value=${{ steps.prep.outputs.version_major }}
             type=raw,value=latest
 
-      - name: Fill GHCR Docker Dev PHP-APACHE Image metadata
-        id: meta_ghcr_apache_dev
+      - name: Fill Docker PHP-APACHE Dev Image metadata
+        id: meta_apache_dev
         uses: crazy-max/ghaction-docker-meta@v3
         with:
-          images: "${{ steps.prep.outputs.ghcr_apache_dev_image }}"
+          images: "${{ steps.prep.outputs.apache_dev_image }}"
           tags: |
-            type=edge
             type=raw,value=${{ env.CI_SHA_SHORT }}
             type=raw,value=${{ steps.prep.outputs.version_major_minor_patch }}
             type=raw,value=${{ steps.prep.outputs.version_major_minor }}
             type=raw,value=${{ steps.prep.outputs.version_major }}
             type=raw,value=latest
 
-      - name: Fill DockerHub Docker PHP-APACHE Prod Image metadata
-        id: meta_dockerhub_apache_prd
+      - name: Fill Docker PHP-NGINX Prod Image metadata
+        id: meta_nginx_prd
         uses: crazy-max/ghaction-docker-meta@v3
         with:
-          images: "${{ steps.prep.outputs.dockerhub_apache_prd_image }}"
+          images: "${{ steps.prep.outputs.nginx_prd_image }}"
           tags: |
-            type=raw,value=${{ steps.prep.outputs.version_major_minor_patch }}
-            type=raw,value=${{ steps.prep.outputs.version_major_minor }}
-            type=raw,value=${{ steps.prep.outputs.version_major }}
-            type=raw,value=latest
-
-      - name: Fill DockerHub Docker PHP-APACHE Dev Image metadata
-        id: meta_dockerhub_apache_dev
-        uses: crazy-max/ghaction-docker-meta@v3
-        with:
-          images: "${{ steps.prep.outputs.dockerhub_apache_dev_image }}"
-          tags: |
-            type=raw,value=${{ steps.prep.outputs.version_major_minor_patch }}
-            type=raw,value=${{ steps.prep.outputs.version_major_minor }}
-            type=raw,value=${{ steps.prep.outputs.version_major }}
-            type=raw,value=latest
-
-      - name: Fill GHCR Docker Prod PHP-NGINX Image metadata
-        id: meta_ghcr_nginx_prd
-        uses: crazy-max/ghaction-docker-meta@v3
-        with:
-          images: "${{ steps.prep.outputs.ghcr_nginx_prd_image }}"
-          tags: |
-            type=edge
             type=raw,value=${{ env.CI_SHA_SHORT }}
             type=raw,value=${{ steps.prep.outputs.version_major_minor_patch }}
             type=raw,value=${{ steps.prep.outputs.version_major_minor }}
             type=raw,value=${{ steps.prep.outputs.version_major }}
             type=raw,value=latest
 
-      - name: Fill GHCR Docker Dev PHP-NGINX Image metadata
-        id: meta_ghcr_nginx_dev
+      - name: Fill Docker PHP-NGINX Dev Image metadata
+        id: meta_nginx_dev
         uses: crazy-max/ghaction-docker-meta@v3
         with:
-          images: "${{ steps.prep.outputs.ghcr_nginx_dev_image }}"
+          images: "${{ steps.prep.outputs.nginx_dev_image }}"
           tags: |
-            type=edge
             type=raw,value=${{ env.CI_SHA_SHORT }}
             type=raw,value=${{ steps.prep.outputs.version_major_minor_patch }}
             type=raw,value=${{ steps.prep.outputs.version_major_minor }}
             type=raw,value=${{ steps.prep.outputs.version_major }}
             type=raw,value=latest
-
-      - name: Fill DockerHub Docker PHP-NGINX Prod Image metadata
-        id: meta_dockerhub_nginx_prd
-        uses: crazy-max/ghaction-docker-meta@v3
-        with:
-          images: "${{ steps.prep.outputs.dockerhub_nginx_prd_image }}"
-          tags: |
-            type=raw,value=${{ steps.prep.outputs.version_major_minor_patch }}
-            type=raw,value=${{ steps.prep.outputs.version_major_minor }}
-            type=raw,value=${{ steps.prep.outputs.version_major }}
-            type=raw,value=latest
-
-      - name: Fill DockerHub Docker PHP-NGINX Dev Image metadata
-        id: meta_dockerhub_nginx_dev
-        uses: crazy-max/ghaction-docker-meta@v3
-        with:
-          images: "${{ steps.prep.outputs.dockerhub_nginx_dev_image }}"
-          tags: |
-            type=raw,value=${{ steps.prep.outputs.version_major_minor_patch }}
-            type=raw,value=${{ steps.prep.outputs.version_major_minor }}
-            type=raw,value=${{ steps.prep.outputs.version_major }}
-            type=raw,value=latest
-
-      - name: Login to GHCR
-        if: github.event_name != 'pull_request'
-        uses: docker/login-action@v1.14.1
-        with:
-          registry: ghcr.io
-          username: ${{ github.repository_owner }}
-          password: ${{ secrets.GHCR_TOKEN }}
 
       - name: Login to DockerHub
         if: github.event_name != 'pull_request'
@@ -247,8 +149,8 @@ jobs:
           restore-keys: |
             ${{ runner.os }}-buildx-
 
-      - name: Build GHCR Docker PHP-FPM Prod Image
-        id: build_ghcr_phpfpm_prod
+      - name: Build Docker PHP-FPM Prod Image
+        id: build_phpfpm_prod
         uses: docker/build-push-action@v2.10.0
         with:
           builder: ${{ steps.buildx.outputs.name }}
@@ -262,11 +164,11 @@ jobs:
             BUILD_DATE_ARG=${{ steps.prep.outputs.build_date }}
           push: false
           load: true
-          tags: ${{ steps.meta_ghcr_phpfpm_prd.outputs.tags }}
-          labels: ${{ steps.meta_ghcr_phpfpm_prd.outputs.labels }}
+          tags: ${{ steps.meta_phpfpm_prd.outputs.tags }}
+          labels: ${{ steps.meta_phpfpm_prd.outputs.labels }}
 
-      - name: Build GHCR Docker PHP-FPM Dev Docker Image
-        id: build_ghcr_phpfpm_dev
+      - name: Build Docker PHP-FPM Dev Docker Image
+        id: build_phpfpm_dev
         uses: docker/build-push-action@v2.10.0
         with:
           builder: ${{ steps.buildx.outputs.name }}
@@ -280,11 +182,11 @@ jobs:
             BUILD_DATE_ARG=${{ steps.prep.outputs.build_date }}
           push: false
           load: true
-          tags: ${{ steps.meta_ghcr_phpfpm_dev.outputs.tags }}
-          labels: ${{ steps.meta_ghcr_phpfpm_dev.outputs.labels }}
+          tags: ${{ steps.meta_phpfpm_dev.outputs.tags }}
+          labels: ${{ steps.meta_phpfpm_dev.outputs.labels }}
 
-      - name: Build GHCR Docker PHP-APACHE Prod Image
-        id: build_ghcr_apache_prod
+      - name: Build Docker PHP-APACHE Prod Image
+        id: build_apache_prod
         uses: docker/build-push-action@v2.10.0
         with:
           builder: ${{ steps.buildx.outputs.name }}
@@ -298,11 +200,11 @@ jobs:
             BUILD_DATE_ARG=${{ steps.prep.outputs.build_date }}
           push: false
           load: true
-          tags: ${{ steps.meta_ghcr_apache_prd.outputs.tags }}
-          labels: ${{ steps.meta_ghcr_apache_prd.outputs.labels }}
+          tags: ${{ steps.meta_apache_prd.outputs.tags }}
+          labels: ${{ steps.meta_apache_prd.outputs.labels }}
 
-      - name: Build GHCR Docker PHP-APACHE Dev Docker Image
-        id: build_ghcr_apache_dev
+      - name: Build Docker PHP-APACHE Dev Docker Image
+        id: build_apache_dev
         uses: docker/build-push-action@v2.10.0
         with:
           builder: ${{ steps.buildx.outputs.name }}
@@ -316,11 +218,11 @@ jobs:
             BUILD_DATE_ARG=${{ steps.prep.outputs.build_date }}
           push: false
           load: true
-          tags: ${{ steps.meta_ghcr_apache_dev.outputs.tags }}
-          labels: ${{ steps.meta_ghcr_apache_dev.outputs.labels }}
+          tags: ${{ steps.meta_apache_dev.outputs.tags }}
+          labels: ${{ steps.meta_apache_dev.outputs.labels }}
 
-      - name: Build GHCR Docker PHP-NGINX Prod Image
-        id: build_ghcr_nginx_prod
+      - name: Build Docker PHP-NGINX Prod Image
+        id: build_nginx_prod
         uses: docker/build-push-action@v2.10.0
         with:
           builder: ${{ steps.buildx.outputs.name }}
@@ -334,11 +236,11 @@ jobs:
             BUILD_DATE_ARG=${{ steps.prep.outputs.build_date }}
           push: false
           load: true
-          tags: ${{ steps.meta_ghcr_nginx_prd.outputs.tags }}
-          labels: ${{ steps.meta_ghcr_nginx_prd.outputs.labels }}
+          tags: ${{ steps.meta_nginx_prd.outputs.tags }}
+          labels: ${{ steps.meta_nginx_prd.outputs.labels }}
 
-      - name: Build GHCR Docker PHP-NGINX Dev Docker Image
-        id: build_ghcr_nginx_dev
+      - name: Build Docker PHP-NGINX Dev Docker Image
+        id: build_nginx_dev
         uses: docker/build-push-action@v2.10.0
         with:
           builder: ${{ steps.buildx.outputs.name }}
@@ -352,59 +254,59 @@ jobs:
             BUILD_DATE_ARG=${{ steps.prep.outputs.build_date }}
           push: false
           load: true
-          tags: ${{ steps.meta_ghcr_nginx_dev.outputs.tags }}
-          labels: ${{ steps.meta_ghcr_nginx_dev.outputs.labels }}
+          tags: ${{ steps.meta_nginx_dev.outputs.tags }}
+          labels: ${{ steps.meta_nginx_dev.outputs.labels }}
 
-      - name: Scan GHCR PHP-FPM Prod Docker Image
+      - name: Scan PHP-FPM Prod Docker Image
         uses: azure/container-scan@v0
         with:
-          image-name: "${{ steps.prep.outputs.ghcr_phpfpm_prd_image }}:${{ env.CI_SHA_SHORT }}"
+          image-name: "${{ steps.prep.outputs.phpfpm_prd_image }}:${{ env.CI_SHA_SHORT }}"
 
-      - name: Scan GHCR PHP-FPM Dev Docker Image
+      - name: Scan PHP-FPM Dev Docker Image
         uses: azure/container-scan@v0
         with:
-          image-name: "${{ steps.prep.outputs.ghcr_phpfpm_dev_image }}:${{ env.CI_SHA_SHORT }}"
+          image-name: "${{ steps.prep.outputs.phpfpm_dev_image }}:${{ env.CI_SHA_SHORT }}"
 
-      - name: Scan GHCR PHP-APACHE Prod Docker Image
+      - name: Scan PHP-APACHE Prod Docker Image
         uses: azure/container-scan@v0
         with:
-          image-name: "${{ steps.prep.outputs.ghcr_apache_prd_image }}:${{ env.CI_SHA_SHORT }}"
+          image-name: "${{ steps.prep.outputs.apache_prd_image }}:${{ env.CI_SHA_SHORT }}"
 
-      - name: Scan GHCR PHP-APACHE Dev Docker Image
+      - name: Scan PHP-APACHE Dev Docker Image
         uses: azure/container-scan@v0
         with:
-          image-name: "${{ steps.prep.outputs.ghcr_apache_dev_image }}:${{ env.CI_SHA_SHORT }}"
+          image-name: "${{ steps.prep.outputs.apache_dev_image }}:${{ env.CI_SHA_SHORT }}"
 
-      - name: Scan GHCR PHP-NGINX Prod Docker Image
+      - name: Scan PHP-NGINX Prod Docker Image
         uses: azure/container-scan@v0
         with:
-          image-name: "${{ steps.prep.outputs.ghcr_nginx_prd_image }}:${{ env.CI_SHA_SHORT }}"
+          image-name: "${{ steps.prep.outputs.nginx_prd_image }}:${{ env.CI_SHA_SHORT }}"
 
-      - name: Scan GHCR PHP-NGINX Dev Docker Image
+      - name: Scan PHP-NGINX Dev Docker Image
         uses: azure/container-scan@v0
         with:
-          image-name: "${{ steps.prep.outputs.ghcr_nginx_dev_image }}:${{ env.CI_SHA_SHORT }}"
+          image-name: "${{ steps.prep.outputs.nginx_dev_image }}:${{ env.CI_SHA_SHORT }}"
 
       - name: Test PHP-FPM Prod Docker Image
         env:
-          PHP_DOCKER_IMAGE_NAME: ${{ steps.prep.outputs.ghcr_phpfpm_prd_image }}:${{ env.CI_SHA_SHORT }}
+          PHP_DOCKER_IMAGE_NAME: ${{ steps.prep.outputs.phpfpm_prd_image }}:${{ env.CI_SHA_SHORT }}
         run: |
           bats -r test/tests.php-fpm.bats
 
       - name: Test PHP-APACHE Prod Docker Image
         env:
-          PHP_DOCKER_IMAGE_NAME: ${{ steps.prep.outputs.ghcr_apache_prd_image }}:${{ env.CI_SHA_SHORT }}
+          PHP_DOCKER_IMAGE_NAME: ${{ steps.prep.outputs.apache_prd_image }}:${{ env.CI_SHA_SHORT }}
         run: |
           bats -r test/tests.apache.bats
 
       - name: Test PHP-NGINX Prod Docker Image
         env:
-          PHP_DOCKER_IMAGE_NAME: ${{ steps.prep.outputs.ghcr_nginx_prd_image }}:${{ env.CI_SHA_SHORT }}
+          PHP_DOCKER_IMAGE_NAME: ${{ steps.prep.outputs.nginx_prd_image }}:${{ env.CI_SHA_SHORT }}
         run: |
           bats -r test/tests.nginx.bats
 
-      - name: Push GHCR PHP-FPM Prod Docker Image
-        id: push_ghcr_phpfpm_prod
+      - name: Push PHP-FPM Docker Prod Image
+        id: push_phpfpm_prod
         uses: docker/build-push-action@v2.10.0
         with:
           builder: ${{ steps.buildx.outputs.name }}
@@ -417,11 +319,11 @@ jobs:
             VCS_REF_ARG=${{ env.CI_SHA }}
             BUILD_DATE_ARG=${{ steps.prep.outputs.build_date }}
           push: ${{ github.event_name != 'pull_request' }}
-          tags: ${{ steps.meta_ghcr_phpfpm_prd.outputs.tags }}
-          labels: ${{ steps.meta_ghcr_phpfpm_prd.outputs.labels }}
+          tags: ${{ steps.meta_phpfpm_prd.outputs.tags }}
+          labels: ${{ steps.meta_phpfpm_prd.outputs.labels }}
 
-      - name: Push GHCR PHP-FPM Dev Docker Image
-        id: push_ghcr_phpfpm_dev
+      - name: Push PHP-FPM Docker Dev Image
+        id: push_phpfpm_dev
         uses: docker/build-push-action@v2.10.0
         with:
           builder: ${{ steps.buildx.outputs.name }}
@@ -434,11 +336,11 @@ jobs:
             VCS_REF_ARG=${{ env.CI_SHA }}
             BUILD_DATE_ARG=${{ steps.prep.outputs.build_date }}
           push: ${{ github.event_name != 'pull_request' }}
-          tags: ${{ steps.meta_ghcr_phpfpm_dev.outputs.tags }}
-          labels: ${{ steps.meta_ghcr_phpfpm_dev.outputs.labels }}
+          tags: ${{ steps.meta_phpfpm_dev.outputs.tags }}
+          labels: ${{ steps.meta_phpfpm_dev.outputs.labels }}
 
-      - name: Push GHCR PHP-APACHE Prod Docker Image
-        id: push_ghcr_apache_prod
+      - name: Push PHP-APACHE Docker Prod Image
+        id: push_apache_prod
         uses: docker/build-push-action@v2.10.0
         with:
           builder: ${{ steps.buildx.outputs.name }}
@@ -451,11 +353,11 @@ jobs:
             VCS_REF_ARG=${{ env.CI_SHA }}
             BUILD_DATE_ARG=${{ steps.prep.outputs.build_date }}
           push: ${{ github.event_name != 'pull_request' }}
-          tags: ${{ steps.meta_ghcr_apache_prd.outputs.tags }}
-          labels: ${{ steps.meta_ghcr_apache_prd.outputs.labels }}
+          tags: ${{ steps.meta_apache_prd.outputs.tags }}
+          labels: ${{ steps.meta_apache_prd.outputs.labels }}
 
-      - name: Push GHCR PHP-APACHE Dev Docker Image
-        id: push_ghcr_apache_dev
+      - name: Push PHP-APACHE Docker Dev Image
+        id: push_apache_dev
         uses: docker/build-push-action@v2.10.0
         with:
           builder: ${{ steps.buildx.outputs.name }}
@@ -468,11 +370,11 @@ jobs:
             VCS_REF_ARG=${{ env.CI_SHA }}
             BUILD_DATE_ARG=${{ steps.prep.outputs.build_date }}
           push: ${{ github.event_name != 'pull_request' }}
-          tags: ${{ steps.meta_ghcr_apache_dev.outputs.tags }}
-          labels: ${{ steps.meta_ghcr_apache_dev.outputs.labels }}
+          tags: ${{ steps.meta_apache_dev.outputs.tags }}
+          labels: ${{ steps.meta_apache_dev.outputs.labels }}
 
-      - name: Push GHCR PHP-NGINX Prod Docker Image
-        id: push_ghcr_nginx_prod
+      - name: Push PHP-NGINX Docker Prod Image
+        id: push_nginx_prod
         uses: docker/build-push-action@v2.10.0
         with:
           builder: ${{ steps.buildx.outputs.name }}
@@ -485,11 +387,11 @@ jobs:
             VCS_REF_ARG=${{ env.CI_SHA }}
             BUILD_DATE_ARG=${{ steps.prep.outputs.build_date }}
           push: ${{ github.event_name != 'pull_request' }}
-          tags: ${{ steps.meta_ghcr_nginx_prd.outputs.tags }}
-          labels: ${{ steps.meta_ghcr_nginx_prd.outputs.labels }}
+          tags: ${{ steps.meta_nginx_prd.outputs.tags }}
+          labels: ${{ steps.meta_nginx_prd.outputs.labels }}
 
-      - name: Push GHCR PHP-NGINX Dev Docker Image
-        id: push_ghcr_nginx_dev
+      - name: Push PHP-NGINX Docker Dev Image
+        id: push_nginx_dev
         uses: docker/build-push-action@v2.10.0
         with:
           builder: ${{ steps.buildx.outputs.name }}
@@ -502,136 +404,24 @@ jobs:
             VCS_REF_ARG=${{ env.CI_SHA }}
             BUILD_DATE_ARG=${{ steps.prep.outputs.build_date }}
           push: ${{ github.event_name != 'pull_request' }}
-          tags: ${{ steps.meta_ghcr_nginx_dev.outputs.tags }}
-          labels: ${{ steps.meta_ghcr_nginx_dev.outputs.labels }}
+          tags: ${{ steps.meta_nginx_dev.outputs.tags }}
+          labels: ${{ steps.meta_nginx_dev.outputs.labels }}
 
-      - name: Check GHCR (PHP-FPM PHP-APACHE PHP-NGINX) Prod Docker Image
+      - name: Check PHP-FPM Prod Docker Image
         if: github.event_name != 'pull_request'
         run: |
-          docker buildx imagetools inspect ${{ steps.prep.outputs.ghcr_phpfpm_prd_image }}:${{ steps.meta_ghcr_phpfpm_prd.outputs.version }}
-          docker buildx imagetools inspect ${{ steps.prep.outputs.ghcr_phpfpm_dev_image }}:${{ steps.meta_ghcr_phpfpm_dev.outputs.version }}
-          docker buildx imagetools inspect ${{ steps.prep.outputs.ghcr_apache_prd_image }}:${{ steps.meta_ghcr_apache_prd.outputs.version }}
-          docker buildx imagetools inspect ${{ steps.prep.outputs.ghcr_apache_dev_image }}:${{ steps.meta_ghcr_apache_dev.outputs.version }}
-          docker buildx imagetools inspect ${{ steps.prep.outputs.ghcr_nginx_prd_image }}:${{ steps.meta_ghcr_nginx_prd.outputs.version }}
-          docker buildx imagetools inspect ${{ steps.prep.outputs.ghcr_nginx_dev_image }}:${{ steps.meta_ghcr_nginx_dev.outputs.version }}
-
-      - name: Push DockerHub PHP-FPM Docker Prod Image
-        id: push_dockerhub_phpfpm_prod
-        uses: docker/build-push-action@v2.10.0
-        with:
-          builder: ${{ steps.buildx.outputs.name }}
-          context: .
-          file: Dockerfile
-          target: php-fpm-prod
-          build-args: |
-            VERSION_ARG=${{ env.PHP_VERSION }}
-            RELEASE_ARG=${{ env.CI_RUN_ID }}
-            VCS_REF_ARG=${{ env.CI_SHA }}
-            BUILD_DATE_ARG=${{ steps.prep.outputs.build_date }}
-          push: ${{ github.event_name != 'pull_request' }}
-          tags: ${{ steps.meta_dockerhub_phpfpm_prd.outputs.tags }}
-          labels: ${{ steps.meta_dockerhub_phpfpm_prd.outputs.labels }}
-
-      - name: Push DockerHub PHP-FPM Docker Dev Image
-        id: push_dockerhub_phpfpm_dev
-        uses: docker/build-push-action@v2.10.0
-        with:
-          builder: ${{ steps.buildx.outputs.name }}
-          context: .
-          file: Dockerfile
-          target: php-fpm-dev
-          build-args: |
-            VERSION_ARG=${{ env.PHP_VERSION }}
-            RELEASE_ARG=${{ env.CI_RUN_ID }}
-            VCS_REF_ARG=${{ env.CI_SHA }}
-            BUILD_DATE_ARG=${{ steps.prep.outputs.build_date }}
-          push: ${{ github.event_name != 'pull_request' }}
-          tags: ${{ steps.meta_dockerhub_phpfpm_dev.outputs.tags }}
-          labels: ${{ steps.meta_dockerhub_phpfpm_dev.outputs.labels }}
-
-      - name: Push DockerHub PHP-APACHE Docker Prod Image
-        id: push_dockerhub_apache_prod
-        uses: docker/build-push-action@v2.10.0
-        with:
-          builder: ${{ steps.buildx.outputs.name }}
-          context: .
-          file: Dockerfile
-          target: apache-prod
-          build-args: |
-            VERSION_ARG=${{ env.PHP_VERSION }}
-            RELEASE_ARG=${{ env.CI_RUN_ID }}
-            VCS_REF_ARG=${{ env.CI_SHA }}
-            BUILD_DATE_ARG=${{ steps.prep.outputs.build_date }}
-          push: ${{ github.event_name != 'pull_request' }}
-          tags: ${{ steps.meta_dockerhub_apache_prd.outputs.tags }}
-          labels: ${{ steps.meta_dockerhub_apache_prd.outputs.labels }}
-
-      - name: Push DockerHub PHP-APACHE Docker Dev Image
-        id: push_dockerhub_apache_dev
-        uses: docker/build-push-action@v2.10.0
-        with:
-          builder: ${{ steps.buildx.outputs.name }}
-          context: .
-          file: Dockerfile
-          target: apache-dev
-          build-args: |
-            VERSION_ARG=${{ env.PHP_VERSION }}
-            RELEASE_ARG=${{ env.CI_RUN_ID }}
-            VCS_REF_ARG=${{ env.CI_SHA }}
-            BUILD_DATE_ARG=${{ steps.prep.outputs.build_date }}
-          push: ${{ github.event_name != 'pull_request' }}
-          tags: ${{ steps.meta_dockerhub_apache_dev.outputs.tags }}
-          labels: ${{ steps.meta_dockerhub_apache_dev.outputs.labels }}
-
-      - name: Push DockerHub PHP-NGINX Docker Prod Image
-        id: push_dockerhub_nginx_prod
-        uses: docker/build-push-action@v2.10.0
-        with:
-          builder: ${{ steps.buildx.outputs.name }}
-          context: .
-          file: Dockerfile
-          target: nginx-prod
-          build-args: |
-            VERSION_ARG=${{ env.PHP_VERSION }}
-            RELEASE_ARG=${{ env.CI_RUN_ID }}
-            VCS_REF_ARG=${{ env.CI_SHA }}
-            BUILD_DATE_ARG=${{ steps.prep.outputs.build_date }}
-          push: ${{ github.event_name != 'pull_request' }}
-          tags: ${{ steps.meta_dockerhub_nginx_prd.outputs.tags }}
-          labels: ${{ steps.meta_dockerhub_nginx_prd.outputs.labels }}
-
-      - name: Push DockerHub PHP-NGINX Docker Dev Image
-        id: push_dockerhub_nginx_dev
-        uses: docker/build-push-action@v2.10.0
-        with:
-          builder: ${{ steps.buildx.outputs.name }}
-          context: .
-          file: Dockerfile
-          target: nginx-dev
-          build-args: |
-            VERSION_ARG=${{ env.PHP_VERSION }}
-            RELEASE_ARG=${{ env.CI_RUN_ID }}
-            VCS_REF_ARG=${{ env.CI_SHA }}
-            BUILD_DATE_ARG=${{ steps.prep.outputs.build_date }}
-          push: ${{ github.event_name != 'pull_request' }}
-          tags: ${{ steps.meta_dockerhub_nginx_dev.outputs.tags }}
-          labels: ${{ steps.meta_dockerhub_nginx_dev.outputs.labels }}
-
-      - name: Check DockerHub PHP-FPM Prod Docker Image
-        if: github.event_name != 'pull_request'
-        run: |
-          docker buildx imagetools inspect ${{ steps.prep.outputs.dockerhub_phpfpm_prd_image }}:${{ steps.meta_dockerhub_phpfpm_prd.outputs.version }}
-          docker buildx imagetools inspect ${{ steps.prep.outputs.dockerhub_phpfpm_dev_image }}:${{ steps.meta_dockerhub_phpfpm_dev.outputs.version }}
-          docker buildx imagetools inspect ${{ steps.prep.outputs.dockerhub_apache_prd_image }}:${{ steps.meta_dockerhub_apache_prd.outputs.version }}
-          docker buildx imagetools inspect ${{ steps.prep.outputs.dockerhub_apache_dev_image }}:${{ steps.meta_dockerhub_apache_dev.outputs.version }}
-          docker buildx imagetools inspect ${{ steps.prep.outputs.dockerhub_nginx_prd_image }}:${{ steps.meta_dockerhub_nginx_prd.outputs.version }}
-          docker buildx imagetools inspect ${{ steps.prep.outputs.dockerhub_nginx_dev_image }}:${{ steps.meta_dockerhub_nginx_dev.outputs.version }}
-          docker pull ${{ steps.prep.outputs.dockerhub_phpfpm_prd_image }}:${{ steps.prep.outputs.version_major_minor_patch }}
-          docker pull ${{ steps.prep.outputs.dockerhub_phpfpm_dev_image }}:${{ steps.prep.outputs.version_major_minor_patch }}
-          docker pull ${{ steps.prep.outputs.dockerhub_apache_prd_image }}:${{ steps.prep.outputs.version_major_minor_patch }}
-          docker pull ${{ steps.prep.outputs.dockerhub_apache_dev_image }}:${{ steps.prep.outputs.version_major_minor_patch }}
-          docker pull ${{ steps.prep.outputs.dockerhub_nginx_prd_image }}:${{ steps.prep.outputs.version_major_minor_patch }}
-          docker pull ${{ steps.prep.outputs.dockerhub_nginx_dev_image }}:${{ steps.prep.outputs.version_major_minor_patch }}
+          docker buildx imagetools inspect ${{ steps.prep.outputs.phpfpm_prd_image }}:${{ steps.meta_phpfpm_prd.outputs.version }}
+          docker buildx imagetools inspect ${{ steps.prep.outputs.phpfpm_dev_image }}:${{ steps.meta_phpfpm_dev.outputs.version }}
+          docker buildx imagetools inspect ${{ steps.prep.outputs.apache_prd_image }}:${{ steps.meta_apache_prd.outputs.version }}
+          docker buildx imagetools inspect ${{ steps.prep.outputs.apache_dev_image }}:${{ steps.meta_apache_dev.outputs.version }}
+          docker buildx imagetools inspect ${{ steps.prep.outputs.nginx_prd_image }}:${{ steps.meta_nginx_prd.outputs.version }}
+          docker buildx imagetools inspect ${{ steps.prep.outputs.nginx_dev_image }}:${{ steps.meta_nginx_dev.outputs.version }}
+          docker pull ${{ steps.prep.outputs.phpfpm_prd_image }}:${{ steps.prep.outputs.version_major_minor_patch }}
+          docker pull ${{ steps.prep.outputs.phpfpm_dev_image }}:${{ steps.prep.outputs.version_major_minor_patch }}
+          docker pull ${{ steps.prep.outputs.apache_prd_image }}:${{ steps.prep.outputs.version_major_minor_patch }}
+          docker pull ${{ steps.prep.outputs.apache_dev_image }}:${{ steps.prep.outputs.version_major_minor_patch }}
+          docker pull ${{ steps.prep.outputs.nginx_prd_image }}:${{ steps.prep.outputs.version_major_minor_patch }}
+          docker pull ${{ steps.prep.outputs.nginx_dev_image }}:${{ steps.prep.outputs.version_major_minor_patch }}
 
       - name: Create the Mattermost Message
         if: github.event_name != 'pull_request'
@@ -640,30 +430,30 @@ jobs:
           echo "# :php: New version of [Base PHP](https://github.com/ems-project/docker-php-fpm) Docker image(s) has been pushed in DockerHub Registry" >> mattermost.json
           echo "| :docker: Docker image Name(s) | Flavor(s) |" >> mattermost.json
           echo "| :--- | :--- |" >> mattermost.json
-          echo "| ${{ steps.prep.outputs.dockerhub_phpfpm_prd_image }}:${{ steps.prep.outputs.version_major_minor_patch }} | PHP Only |" >> mattermost.json
-          echo "| ${{ steps.prep.outputs.dockerhub_phpfpm_prd_image }}:${{ steps.prep.outputs.version_major_minor }} | PHP Only |" >> mattermost.json
-          echo "| ${{ steps.prep.outputs.dockerhub_phpfpm_prd_image }}:${{ steps.prep.outputs.version_major }} | PHP Only |" >> mattermost.json
-          echo "| ${{ steps.prep.outputs.dockerhub_phpfpm_prd_image }}:latest | PHP Only |" >> mattermost.json
-          echo "| ${{ steps.prep.outputs.dockerhub_phpfpm_dev_image }}:${{ steps.prep.outputs.version_major_minor_patch }} | PHP + Composer |" >> mattermost.json
-          echo "| ${{ steps.prep.outputs.dockerhub_phpfpm_dev_image }}:${{ steps.prep.outputs.version_major_minor }} | PHP + Composer |" >> mattermost.json
-          echo "| ${{ steps.prep.outputs.dockerhub_phpfpm_dev_image }}:${{ steps.prep.outputs.version_major }} | PHP + Composer |" >> mattermost.json
-          echo "| ${{ steps.prep.outputs.dockerhub_phpfpm_dev_image }}:latest | PHP + Composer |" >> mattermost.json
-          echo "| ${{ steps.prep.outputs.dockerhub_apache_prd_image }}:${{ steps.prep.outputs.version_major_minor_patch }} | PHP + Apache WebServer |" >> mattermost.json
-          echo "| ${{ steps.prep.outputs.dockerhub_apache_prd_image }}:${{ steps.prep.outputs.version_major_minor }} | PHP + Apache WebServer |" >> mattermost.json
-          echo "| ${{ steps.prep.outputs.dockerhub_apache_prd_image }}:${{ steps.prep.outputs.version_major }} | PHP + Apache WebServer |" >> mattermost.json
-          echo "| ${{ steps.prep.outputs.dockerhub_apache_prd_image }}:latest | PHP + Apache WebServer |" >> mattermost.json
-          echo "| ${{ steps.prep.outputs.dockerhub_apache_dev_image }}:${{ steps.prep.outputs.version_major_minor_patch }} | PHP + Apache WebServer + Composer |" >> mattermost.json
-          echo "| ${{ steps.prep.outputs.dockerhub_apache_dev_image }}:${{ steps.prep.outputs.version_major_minor }} | PHP + Apache WebServer + Composer |" >> mattermost.json
-          echo "| ${{ steps.prep.outputs.dockerhub_apache_dev_image }}:${{ steps.prep.outputs.version_major }} | PHP + Apache WebServer + Composer |" >> mattermost.json
-          echo "| ${{ steps.prep.outputs.dockerhub_apache_dev_image }}:latest | PHP + Apache WebServer + Composer |" >> mattermost.json
-          echo "| ${{ steps.prep.outputs.dockerhub_nginx_prd_image }}:${{ steps.prep.outputs.version_major_minor_patch }} | PHP + NGinx WebServer |" >> mattermost.json
-          echo "| ${{ steps.prep.outputs.dockerhub_nginx_prd_image }}:${{ steps.prep.outputs.version_major_minor }} | PHP + NGinx WebServer |" >> mattermost.json
-          echo "| ${{ steps.prep.outputs.dockerhub_nginx_prd_image }}:${{ steps.prep.outputs.version_major }} | PHP + NGinx WebServer |" >> mattermost.json
-          echo "| ${{ steps.prep.outputs.dockerhub_nginx_prd_image }}:latest | PHP + NGinx WebServer |" >> mattermost.json
-          echo "| ${{ steps.prep.outputs.dockerhub_nginx_dev_image }}:${{ steps.prep.outputs.version_major_minor_patch }} | PHP + NGinx WebServer + Composer |" >> mattermost.json
-          echo "| ${{ steps.prep.outputs.dockerhub_nginx_dev_image }}:${{ steps.prep.outputs.version_major_minor }} | PHP + NGinx WebServer + Composer |" >> mattermost.json
-          echo "| ${{ steps.prep.outputs.dockerhub_nginx_dev_image }}:${{ steps.prep.outputs.version_major }} | PHP + NGinx WebServer + Composer |" >> mattermost.json
-          echo "| ${{ steps.prep.outputs.dockerhub_nginx_dev_image }}:latest | PHP + NGinx WebServer + Composer |" >> mattermost.json
+          echo "| ${{ steps.prep.outputs.phpfpm_prd_image }}:${{ steps.prep.outputs.version_major_minor_patch }} | PHP Only |" >> mattermost.json
+          echo "| ${{ steps.prep.outputs.phpfpm_prd_image }}:${{ steps.prep.outputs.version_major_minor }} | PHP Only |" >> mattermost.json
+          echo "| ${{ steps.prep.outputs.phpfpm_prd_image }}:${{ steps.prep.outputs.version_major }} | PHP Only |" >> mattermost.json
+          echo "| ${{ steps.prep.outputs.phpfpm_prd_image }}:latest | PHP Only |" >> mattermost.json
+          echo "| ${{ steps.prep.outputs.phpfpm_dev_image }}:${{ steps.prep.outputs.version_major_minor_patch }} | PHP + Composer |" >> mattermost.json
+          echo "| ${{ steps.prep.outputs.phpfpm_dev_image }}:${{ steps.prep.outputs.version_major_minor }} | PHP + Composer |" >> mattermost.json
+          echo "| ${{ steps.prep.outputs.phpfpm_dev_image }}:${{ steps.prep.outputs.version_major }} | PHP + Composer |" >> mattermost.json
+          echo "| ${{ steps.prep.outputs.phpfpm_dev_image }}:latest | PHP + Composer |" >> mattermost.json
+          echo "| ${{ steps.prep.outputs.apache_prd_image }}:${{ steps.prep.outputs.version_major_minor_patch }} | PHP + Apache WebServer |" >> mattermost.json
+          echo "| ${{ steps.prep.outputs.apache_prd_image }}:${{ steps.prep.outputs.version_major_minor }} | PHP + Apache WebServer |" >> mattermost.json
+          echo "| ${{ steps.prep.outputs.apache_prd_image }}:${{ steps.prep.outputs.version_major }} | PHP + Apache WebServer |" >> mattermost.json
+          echo "| ${{ steps.prep.outputs.apache_prd_image }}:latest | PHP + Apache WebServer |" >> mattermost.json
+          echo "| ${{ steps.prep.outputs.apache_dev_image }}:${{ steps.prep.outputs.version_major_minor_patch }} | PHP + Apache WebServer + Composer |" >> mattermost.json
+          echo "| ${{ steps.prep.outputs.apache_dev_image }}:${{ steps.prep.outputs.version_major_minor }} | PHP + Apache WebServer + Composer |" >> mattermost.json
+          echo "| ${{ steps.prep.outputs.apache_dev_image }}:${{ steps.prep.outputs.version_major }} | PHP + Apache WebServer + Composer |" >> mattermost.json
+          echo "| ${{ steps.prep.outputs.apache_dev_image }}:latest | PHP + Apache WebServer + Composer |" >> mattermost.json
+          echo "| ${{ steps.prep.outputs.nginx_prd_image }}:${{ steps.prep.outputs.version_major_minor_patch }} | PHP + NGinx WebServer |" >> mattermost.json
+          echo "| ${{ steps.prep.outputs.nginx_prd_image }}:${{ steps.prep.outputs.version_major_minor }} | PHP + NGinx WebServer |" >> mattermost.json
+          echo "| ${{ steps.prep.outputs.nginx_prd_image }}:${{ steps.prep.outputs.version_major }} | PHP + NGinx WebServer |" >> mattermost.json
+          echo "| ${{ steps.prep.outputs.nginx_prd_image }}:latest | PHP + NGinx WebServer |" >> mattermost.json
+          echo "| ${{ steps.prep.outputs.nginx_dev_image }}:${{ steps.prep.outputs.version_major_minor_patch }} | PHP + NGinx WebServer + Composer |" >> mattermost.json
+          echo "| ${{ steps.prep.outputs.nginx_dev_image }}:${{ steps.prep.outputs.version_major_minor }} | PHP + NGinx WebServer + Composer |" >> mattermost.json
+          echo "| ${{ steps.prep.outputs.nginx_dev_image }}:${{ steps.prep.outputs.version_major }} | PHP + NGinx WebServer + Composer |" >> mattermost.json
+          echo "| ${{ steps.prep.outputs.nginx_dev_image }}:latest | PHP + NGinx WebServer + Composer |" >> mattermost.json
           echo "\"}" >> mattermost.json
           cat mattermost.json
 
