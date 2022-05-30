@@ -1,6 +1,6 @@
 ARG VERSION_ARG
 
-FROM php:${VERSION_ARG}-fpm-alpine3.15 AS php-fpm-prod
+FROM php:${VERSION_ARG}-fpm-alpine3.16 AS php-fpm-prod
 
 ARG VERSION_ARG
 ARG RELEASE_ARG
@@ -51,8 +51,8 @@ RUN mkdir -p /home/default /opt/etc /opt/bin/container-entrypoint.d /opt/src /va
     && docker-php-ext-install -j "$(nproc)" soap bz2 fileinfo gettext intl pcntl pgsql \
                                             pdo_pgsql simplexml ldap gd ldap mysqli pdo_mysql \
                                             zip opcache bcmath exif tidy \
-    && pecl install APCu-5.1.19 \
-    && pecl install redis-5.3.1 \
+    && pecl install APCu-5.1.21 \
+    && pecl install redis-5.3.7 \
     && docker-php-ext-enable apcu redis \
     && runDeps="$( \
        scanelf --needed --nobanner --format '%n#p' --recursive /usr/local/lib/php/extensions \
