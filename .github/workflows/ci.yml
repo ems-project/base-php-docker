@@ -28,7 +28,7 @@ jobs:
           bats-version: 1.2.1
 
       - name: Fill PHP Version Environment Variable
-        uses: c-py/action-dotenv-to-setenv@v3
+        uses: c-py/action-dotenv-to-setenv@v4
         with:
           env-file: .build.env
 
