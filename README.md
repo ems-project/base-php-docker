@@ -20,12 +20,12 @@ set -a
 source .build.env
 set +a
 
-docker build --target php-fpm-prod --build-arg VERSION_ARG=${PHP_VERSION} -t ${PHPFPM_PRD_DOCKER_IMAGE_NAME}:rc . 
-docker build --target php-fpm-dev --build-arg VERSION_ARG=${PHP_VERSION} -t ${PHPFPM_DEV_DOCKER_IMAGE_NAME}:rc . 
-docker build --target apache-prod --build-arg VERSION_ARG=${PHP_VERSION} -t ${APACHE_PRD_DOCKER_IMAGE_NAME}:rc . 
-docker build --target apache-dev --build-arg VERSION_ARG=${PHP_VERSION} -t ${APACHE_DEV_DOCKER_IMAGE_NAME}:rc . 
-docker build --target nginx-prod --build-arg VERSION_ARG=${PHP_VERSION} -t ${NGINX_PRD_DOCKER_IMAGE_NAME}:rc . 
-docker build --target nginx-dev --build-arg VERSION_ARG=${PHP_VERSION} -t ${NGINX_DEV_DOCKER_IMAGE_NAME}:rc . 
+docker build --target php-fpm-prod --build-arg VERSION_ARG=${PHP_VERSION} -t ${PHPFPM_PRD_DOCKER_IMAGE_NAME}:latest . 
+docker build --target php-fpm-dev --build-arg VERSION_ARG=${PHP_VERSION} -t ${PHPFPM_DEV_DOCKER_IMAGE_NAME}:latest . 
+docker build --target apache-prod --build-arg VERSION_ARG=${PHP_VERSION} -t ${APACHE_PRD_DOCKER_IMAGE_NAME}:latest . 
+docker build --target apache-dev --build-arg VERSION_ARG=${PHP_VERSION} -t ${APACHE_DEV_DOCKER_IMAGE_NAME}:latest . 
+docker build --target nginx-prod --build-arg VERSION_ARG=${PHP_VERSION} -t ${NGINX_PRD_DOCKER_IMAGE_NAME}:latest . 
+docker build --target nginx-dev --build-arg VERSION_ARG=${PHP_VERSION} -t ${NGINX_DEV_DOCKER_IMAGE_NAME}:latest . 
 ```
 
 ## Test
