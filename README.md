@@ -9,9 +9,46 @@ Use [Supervisord] as manager for Webserver **and** PHP-FPM.  Supervisord is ther
 Run container as non-privileged.  
 Container Entrypoint hooks available.  
 
-Installation of [Nginx](https://pkgs.alpinelinux.org/package/v3.15/main/x86_64/nginx).  
-Installation of [Apache 2.4](https://pkgs.alpinelinux.org/package/v3.15/main/x86_64/apache2).  
-Installation of [Varnish](https://pkgs.alpinelinux.org/package/v3.15/main/x86_64/varnish).  
+Installation of [Nginx](https://pkgs.alpinelinux.org/package/v3.16/main/x86_64/nginx).  
+Installation of [Apache 2.4](https://pkgs.alpinelinux.org/package/v3.16/main/x86_64/apache2).  
+Installation of [Varnish](https://pkgs.alpinelinux.org/package/v3.16/main/x86_64/varnish).  
+
+## Build
+
+```
+set -a
+source .build.env
+set +a
+
+docker build --target php-fpm-prod --build-arg VERSION_ARG=${PHP_VERSION} -t ${PHPFPM_PRD_DOCKER_IMAGE_NAME}:rc . 
+docker build --target php-fpm-dev --build-arg VERSION_ARG=${PHP_VERSION} -t ${PHPFPM_DEV_DOCKER_IMAGE_NAME}:rc . 
+docker build --target apache-prod --build-arg VERSION_ARG=${PHP_VERSION} -t ${APACHE_PRD_DOCKER_IMAGE_NAME}:rc . 
+docker build --target apache-dev --build-arg VERSION_ARG=${PHP_VERSION} -t ${APACHE_DEV_DOCKER_IMAGE_NAME}:rc . 
+docker build --target nginx-prod --build-arg VERSION_ARG=${PHP_VERSION} -t ${NGINX_PRD_DOCKER_IMAGE_NAME}:rc . 
+docker build --target nginx-dev --build-arg VERSION_ARG=${PHP_VERSION} -t ${NGINX_DEV_DOCKER_IMAGE_NAME}:rc . 
+```
+
+## Test
+
+Requirements: 
+
+- bats
+- docker-compose
+
+```
+set -a
+source .build.env
+set +a
+
+docker network create docker_default
+docker pull appropriate/curl:latest
+
+bats test/tests.php-fpm.bats
+bats test/tests.apache.bats
+bats test/tests.nginx.bats
+bats test/tests.varnish.bats
+
+```
 
 ## PHP-FPM Configuration
 
