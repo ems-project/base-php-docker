@@ -46,11 +46,12 @@ RUN mkdir -p /home/default /opt/etc /opt/bin/container-entrypoint.d /opt/src /va
                                                 libjpeg-turbo-dev libpng-dev libwebp-dev libxpm-dev \
                                                 libzip-dev openldap-dev pcre-dev gnupg git bzip2-dev \
                                                 musl-libintl postgresql-dev libxml2-dev tidyhtml-dev \
+                                                libxslt-dev \
     && docker-php-ext-configure gd --with-freetype --with-webp --with-jpeg \
     && docker-php-ext-configure tidy --with-tidy \
     && docker-php-ext-install -j "$(nproc)" soap bz2 fileinfo gettext intl pcntl pgsql \
                                             pdo_pgsql simplexml ldap gd ldap mysqli pdo_mysql \
-                                            zip opcache bcmath exif tidy \
+                                            zip opcache bcmath exif tidy xsl \
     && pecl install APCu-5.1.21 \
     && pecl install redis-5.3.7 \
     && docker-php-ext-enable apcu redis \
@@ -63,7 +64,7 @@ RUN mkdir -p /home/default /opt/etc /opt/bin/container-entrypoint.d /opt/src /va
     && apk add --update --no-cache --virtual .ems-phpext-rundeps $runDeps \
     && apk add --update --upgrade --no-cache --virtual .ems-rundeps curl tzdata \
                                       bash tar gettext ssmtp postgresql-client postgresql-libs \
-                                      libjpeg-turbo freetype libpng libwebp libxpm mailx coreutils \
+                                      libjpeg-turbo freetype libpng libwebp libxpm mailx coreutils libxslt \
                                       mysql-client jq wget icu-libs libxml2 python3 py3-pip groff supervisor \
                                       varnish tidyhtml \
     && rm /etc/supervisord.conf \
