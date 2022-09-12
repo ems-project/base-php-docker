@@ -251,36 +251,6 @@ jobs:
           tags: ${{ steps.meta_nginx_dev.outputs.tags }}
           labels: ${{ steps.meta_nginx_dev.outputs.labels }}
 
-      - name: Scan PHP-FPM Prod Docker Image
-        uses: azure/container-scan@v0
-        with:
-          image-name: "${{ steps.prep.outputs.phpfpm_prd_image }}:${{ env.CI_SHA_SHORT }}"
-
-      - name: Scan PHP-FPM Dev Docker Image
-        uses: azure/container-scan@v0
-        with:
-          image-name: "${{ steps.prep.outputs.phpfpm_dev_image }}:${{ env.CI_SHA_SHORT }}"
-
-      - name: Scan PHP-APACHE Prod Docker Image
-        uses: azure/container-scan@v0
-        with:
-          image-name: "${{ steps.prep.outputs.apache_prd_image }}:${{ env.CI_SHA_SHORT }}"
-
-      - name: Scan PHP-APACHE Dev Docker Image
-        uses: azure/container-scan@v0
-        with:
-          image-name: "${{ steps.prep.outputs.apache_dev_image }}:${{ env.CI_SHA_SHORT }}"
-
-      - name: Scan PHP-NGINX Prod Docker Image
-        uses: azure/container-scan@v0
-        with:
-          image-name: "${{ steps.prep.outputs.nginx_prd_image }}:${{ env.CI_SHA_SHORT }}"
-
-      - name: Scan PHP-NGINX Dev Docker Image
-        uses: azure/container-scan@v0
-        with:
-          image-name: "${{ steps.prep.outputs.nginx_dev_image }}:${{ env.CI_SHA_SHORT }}"
-
       - name: Test PHP-FPM Prod Docker Image
         env:
           PHP_DOCKER_IMAGE_NAME: ${{ steps.prep.outputs.phpfpm_prd_image }}:${{ env.CI_SHA_SHORT }}
