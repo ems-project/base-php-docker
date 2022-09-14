@@ -47,7 +47,6 @@ bats test/tests.php-fpm.bats
 bats test/tests.apache.bats
 bats test/tests.nginx.bats
 bats test/tests.varnish.bats
-
 ```
 
 ## PHP-FPM Configuration
