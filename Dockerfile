@@ -31,9 +31,9 @@ ENV MAIL_SMTP_SERVER="" \
     HOME=/home/default \
     PATH=/opt/bin:/usr/local/bin:/usr/bin:$PATH
 
-COPY --chmod=755 --chown=1001:0 etc/ssmtp/ /etc/ssmtp/
-COPY --chmod=755 --chown=1001:0 etc/php/ /usr/local/etc/
-COPY --chmod=755 --chown=1001:0 bin/ /usr/local/bin/
+COPY --chmod=775 --chown=1001:0 etc/ssmtp/ /etc/ssmtp/
+COPY --chmod=775 --chown=1001:0 etc/php/ /usr/local/etc/
+COPY --chmod=775 --chown=1001:0 bin/ /usr/local/bin/
 
 RUN mkdir -p /home/default /opt/etc /opt/bin/container-entrypoint.d /opt/src /var/lock \
     && echo "Install and Configure required extra PHP packages ..." \
@@ -156,9 +156,9 @@ LABEL eu.elasticms.base-php-fpm.webserver="apache"
 
 USER root
 
-COPY --chmod=755 --chown=1001:0 etc/apache2/ /etc/apache2/
-COPY --chmod=755 --chown=1001:0 etc/supervisord.apache/ /etc/supervisord/
-COPY --chmod=755 --chown=1001:0 src/ /var/www/html/
+COPY --chmod=775 --chown=1001:0 etc/apache2/ /etc/apache2/
+COPY --chmod=775 --chown=1001:0 etc/supervisord.apache/ /etc/supervisord/
+COPY --chmod=775 --chown=1001:0 src/ /var/www/html/
 
 RUN apk add --update --no-cache --virtual .php-apache-rundeps apache2 apache2-utils apache2-proxy apache2-ssl \
     && mkdir -p /run/apache2 /var/run/apache2 /var/log/apache2 \
@@ -185,9 +185,9 @@ LABEL eu.elasticms.base-php-fpm.webserver="apache"
 
 USER root
 
-COPY --chmod=755 --chown=1001:0 etc/apache2/ /etc/apache2/
-COPY --chmod=755 --chown=1001:0 etc/supervisord.apache/ /etc/supervisord/
-COPY --chmod=755 --chown=1001:0 src/ /var/www/html/
+COPY --chmod=775 --chown=1001:0 etc/apache2/ /etc/apache2/
+COPY --chmod=775 --chown=1001:0 etc/supervisord.apache/ /etc/supervisord/
+COPY --chmod=775 --chown=1001:0 src/ /var/www/html/
 
 RUN apk add --update --no-cache --virtual .php-apache-rundeps apache2 apache2-utils apache2-proxy apache2-ssl \
     && mkdir -p /run/apache2 /var/run/apache2 /var/log/apache2 \
@@ -214,9 +214,9 @@ LABEL eu.elasticms.base-php-fpm.webserver="nginx"
 
 USER root
 
-COPY --chmod=755 --chown=1001:0 etc/nginx/ /etc/nginx/
-COPY --chmod=755 --chown=1001:0 etc/supervisord.nginx/ /etc/supervisord/
-COPY --chmod=755 --chown=1001:0 src/ /usr/share/nginx/html/
+COPY --chmod=775 --chown=1001:0 etc/nginx/ /etc/nginx/
+COPY --chmod=775 --chown=1001:0 etc/supervisord.nginx/ /etc/supervisord/
+COPY --chmod=775 --chown=1001:0 src/ /usr/share/nginx/html/
 
 RUN apk add --update --no-cache --virtual .php-nginx-rundeps nginx \
     && mkdir -p /var/log/nginx /var/cache/nginx /var/tmp/nginx \
@@ -248,9 +248,9 @@ LABEL eu.elasticms.base-php-fpm.webserver="nginx"
 
 USER root
 
-COPY --chmod=755 --chown=1001:0  etc/nginx/ /etc/nginx/
-COPY --chmod=755 --chown=1001:0  etc/supervisord.nginx/ /etc/supervisord/
-COPY --chmod=755 --chown=1001:0  src/ /usr/share/nginx/html/
+COPY --chmod=775 --chown=1001:0  etc/nginx/ /etc/nginx/
+COPY --chmod=775 --chown=1001:0  etc/supervisord.nginx/ /etc/supervisord/
+COPY --chmod=775 --chown=1001:0  src/ /usr/share/nginx/html/
 
 RUN apk add --update --no-cache --virtual .php-nginx-rundeps nginx \
     && mkdir -p /var/log/nginx /var/cache/nginx /var/tmp/nginx \
