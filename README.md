@@ -9,8 +9,9 @@ Use [Supervisord] as manager for Webserver **and** PHP-FPM.  Supervisord is ther
 Run container as non-privileged.  
 Container Entrypoint hooks available.  
 
-Installation of [Nginx](https://pkgs.alpinelinux.org/package/v3.12/main/x86_64/nginx).  
-Installation of [Apache 2.4](https://pkgs.alpinelinux.org/package/v3.12/main/x86_64/apache2).  
+Installation of [Nginx](https://pkgs.alpinelinux.org/package/v3.16/main/x86_64/nginx).  
+Installation of [Apache 2.4](https://pkgs.alpinelinux.org/package/v3.16/main/x86_64/apache2).  
+Installation of [Varnish](https://pkgs.alpinelinux.org/package/v3.16/main/x86_64/varnish).  
 
 ## Build
 
