@@ -24,7 +24,7 @@ export BATS_PHP_SOCKET_VOLUME_NAME=${BATS_PHP_SOCKET_VOLUME_NAME:-php_socket}
 export BATS_SOURCES_VOLUME_NAME=${BATS_SOURCES_VOLUME_NAME:-php_sources}
 export BATS_NGINX_CONFIG_VOLUME_NAME=${BATS_NGINX_CONFIG_VOLUME_NAME:-nginx_config}
 
-export BATS_PHP_DOCKER_IMAGE_NAME="${PHP_DOCKER_IMAGE_NAME:-docker.io/elasticms/base-php-fpm:latest}"
+export BATS_PHP_DOCKER_IMAGE_NAME="${PHPFPM_PRD_DOCKER_IMAGE_NAME:-docker.io/elasticms/base-php-fpm:latest}"
 
 @test "[$TEST_FILE] Create Docker external volumes (local)" {
   command docker volume create -d local ${BATS_PHP_SCRIPTS_VOLUME_NAME}
