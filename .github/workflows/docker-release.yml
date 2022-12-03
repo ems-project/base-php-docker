@@ -440,7 +440,7 @@ jobs:
 
       - name: Scan Prod PHP Docker image
         uses: anchore/scan-action@v3
-        id: scan
+        id: scan-phpfpm
         with:
           image: ${{ needs.init.outputs.phpfpm-prd-docker-image-name }}:${{ needs.init.outputs.github-ci-sha-short }}
           fail-build: false
@@ -449,7 +449,7 @@ jobs:
 
       - name: Scan Prod Apache Docker image
         uses: anchore/scan-action@v3
-        id: scan
+        id: scan-apache
         with:
           image: ${{ needs.init.outputs.apache-prd-docker-image-name }}:${{ needs.init.outputs.github-ci-sha-short }}
           fail-build: false
@@ -458,7 +458,7 @@ jobs:
 
       - name: Scan Prod Nginx Docker image
         uses: anchore/scan-action@v3
-        id: scan
+        id: scan-nginx
         with:
           image: ${{ needs.init.outputs.nginx-prd-docker-image-name }}:${{ needs.init.outputs.github-ci-sha-short }}
           fail-build: false
