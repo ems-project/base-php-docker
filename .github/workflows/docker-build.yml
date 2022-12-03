@@ -1,0 +1,271 @@
+name: Docker Build
+
+on:
+  push:
+    branches:
+      - '**'
+  pull_request:
+
+jobs:
+
+  build-docker-images:
+
+    runs-on: ubuntu-20.04
+
+    steps:
+      - uses: actions/checkout@v3
+
+      - name: Fill GitHub Environment Variables
+        uses: FranzDiebold/github-env-vars-action@v2
+
+      - name: Fill PHP Version Environment Variable
+        uses: c-py/action-dotenv-to-setenv@v4
+        with:
+          env-file: .build.env
+
+      - name: Prepare Workflow Environment
+        id: prep
+        run: |
+          echo "phpfpm-prd-docker-image-name=${PHPFPM_PRD_DOCKER_IMAGE_NAME}" >> $GITHUB_OUTPUT
+          echo "phpfpm-dev-docker-image-name=${PHPFPM_DEV_DOCKER_IMAGE_NAME}" >> $GITHUB_OUTPUT
+          echo "apache-prd-docker-image-name=${APACHE_PRD_DOCKER_IMAGE_NAME}" >> $GITHUB_OUTPUT
+          echo "apache-dev-docker-image-name=${APACHE_DEV_DOCKER_IMAGE_NAME}" >> $GITHUB_OUTPUT
+          echo "nginx-prd-docker-image-name=${NGINX_PRD_DOCKER_IMAGE_NAME}" >> $GITHUB_OUTPUT
+          echo "nginx-dev-docker-image-name=${NGINX_DEV_DOCKER_IMAGE_NAME}" >> $GITHUB_OUTPUT
+          echo "build-date=$(date -u +'%Y-%m-%dT%H:%M:%SZ')" >> $GITHUB_OUTPUT
+
+      - name: Fill Prod PHP Docker Image metadata
+        id: meta-phpfpm-prd
+        uses: docker/metadata-action@v4
+        with:
+          github-token: ${{ secrets.GITHUB_TOKEN }}
+          images: "${{ steps.prep.outputs.phpfpm-prd-docker-image-name }}"
+          tags: |
+            type=raw,value=rc
+
+      - name: Fill Dev PHP Docker Image metadata
+        id: meta-phpfpm-dev
+        uses: docker/metadata-action@v4
+        with:
+          github-token: ${{ secrets.GITHUB_TOKEN }}
+          images: "${{ steps.prep.outputs.phpfpm-dev-docker-image-name }}"
+          tags: |
+            type=raw,value=rc
+
+      - name: Fill Prod Apache Docker Image metadata
+        id: meta-apache-prd
+        uses: docker/metadata-action@v4
+        with:
+          github-token: ${{ secrets.GITHUB_TOKEN }}
+          images: "${{ steps.prep.outputs.apache-prd-docker-image-name }}"
+          tags: |
+            type=raw,value=rc
+
+      - name: Fill Dev Apache Docker Image metadata
+        id: meta-apache-dev
+        uses: docker/metadata-action@v4
+        with:
+          github-token: ${{ secrets.GITHUB_TOKEN }}
+          images: "${{ steps.prep.outputs.apache-dev-docker-image-name }}"
+          tags: |
+            type=raw,value=rc
+
+      - name: Fill Prod Nginx Docker Image metadata
+        id: meta-nginx-prd
+        uses: docker/metadata-action@v4
+        with:
+          github-token: ${{ secrets.GITHUB_TOKEN }}
+          images: "${{ steps.prep.outputs.nginx-prd-docker-image-name }}"
+          tags: |
+            type=raw,value=rc
+
+      - name: Fill Dev Nginx Docker Image metadata
+        id: meta-nginx-dev
+        uses: docker/metadata-action@v4
+        with:
+          github-token: ${{ secrets.GITHUB_TOKEN }}
+          images: "${{ steps.prep.outputs.nginx-dev-docker-image-name }}"
+          tags: |
+            type=raw,value=rc
+
+      - name: Set up Docker Buildx
+        id: buildx
+        uses: docker/setup-buildx-action@v2
+
+      - name: Cache Docker layers
+        uses: actions/cache@v3
+        with:
+          path: /tmp/.buildx-cache
+          key: ${{ runner.os }}-buildx-${{ github.sha }}
+          restore-keys: |
+            ${{ runner.os }}-buildx-
+
+      - name: Build Prod PHP Docker Image
+        id: build-phpfpm-prd
+        uses: docker/build-push-action@v3
+        with:
+          builder: ${{ steps.buildx.outputs.name }}
+          context: .
+          file: Dockerfile
+          target: php-fpm-prod
+          build-args: |
+            VERSION_ARG=${{ env.PHP_VERSION }}
+            RELEASE_ARG=${{ env.CI_RUN_ID }}
+            VCS_REF_ARG=${{ env.CI_SHA }}
+            BUILD_DATE_ARG=${{ steps.prep.outputs.build-date }}
+          push: false
+          load: true
+          tags: ${{ steps.meta-phpfpm-prd.outputs.tags }}
+          labels: ${{ steps.meta-phpfpm-prd.outputs.labels }}
+          outputs: type=docker,dest=/tmp/phpfpm-prd-myimage.tar
+
+      - name: Build Dev PHP Docker Image
+        id: build-phpfpm-dev
+        uses: docker/build-push-action@v3
+        with:
+          builder: ${{ steps.buildx.outputs.name }}
+          context: .
+          file: Dockerfile
+          target: php-fpm-dev
+          build-args: |
+            VERSION_ARG=${{ env.PHP_VERSION }}
+            RELEASE_ARG=${{ env.CI_RUN_ID }}
+            VCS_REF_ARG=${{ env.CI_SHA }}
+            BUILD_DATE_ARG=${{ steps.prep.outputs.build-date }}
+          push: false
+          load: true
+          tags: ${{ steps.meta-phpfpm-dev.outputs.tags }}
+          labels: ${{ steps.meta-phpfpm-dev.outputs.labels }}
+          outputs: type=docker,dest=/tmp/phpfpm-dev-myimage.tar
+
+      - name: Build Prod Apache Docker Image
+        id: build-apache-prd
+        uses: docker/build-push-action@v3
+        with:
+          builder: ${{ steps.buildx.outputs.name }}
+          context: .
+          file: Dockerfile
+          target: apache-prod
+          build-args: |
+            VERSION_ARG=${{ env.PHP_VERSION }}
+            RELEASE_ARG=${{ env.CI_RUN_ID }}
+            VCS_REF_ARG=${{ env.CI_SHA }}
+            BUILD_DATE_ARG=${{ steps.prep.outputs.build-date }}
+          push: false
+          load: true
+          tags: ${{ steps.meta-apache-prd.outputs.tags }}
+          labels: ${{ steps.meta-apache-prd.outputs.labels }}
+          outputs: type=docker,dest=/tmp/apache-prd-myimage.tar
+
+      - name: Build Dev Apache Docker Image
+        id: build-apache-dev
+        uses: docker/build-push-action@v3
+        with:
+          builder: ${{ steps.buildx.outputs.name }}
+          context: .
+          file: Dockerfile
+          target: apache-dev
+          build-args: |
+            VERSION_ARG=${{ env.PHP_VERSION }}
+            RELEASE_ARG=${{ env.CI_RUN_ID }}
+            VCS_REF_ARG=${{ env.CI_SHA }}
+            BUILD_DATE_ARG=${{ steps.prep.outputs.build-date }}
+          push: false
+          load: true
+          tags: ${{ steps.meta-apache-dev.outputs.tags }}
+          labels: ${{ steps.meta-apache-dev.outputs.labels }}
+          outputs: type=docker,dest=/tmp/apache-dev-myimage.tar
+
+      - name: Build Prod Nginx Docker Image
+        id: build-nginx-prd
+        uses: docker/build-push-action@v3
+        with:
+          builder: ${{ steps.buildx.outputs.name }}
+          context: .
+          file: Dockerfile
+          target: nginx-prod
+          build-args: |
+            VERSION_ARG=${{ env.PHP_VERSION }}
+            RELEASE_ARG=${{ env.CI_RUN_ID }}
+            VCS_REF_ARG=${{ env.CI_SHA }}
+            BUILD_DATE_ARG=${{ steps.prep.outputs.build-date }}
+          push: false
+          load: true
+          tags: ${{ steps.meta-nginx-prd.outputs.tags }}
+          labels: ${{ steps.meta-nginx-prd.outputs.labels }}
+          outputs: type=docker,dest=/tmp/nginx-prd-myimage.tar
+
+      - name: Build Dev Nginx Docker Image
+        id: build-nginx-dev
+        uses: docker/build-push-action@v3
+        with:
+          builder: ${{ steps.buildx.outputs.name }}
+          context: .
+          file: Dockerfile
+          target: nginx-dev
+          build-args: |
+            VERSION_ARG=${{ env.PHP_VERSION }}
+            RELEASE_ARG=${{ env.CI_RUN_ID }}
+            VCS_REF_ARG=${{ env.CI_SHA }}
+            BUILD_DATE_ARG=${{ steps.prep.outputs.build-date }}
+          push: false
+          load: true
+          tags: ${{ steps.meta-nginx-dev.outputs.tags }}
+          labels: ${{ steps.meta-nginx-dev.outputs.labels }}
+          outputs: type=docker,dest=/tmp/nginx-dev-myimage.tar
+
+      - name: Squash Docker Images
+        id: squash
+        run: |
+          pip install docker-squash
+          cat /tmp/phpfpm-prd-myimage.tar | docker load
+          cat /tmp/phpfpm-dev-myimage.tar | docker load
+          cat /tmp/apache-prd-myimage.tar | docker load
+          cat /tmp/apache-dev-myimage.tar | docker load
+          cat /tmp/nginx-prd-myimage.tar | docker load
+          cat /tmp/nginx-dev-myimage.tar | docker load
+          docker-squash --verbose --message "Build and Squashed in GitHub Action" \
+            --tag ${{ steps.prep.outputs.phpfpm-prd-docker-image-name }}:rc \
+            --output-path /tmp/phpfpm-prd-myimage.tar \
+            ${{ steps.prep.outputs.phpfpm-prd-docker-image-name }}:rc
+          docker-squash --verbose --message "Build and Squashed in GitHub Action" \
+            --tag ${{ steps.prep.outputs.phpfpm-dev-docker-image-name }}:rc \
+            --output-path /tmp/phpfpm-dev-myimage.tar \
+            ${{ steps.prep.outputs.phpfpm-dev-docker-image-name }}:rc
+          docker-squash --verbose --message "Build and Squashed in GitHub Action" \
+            --tag ${{ steps.prep.outputs.apache-prd-docker-image-name }}:rc \
+            --output-path /tmp/apache-prd-myimage.tar \
+            ${{ steps.prep.outputs.apache-prd-docker-image-name }}:rc
+          docker-squash --verbose --message "Build and Squashed in GitHub Action" \
+            --tag ${{ steps.prep.outputs.apache-dev-docker-image-name }}:rc \
+            --output-path /tmp/apache-dev-myimage.tar \
+            ${{ steps.prep.outputs.apache-dev-docker-image-name }}:rc
+          docker-squash --verbose --message "Build and Squashed in GitHub Action" \
+            --tag ${{ steps.prep.outputs.nginx-prd-docker-image-name }}:rc \
+            --output-path /tmp/nginx-prd-myimage.tar \
+            ${{ steps.prep.outputs.nginx-prd-docker-image-name }}:rc
+          docker-squash --verbose --message "Build and Squashed in GitHub Action" \
+            --tag ${{ steps.prep.outputs.nginx-dev-docker-image-name }}:rc \
+            --output-path /tmp/nginx-dev-myimage.tar \
+            ${{ steps.prep.outputs.nginx-dev-docker-image-name }}:rc
+          cat /tmp/phpfpm-prd-myimage.tar | docker load
+          cat /tmp/phpfpm-dev-myimage.tar | docker load
+          cat /tmp/apache-prd-myimage.tar | docker load
+          cat /tmp/apache-dev-myimage.tar | docker load
+          cat /tmp/nginx-prd-myimage.tar | docker load
+          cat /tmp/nginx-dev-myimage.tar | docker load
+
+      - name: Check Docker Images
+        run: |
+          docker image inspect ${{ steps.prep.outputs.phpfpm-prd-docker-image-name }}:rc
+          docker image inspect ${{ steps.prep.outputs.phpfpm-dev-docker-image-name }}:rc
+          docker image inspect ${{ steps.prep.outputs.apache-prd-docker-image-name }}:rc
+          docker image inspect ${{ steps.prep.outputs.apache-dev-docker-image-name }}:rc
+          docker image inspect ${{ steps.prep.outputs.nginx-prd-docker-image-name }}:rc
+          docker image inspect ${{ steps.prep.outputs.nginx-dev-docker-image-name }}:rc
+          docker history ${{ steps.prep.outputs.phpfpm-prd-docker-image-name }}:rc
+          docker history ${{ steps.prep.outputs.phpfpm-dev-docker-image-name }}:rc
+          docker history ${{ steps.prep.outputs.apache-prd-docker-image-name }}:rc
+          docker history ${{ steps.prep.outputs.apache-dev-docker-image-name }}:rc
+          docker history ${{ steps.prep.outputs.nginx-prd-docker-image-name }}:rc
+          docker history ${{ steps.prep.outputs.nginx-dev-docker-image-name }}:rc
