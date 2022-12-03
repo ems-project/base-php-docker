@@ -1,6 +1,6 @@
 ARG VERSION_ARG
 
-FROM php:${VERSION_ARG}-fpm-alpine3.12 AS php-fpm-prod
+FROM php:${VERSION_ARG}-fpm-alpine3.16 AS php-fpm-prod
 
 ARG RELEASE_ARG
 ARG BUILD_DATE_ARG
