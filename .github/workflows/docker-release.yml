@@ -71,7 +71,7 @@ jobs:
           echo "github-ci-run-id=${CI_RUN_ID}" >> $GITHUB_OUTPUT
           echo "aws-cli-version=${AWS_CLI_VERSION}" >> $GITHUB_OUTPUT
 
-      - name: Fill Prod PHP Docker Image metadata
+      - name: Fill "${{ steps.prep.outputs.phpfpm-prd-docker-image-name }}" Docker Image metadata
         id: meta-phpfpm-prd
         uses: docker/metadata-action@v4
         with:
@@ -84,7 +84,7 @@ jobs:
             type=raw,value=${{ steps.prep.outputs.version-major }}
             type=raw,value=latest
 
-      - name: Fill Dev PHP Docker Image metadata
+      - name: Fill "${{ steps.prep.outputs.phpfpm-dev-docker-image-name }}" Docker Image metadata
         id: meta-phpfpm-dev
         uses: docker/metadata-action@v4
         with:
@@ -97,7 +97,7 @@ jobs:
             type=raw,value=${{ steps.prep.outputs.version-major }}
             type=raw,value=latest
 
-      - name: Fill Prod Apache Docker Image metadata
+      - name: Fill "${{ steps.prep.outputs.apache-prd-docker-image-name }}" Docker Image metadata
         id: meta-apache-prd
         uses: docker/metadata-action@v4
         with:
@@ -110,7 +110,7 @@ jobs:
             type=raw,value=${{ steps.prep.outputs.version-major }}
             type=raw,value=latest
 
-      - name: Fill Dev Apache Docker Image metadata
+      - name: Fill "${{ steps.prep.outputs.apache-dev-docker-image-name }}" Docker Image metadata
         id: meta-apache-dev
         uses: docker/metadata-action@v4
         with:
@@ -123,7 +123,7 @@ jobs:
             type=raw,value=${{ steps.prep.outputs.version-major }}
             type=raw,value=latest
 
-      - name: Fill Prod Nginx Docker Image metadata
+      - name: Fill "${{ steps.prep.outputs.nginx-prd-docker-image-name }}" Docker Image metadata
         id: meta-nginx-prd
         uses: docker/metadata-action@v4
         with:
@@ -136,7 +136,7 @@ jobs:
             type=raw,value=${{ steps.prep.outputs.version-major }}
             type=raw,value=latest
 
-      - name: Fill Dev Nginx Docker Image metadata
+      - name: Fill "${{ steps.prep.outputs.nginx-dev-docker-image-name }}" Docker Image metadata
         id: meta-nginx-dev
         uses: docker/metadata-action@v4
         with:
@@ -168,7 +168,7 @@ jobs:
           restore-keys: |
             ${{ runner.os }}-buildx-
 
-      - name: Build Prod PHP Docker Image
+      - name: Build "${{ needs.init.outputs.phpfpm-prd-docker-image-name }}" Docker Image
         id: build-phpfpm-prd
         uses: docker/build-push-action@v3
         with:
@@ -185,7 +185,7 @@ jobs:
           labels: ${{ needs.init.outputs.phpfpm-prd-docker-image-labels }}
           outputs: type=docker,dest=/tmp/phpfpm-prd-builded.tar
 
-      - name: Build Dev PHP Docker Image
+      - name: Build "${{ needs.init.outputs.phpfpm-dev-docker-image-name }}" Docker Image
         id: build-phpfpm-dev
         uses: docker/build-push-action@v3
         with:
@@ -202,7 +202,7 @@ jobs:
           labels: ${{ needs.init.outputs.phpfpm-dev-docker-image-labels }}
           outputs: type=docker,dest=/tmp/phpfpm-dev-builded.tar
 
-      - name: Build Prod Apache Docker Image
+      - name: Build "${{ needs.init.outputs.apache-prd-docker-image-name }}" Docker Image
         id: build-apache-prd
         uses: docker/build-push-action@v3
         with:
@@ -219,7 +219,7 @@ jobs:
           labels: ${{ needs.init.outputs.apache-prd-docker-image-labels }}
           outputs: type=docker,dest=/tmp/apache-prd-builded.tar
 
-      - name: Build Dev Apache Docker Image
+      - name: Build "${{ needs.init.outputs.apache-dev-docker-image-name }}" Docker Image
         id: build-apache-dev
         uses: docker/build-push-action@v3
         with:
@@ -236,7 +236,7 @@ jobs:
           labels: ${{ needs.init.outputs.apache-dev-docker-image-labels }}
           outputs: type=docker,dest=/tmp/apache-dev-builded.tar
 
-      - name: Build Prod Nginx Docker Image
+      - name: Build "${{ needs.init.outputs.nginx-prd-docker-image-name }}" Docker Image
         id: build-nginx-prd
         uses: docker/build-push-action@v3
         with:
@@ -253,7 +253,7 @@ jobs:
           labels: ${{ needs.init.outputs.nginx-prd-docker-image-labels }}
           outputs: type=docker,dest=/tmp/nginx-prd-builded.tar
 
-      - name: Build Dev Nginx Docker Image
+      - name: Build "${{ needs.init.outputs.nginx-dev-docker-image-name }}" Docker Image
         id: build-nginx-dev
         uses: docker/build-push-action@v3
         with:
@@ -270,16 +270,15 @@ jobs:
           labels: ${{ needs.init.outputs.nginx-dev-docker-image-labels }}
           outputs: type=docker,dest=/tmp/nginx-dev-builded.tar
 
-      - name: Squash Docker Image
-        id: squash
+      - name: Install Docker Squash
+        id: install-squash
         run: |
           pip install docker-squash
+
+      - name: Squash "${{ needs.init.outputs.phpfpm-prd-docker-image-name }}" Docker Image
+        id: squash-phpfpm-prd
+        run: |
           cat /tmp/phpfpm-prd-builded.tar | docker load
-          cat /tmp/phpfpm-dev-builded.tar | docker load
-          cat /tmp/apache-prd-builded.tar | docker load
-          cat /tmp/apache-dev-builded.tar | docker load
-          cat /tmp/nginx-prd-builded.tar | docker load
-          cat /tmp/nginx-dev-builded.tar | docker load
           docker-squash --verbose --message "Build and Squashed in GitHub Action" \
             --tag ${{ needs.init.outputs.phpfpm-prd-docker-image-name }}:${{ needs.init.outputs.github-ci-sha-short }} \
             --output-path /tmp/phpfpm-prd-squashed.tar \
@@ -291,6 +290,11 @@ jobs:
             docker tag ${{ needs.init.outputs.phpfpm-prd-docker-image-name }}:${{ needs.init.outputs.github-ci-sha-short }} $tag
           done
           docker save --output /tmp/phpfpm-prd-final.tar $tags
+
+      - name: Squash "${{ needs.init.outputs.phpfpm-dev-docker-image-name }}" Docker Image
+        id: squash-phpfpm-dev
+        run: |
+          cat /tmp/phpfpm-dev-builded.tar | docker load
           docker-squash --verbose --message "Build and Squashed in GitHub Action" \
             --tag ${{ needs.init.outputs.phpfpm-dev-docker-image-name }}:${{ needs.init.outputs.github-ci-sha-short }} \
             --output-path /tmp/phpfpm-dev-squashed.tar \
@@ -302,6 +306,11 @@ jobs:
             docker tag ${{ needs.init.outputs.phpfpm-dev-docker-image-name }}:${{ needs.init.outputs.github-ci-sha-short }} $tag
           done
           docker save --output /tmp/phpfpm-dev-final.tar $tags
+
+      - name: Squash "${{ needs.init.outputs.apache-prd-docker-image-name }}" Docker Image
+        id: squash-apache-prd
+        run: |
+          cat /tmp/apache-prd-builded.tar | docker load
           docker-squash --verbose --message "Build and Squashed in GitHub Action" \
             --tag ${{ needs.init.outputs.apache-prd-docker-image-name }}:${{ needs.init.outputs.github-ci-sha-short }} \
             --output-path /tmp/apache-prd-squashed.tar \
@@ -313,6 +322,11 @@ jobs:
             docker tag ${{ needs.init.outputs.apache-prd-docker-image-name }}:${{ needs.init.outputs.github-ci-sha-short }} $tag
           done
           docker save --output /tmp/apache-prd-final.tar $tags
+
+      - name: Squash "${{ needs.init.outputs.apache-dev-docker-image-name }}" Docker Image
+        id: squash-apache-dev
+        run: |
+          cat /tmp/apache-dev-builded.tar | docker load
           docker-squash --verbose --message "Build and Squashed in GitHub Action" \
             --tag ${{ needs.init.outputs.apache-dev-docker-image-name }}:${{ needs.init.outputs.github-ci-sha-short }} \
             --output-path /tmp/apache-dev-squashed.tar \
@@ -324,6 +338,11 @@ jobs:
             docker tag ${{ needs.init.outputs.apache-dev-docker-image-name }}:${{ needs.init.outputs.github-ci-sha-short }} $tag
           done
           docker save --output /tmp/apache-dev-final.tar $tags
+
+      - name: Squash "${{ needs.init.outputs.nginx-prd-docker-image-name }}" Docker Image
+        id: squash-nginx-prd
+        run: |
+          cat /tmp/nginx-prd-builded.tar | docker load
           docker-squash --verbose --message "Build and Squashed in GitHub Action" \
             --tag ${{ needs.init.outputs.nginx-prd-docker-image-name }}:${{ needs.init.outputs.github-ci-sha-short }} \
             --output-path /tmp/nginx-prd-squashed.tar \
@@ -335,6 +354,11 @@ jobs:
             docker tag ${{ needs.init.outputs.nginx-prd-docker-image-name }}:${{ needs.init.outputs.github-ci-sha-short }} $tag
           done
           docker save --output /tmp/nginx-prd-final.tar $tags
+
+      - name: Squash "${{ needs.init.outputs.nginx-dev-docker-image-tags }}" Docker Image
+        id: squash-nginx-dev
+        run: |
+          cat /tmp/nginx-dev-builded.tar | docker load
           docker-squash --verbose --message "Build and Squashed in GitHub Action" \
             --tag ${{ needs.init.outputs.nginx-dev-docker-image-name }}:${{ needs.init.outputs.github-ci-sha-short }} \
             --output-path /tmp/nginx-dev-squashed.tar \
@@ -347,7 +371,7 @@ jobs:
           done
           docker save --output /tmp/nginx-dev-final.tar $tags
 
-      - name: Check Docker Image
+      - name: Check Docker Images
         run: |
           docker image inspect ${{ needs.init.outputs.phpfpm-prd-docker-image-name }}:${{ needs.init.outputs.github-ci-sha-short }}
           docker image inspect ${{ needs.init.outputs.phpfpm-dev-docker-image-name }}:${{ needs.init.outputs.github-ci-sha-short }}
@@ -362,37 +386,37 @@ jobs:
           docker history ${{ needs.init.outputs.nginx-prd-docker-image-name }}:${{ needs.init.outputs.github-ci-sha-short }}
           docker history ${{ needs.init.outputs.nginx-dev-docker-image-name }}:${{ needs.init.outputs.github-ci-sha-short }}
 
-      - name: Upload Prod PHP artifact
+      - name: Upload "${{ needs.init.outputs.phpfpm-prd-docker-image-name }}" Docker image artifact
         uses: actions/upload-artifact@v3
         with:
           name: phpfpm-prd
           path: /tmp/phpfpm-prd-final.tar
 
-      - name: Upload Dev PHP artifact
+      - name: Upload "${{ needs.init.outputs.phpfpm-dev-docker-image-name }}" Docker image artifact
         uses: actions/upload-artifact@v3
         with:
           name: phpfpm-dev
           path: /tmp/phpfpm-dev-final.tar
 
-      - name: Upload Prod Apache artifact
+      - name: Upload "${{ needs.init.outputs.apache-prd-docker-image-name }}" Docker image artifact
         uses: actions/upload-artifact@v3
         with:
           name: apache-prd
           path: /tmp/apache-prd-final.tar
 
-      - name: Upload Dev Apache artifact
+      - name: Upload "${{ needs.init.outputs.apache-dev-docker-image-name }}" Docker image artifact
         uses: actions/upload-artifact@v3
         with:
           name: apache-dev
           path: /tmp/apache-dev-final.tar
 
-      - name: Upload Prod Nginx artifact
+      - name: Upload "${{ needs.init.outputs.nginx-prd-docker-image-name }}" Docker image artifact
         uses: actions/upload-artifact@v3
         with:
           name: nginx-prd
           path: /tmp/nginx-prd-final.tar
 
-      - name: Upload Dev Nginx artifact
+      - name: Upload "${{ needs.init.outputs.nginx-dev-docker-image-name }}" Docker image artifact
         uses: actions/upload-artifact@v3
         with:
           name: nginx-dev
@@ -413,19 +437,19 @@ jobs:
       - name: Set up Docker Buildx
         uses: docker/setup-buildx-action@v2
 
-      - name: Download Prod PHP artifact
+      - name: Download "${{ needs.init.outputs.phpfpm-prd-docker-image-name }}" Docker image artifact
         uses: actions/download-artifact@v3
         with:
           name: phpfpm-prd
           path: /tmp
 
-      - name: Download Prod Apache artifact
+      - name: Download "${{ needs.init.outputs.apache-prd-docker-image-name }}" Docker image artifact
         uses: actions/download-artifact@v3
         with:
           name: apache-prd
           path: /tmp
 
-      - name: Download Prod Apache artifact
+      - name: Download "${{ needs.init.outputs.nginx-prd-docker-image-name }}" Docker image artifact
         uses: actions/download-artifact@v3
         with:
           name: nginx-prd
@@ -438,7 +462,7 @@ jobs:
           docker load --input /tmp/nginx-prd-final.tar
           docker image ls -a
 
-      - name: Scan Prod PHP Docker image
+      - name: Scan "${{ needs.init.outputs.phpfpm-prd-docker-image-name }}" Docker image
         uses: anchore/scan-action@v3
         id: scan-phpfpm
         with:
@@ -447,7 +471,7 @@ jobs:
           severity-cutoff: critical
           output-format: table
 
-      - name: Scan Prod Apache Docker image
+      - name: Scan "${{ needs.init.outputs.apache-prd-docker-image-name }}" Docker image
         uses: anchore/scan-action@v3
         id: scan-apache
         with:
@@ -456,7 +480,7 @@ jobs:
           severity-cutoff: critical
           output-format: table
 
-      - name: Scan Prod Nginx Docker image
+      - name: Scan "${{ needs.init.outputs.nginx-prd-docker-image-name }}" Docker image
         uses: anchore/scan-action@v3
         id: scan-nginx
         with:
@@ -472,7 +496,7 @@ jobs:
           username: ${{ secrets.DOCKERHUB_USERNAME }}
           password: ${{ secrets.DOCKERHUB_PASSWORD }}
 
-      - name: Test Prod PHP Docker Image
+      - name: Test "${{ needs.init.outputs.phpfpm-prd-docker-image-name }}" Docker Image
         env:
           PHPFPM_PRD_DOCKER_IMAGE_NAME: ${{ needs.init.outputs.phpfpm-prd-docker-image-name }}:${{ needs.init.outputs.github-ci-sha-short }}
         run: |
@@ -480,19 +504,19 @@ jobs:
           docker pull appropriate/curl:latest
           bats -r test/tests.php-fpm.bats
 
-      - name: Test Prod Apache Docker Image
+      - name: Test "${{ needs.init.outputs.apache-prd-docker-image-name }}" Docker Image
         env:
           APACHE_PRD_DOCKER_IMAGE_NAME: ${{ needs.init.outputs.apache-prd-docker-image-name }}:${{ needs.init.outputs.github-ci-sha-short }}
         run: |
           bats -r test/tests.apache.bats
 
-      - name: Test Prod Apache (Varnished) Docker Image
+      - name: Test "${{ needs.init.outputs.apache-prd-docker-image-name }}" (Varnished) Docker Image
         env:
           APACHE_PRD_DOCKER_IMAGE_NAME: ${{ needs.init.outputs.apache-prd-docker-image-name }}:${{ needs.init.outputs.github-ci-sha-short }}
         run: |
           bats -r test/tests.varnish.bats
 
-      - name: Test Prod Nginx Docker Image
+      - name: Test "${{ needs.init.outputs.nginx-prd-docker-image-name }}" Docker Image
         env:
           NGINX_PRD_DOCKER_IMAGE_NAME: ${{ needs.init.outputs.nginx-prd-docker-image-name }}:${{ needs.init.outputs.github-ci-sha-short }}
         run: |
@@ -508,43 +532,43 @@ jobs:
       - name: Set up Docker Buildx
         uses: docker/setup-buildx-action@v2
 
-      - name: Download Prod PHP artifact
+      - name: Download "${{ needs.init.outputs.phpfpm-prd-docker-image-name }}" Docker image artifact
         uses: actions/download-artifact@v3
         with:
           name: phpfpm-prd
           path: /tmp
 
-      - name: Download Prod Apache artifact
+      - name: Download "${{ needs.init.outputs.apache-prd-docker-image-name }}" Docker image artifact
         uses: actions/download-artifact@v3
         with:
           name: apache-prd
           path: /tmp
 
-      - name: Download Prod Apache artifact
+      - name: Download "${{ needs.init.outputs.nginx-prd-docker-image-name }}" Docker image artifact
         uses: actions/download-artifact@v3
         with:
           name: nginx-prd
           path: /tmp
 
-      - name: Download Dev PHP artifact
+      - name: Download "${{ needs.init.outputs.phpfpm-dev-docker-image-name }}" Docker image artifact
         uses: actions/download-artifact@v3
         with:
           name: phpfpm-dev
           path: /tmp
 
-      - name: Download Dev Apache artifact
+      - name: Download "${{ needs.init.outputs.apache-dev-docker-image-name }}" Docker image artifact
         uses: actions/download-artifact@v3
         with:
           name: apache-dev
           path: /tmp
 
-      - name: Download Dev Apache artifact
+      - name: Download "${{ needs.init.outputs.nginx-dev-docker-image-name }}" Docker image artifact
         uses: actions/download-artifact@v3
         with:
           name: nginx-dev
           path: /tmp
 
-      - name: Load Docker image
+      - name: Load Docker images
         run: |
           docker load --input /tmp/phpfpm-prd-final.tar
           docker load --input /tmp/apache-prd-final.tar
@@ -888,7 +912,7 @@ jobs:
           name: phpfpm-prd
           path: /tmp
 
-      - name: Load Docker image
+      - name: Load "${{ needs.init.outputs.phpfpm-prd-docker-image-name }}" Docker image
         run: |
           docker load --input /tmp/phpfpm-prd-final.tar
           docker image ls -a
@@ -927,7 +951,7 @@ jobs:
           username: ${{ secrets.DOCKERHUB_USERNAME }}
           password: ${{ secrets.DOCKERHUB_PASSWORD }}
 
-      - name: Create manifest
+      - name: Create "${{ needs.init.outputs.phpfpm-prd-docker-image-name }}" manifest
         run: |
           DOCKER_CLI_EXPERIMENTAL=enabled docker manifest create \
               ${{ needs.init.outputs.phpfpm-prd-docker-image-name }}:latest \
@@ -977,7 +1001,7 @@ jobs:
 #            sign-manifest: true
 #            notary-auth: "${{ secrets.DOCKERHUB_USERNAME }}:${{ secrets.DOCKERHUB_PASSWORD }}"
 
-      - name: Cosign
+      - name: Cosign "${{ needs.init.outputs.phpfpm-prd-docker-image-name }}:${{ needs.init.outputs.version-patch }}"
         run: |
           echo "${COSIGN_KEY}" > /tmp/cosign.key
           cosign sign --key /tmp/cosign.key ${TAGS}

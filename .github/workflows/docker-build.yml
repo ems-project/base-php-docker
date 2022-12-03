@@ -34,7 +34,7 @@ jobs:
           echo "nginx-dev-docker-image-name=${NGINX_DEV_DOCKER_IMAGE_NAME}" >> $GITHUB_OUTPUT
           echo "build-date=$(date -u +'%Y-%m-%dT%H:%M:%SZ')" >> $GITHUB_OUTPUT
 
-      - name: Fill Prod PHP Docker Image metadata
+      - name: Fill "${{ steps.prep.outputs.phpfpm-prd-docker-image-name }}" Docker Image metadata
         id: meta-phpfpm-prd
         uses: docker/metadata-action@v4
         with:
@@ -43,7 +43,7 @@ jobs:
           tags: |
             type=raw,value=rc
 
-      - name: Fill Dev PHP Docker Image metadata
+      - name: Fill "${{ steps.prep.outputs.phpfpm-dev-docker-image-name }}" Docker Image metadata
         id: meta-phpfpm-dev
         uses: docker/metadata-action@v4
         with:
@@ -52,7 +52,7 @@ jobs:
           tags: |
             type=raw,value=rc
 
-      - name: Fill Prod Apache Docker Image metadata
+      - name: Fill "${{ steps.prep.outputs.apache-prd-docker-image-name }}" Docker Image metadata
         id: meta-apache-prd
         uses: docker/metadata-action@v4
         with:
@@ -61,7 +61,7 @@ jobs:
           tags: |
             type=raw,value=rc
 
-      - name: Fill Dev Apache Docker Image metadata
+      - name: Fill "${{ steps.prep.outputs.apache-dev-docker-image-name }}" Docker Image metadata
         id: meta-apache-dev
         uses: docker/metadata-action@v4
         with:
@@ -70,7 +70,7 @@ jobs:
           tags: |
             type=raw,value=rc
 
-      - name: Fill Prod Nginx Docker Image metadata
+      - name: Fill "${{ steps.prep.outputs.nginx-prd-docker-image-name }}" Docker Image metadata
         id: meta-nginx-prd
         uses: docker/metadata-action@v4
         with:
@@ -79,7 +79,7 @@ jobs:
           tags: |
             type=raw,value=rc
 
-      - name: Fill Dev Nginx Docker Image metadata
+      - name: Fill "${{ steps.prep.outputs.nginx-dev-docker-image-name }}" Docker Image metadata
         id: meta-nginx-dev
         uses: docker/metadata-action@v4
         with:
@@ -100,7 +100,7 @@ jobs:
           restore-keys: |
             ${{ runner.os }}-buildx-
 
-      - name: Build Prod PHP Docker Image
+      - name: Build "${{ steps.prep.outputs.phpfpm-prd-docker-image-name }}" Docker Image
         id: build-phpfpm-prd
         uses: docker/build-push-action@v3
         with:
@@ -119,7 +119,7 @@ jobs:
           labels: ${{ steps.meta-phpfpm-prd.outputs.labels }}
           outputs: type=docker,dest=/tmp/phpfpm-prd-myimage.tar
 
-      - name: Build Dev PHP Docker Image
+      - name: Build "${{ steps.prep.outputs.phpfpm-dev-docker-image-name }}" Docker Image
         id: build-phpfpm-dev
         uses: docker/build-push-action@v3
         with:
@@ -138,7 +138,7 @@ jobs:
           labels: ${{ steps.meta-phpfpm-dev.outputs.labels }}
           outputs: type=docker,dest=/tmp/phpfpm-dev-myimage.tar
 
-      - name: Build Prod Apache Docker Image
+      - name: Build "${{ steps.prep.outputs.apache-prd-docker-image-name }}" Docker Image
         id: build-apache-prd
         uses: docker/build-push-action@v3
         with:
@@ -157,7 +157,7 @@ jobs:
           labels: ${{ steps.meta-apache-prd.outputs.labels }}
           outputs: type=docker,dest=/tmp/apache-prd-myimage.tar
 
-      - name: Build Dev Apache Docker Image
+      - name: Build "${{ steps.prep.outputs.apache-dev-docker-image-name }}" Docker Image
         id: build-apache-dev
         uses: docker/build-push-action@v3
         with:
@@ -176,7 +176,7 @@ jobs:
           labels: ${{ steps.meta-apache-dev.outputs.labels }}
           outputs: type=docker,dest=/tmp/apache-dev-myimage.tar
 
-      - name: Build Prod Nginx Docker Image
+      - name: Build "${{ steps.prep.outputs.nginx-prd-docker-image-name }}" Docker Image
         id: build-nginx-prd
         uses: docker/build-push-action@v3
         with:
@@ -195,7 +195,7 @@ jobs:
           labels: ${{ steps.meta-nginx-prd.outputs.labels }}
           outputs: type=docker,dest=/tmp/nginx-prd-myimage.tar
 
-      - name: Build Dev Nginx Docker Image
+      - name: Build "${{ steps.prep.outputs.nginx-dev-docker-image-name }}" Docker Image
         id: build-nginx-dev
         uses: docker/build-push-action@v3
         with:
@@ -214,45 +214,69 @@ jobs:
           labels: ${{ steps.meta-nginx-dev.outputs.labels }}
           outputs: type=docker,dest=/tmp/nginx-dev-myimage.tar
 
-      - name: Squash Docker Images
-        id: squash
+      - name: Install Docker Squash
+        id: install-squash
         run: |
           pip install docker-squash
+
+      - name: Squash "${{ steps.prep.outputs.phpfpm-prd-docker-image-name }}" Docker Images
+        id: squash-phpfpm-prd
+        run: |
           cat /tmp/phpfpm-prd-myimage.tar | docker load
-          cat /tmp/phpfpm-dev-myimage.tar | docker load
-          cat /tmp/apache-prd-myimage.tar | docker load
-          cat /tmp/apache-dev-myimage.tar | docker load
-          cat /tmp/nginx-prd-myimage.tar | docker load
-          cat /tmp/nginx-dev-myimage.tar | docker load
           docker-squash --verbose --message "Build and Squashed in GitHub Action" \
             --tag ${{ steps.prep.outputs.phpfpm-prd-docker-image-name }}:rc \
             --output-path /tmp/phpfpm-prd-myimage.tar \
             ${{ steps.prep.outputs.phpfpm-prd-docker-image-name }}:rc
+          cat /tmp/phpfpm-prd-myimage.tar | docker load
+
+      - name: Squash "${{ steps.prep.outputs.phpfpm-dev-docker-image-name }}" Docker Images
+        id: squash-phpfpm-dev
+        run: |
+          cat /tmp/phpfpm-dev-myimage.tar | docker load
           docker-squash --verbose --message "Build and Squashed in GitHub Action" \
             --tag ${{ steps.prep.outputs.phpfpm-dev-docker-image-name }}:rc \
             --output-path /tmp/phpfpm-dev-myimage.tar \
             ${{ steps.prep.outputs.phpfpm-dev-docker-image-name }}:rc
+          cat /tmp/phpfpm-dev-myimage.tar | docker load
+
+      - name: Squash "${{ steps.prep.outputs.apache-prd-docker-image-name }}" Docker Images
+        id: squash-apache-prd
+        run: |
+          cat /tmp/apache-prd-myimage.tar | docker load
           docker-squash --verbose --message "Build and Squashed in GitHub Action" \
             --tag ${{ steps.prep.outputs.apache-prd-docker-image-name }}:rc \
             --output-path /tmp/apache-prd-myimage.tar \
             ${{ steps.prep.outputs.apache-prd-docker-image-name }}:rc
+          cat /tmp/apache-prd-myimage.tar | docker load
+
+      - name: Squash "${{ steps.prep.outputs.apache-dev-docker-image-name }}" Docker Images
+        id: squash-apache-dev
+        run: |
+          cat /tmp/apache-dev-myimage.tar | docker load
           docker-squash --verbose --message "Build and Squashed in GitHub Action" \
             --tag ${{ steps.prep.outputs.apache-dev-docker-image-name }}:rc \
             --output-path /tmp/apache-dev-myimage.tar \
             ${{ steps.prep.outputs.apache-dev-docker-image-name }}:rc
+          cat /tmp/apache-dev-myimage.tar | docker load
+
+      - name: Squash "${{ steps.prep.outputs.nginx-prd-docker-image-name }}" Docker Images
+        id: squash-nginx-prd
+        run: |
+          cat /tmp/nginx-prd-myimage.tar | docker load
           docker-squash --verbose --message "Build and Squashed in GitHub Action" \
             --tag ${{ steps.prep.outputs.nginx-prd-docker-image-name }}:rc \
             --output-path /tmp/nginx-prd-myimage.tar \
             ${{ steps.prep.outputs.nginx-prd-docker-image-name }}:rc
+          cat /tmp/nginx-prd-myimage.tar | docker load
+
+      - name: Squash "${{ steps.prep.outputs.nginx-dev-docker-image-name }}" Docker Images
+        id: squash-nginx-dev
+        run: |
+          cat /tmp/nginx-dev-myimage.tar | docker load
           docker-squash --verbose --message "Build and Squashed in GitHub Action" \
             --tag ${{ steps.prep.outputs.nginx-dev-docker-image-name }}:rc \
             --output-path /tmp/nginx-dev-myimage.tar \
             ${{ steps.prep.outputs.nginx-dev-docker-image-name }}:rc
-          cat /tmp/phpfpm-prd-myimage.tar | docker load
-          cat /tmp/phpfpm-dev-myimage.tar | docker load
-          cat /tmp/apache-prd-myimage.tar | docker load
-          cat /tmp/apache-dev-myimage.tar | docker load
-          cat /tmp/nginx-prd-myimage.tar | docker load
           cat /tmp/nginx-dev-myimage.tar | docker load
 
       - name: Check Docker Images
