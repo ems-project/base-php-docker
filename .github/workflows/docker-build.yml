@@ -3,7 +3,7 @@ name: Docker Build
 on:
   push:
     branches:
-      - '8.0'
+      - '8.1'
   pull_request:
 
 jobs:
