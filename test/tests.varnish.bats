@@ -21,7 +21,7 @@ export BATS_STORAGE_SERVICE_NAME="mysql"
 
 export BATS_PHP_SCRIPTS_VOLUME_NAME=${BATS_PHP_SCRIPTS_VOLUME_NAME:-php_scripts}
 
-export BATS_PHP_DOCKER_IMAGE_NAME="${APACHE_PRD_DOCKER_IMAGE_NAME:-docker.io/elasticms/base-php-apache}:latest"
+export BATS_PHP_DOCKER_IMAGE_NAME="${APACHE_PRD_DOCKER_IMAGE_NAME:-docker.io/elasticms/base-php-apache:rc}"
 
 export BATS_VARNISH_ENABLED=${BATS_VARNISH_ENABLED:-"true"}
 export BATS_VARNISH_VCL_CONF_CUSTOM=${BATS_VARNISH_VCL_CONF_CUSTOM:-"/etc/varnish/bats.vcl"}
