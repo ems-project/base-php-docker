@@ -1,4 +1,4 @@
-# Base Docker image ![Continuous Docker Image Build](https://github.com/ems-project/docker-php-fpm/workflows/Continuous%20Docker%20Image%20Build/badge.svg)
+# Base Docker image [![Docker Build](https://github.com/ems-project/docker-php-fpm/actions/workflows/docker-build.yml/badge.svg?branch=8.1)](https://github.com/ems-project/docker-php-fpm/actions/workflows/docker-build.yml)
 
 Docker base image is the basic image on which you add layers (which are basically filesystem changes) and create a final image containing your App.  
 
@@ -25,42 +25,42 @@ docker build --build-arg VERSION_ARG=${PHP_VERSION} \
              --build-arg BUILD_DATE_ARG="" \
              --build-arg VCS_REF_ARG="" \
              --target php-fpm-prod \
-             -t ${PHPFPM_PRD_DOCKER_IMAGE_NAME}:rc .
+             -t ${PHPFPM_PRD_DOCKER_IMAGE_NAME}:latest .
 
 docker build --build-arg VERSION_ARG=${PHP_VERSION} \
              --build-arg RELEASE_ARG=snapshot \
              --build-arg BUILD_DATE_ARG="" \
              --build-arg VCS_REF_ARG="" \
              --target php-fpm-dev \
-             -t ${PHPFPM_DEV_DOCKER_IMAGE_NAME}:rc .
+             -t ${PHPFPM_DEV_DOCKER_IMAGE_NAME}:latest .
 
 docker build --build-arg VERSION_ARG=${PHP_VERSION} \
              --build-arg RELEASE_ARG=snapshot \
              --build-arg BUILD_DATE_ARG="" \
              --build-arg VCS_REF_ARG="" \
              --target apache-prod \
-             -t ${APACHE_PRD_DOCKER_IMAGE_NAME}:rc .
+             -t ${APACHE_PRD_DOCKER_IMAGE_NAME}:latest .
 
 docker build --build-arg VERSION_ARG=${PHP_VERSION} \
              --build-arg RELEASE_ARG=snapshot \
              --build-arg BUILD_DATE_ARG="" \
              --build-arg VCS_REF_ARG="" \
              --target apache-dev \
-             -t ${APACHE_DEV_DOCKER_IMAGE_NAME}:rc .
+             -t ${APACHE_DEV_DOCKER_IMAGE_NAME}:latest .
 
 docker build --build-arg VERSION_ARG=${PHP_VERSION} \
              --build-arg RELEASE_ARG=snapshot \
              --build-arg BUILD_DATE_ARG="" \
              --build-arg VCS_REF_ARG="" \
              --target nginx-prod \
-             -t ${NGINX_PRD_DOCKER_IMAGE_NAME}:rc .
+             -t ${NGINX_PRD_DOCKER_IMAGE_NAME}:latest .
 
 docker build --build-arg VERSION_ARG=${PHP_VERSION} \
              --build-arg RELEASE_ARG=snapshot \
              --build-arg BUILD_DATE_ARG="" \
              --build-arg VCS_REF_ARG="" \
              --target nginx-prod \
-             -t ${NGINX_DEV_DOCKER_IMAGE_NAME}:rc .
+             -t ${NGINX_DEV_DOCKER_IMAGE_NAME}:latest .
 ```
 
 ## Test
