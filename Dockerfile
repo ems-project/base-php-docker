@@ -113,8 +113,8 @@ LABEL eu.elasticms.base-php-fpm.environment="dev"
 USER root
 
 RUN echo "Install and Configure required extra PHP packages ..." \
-    && apk add --update --no-cache --virtual .build-deps $PHPIZE_DEPS autoconf coreutils \
-    && pecl install xdebug \
+    && apk add --update --no-cache --virtual .build-deps $PHPIZE_DEPS autoconf coreutils linux-headers \
+    && pecl install xdebug-3.2.0 \
     && docker-php-ext-enable xdebug \
     && runDeps="$( \
        scanelf --needed --nobanner --format '%n#p' --recursive /usr/local/lib/php/extensions \
