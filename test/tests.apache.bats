@@ -25,6 +25,8 @@ export BATS_PHP_DOCKER_IMAGE_NAME="${APACHE_PRD_DOCKER_IMAGE_NAME:-docker.io/ela
 
 export BATS_VARNISH_ENABLED=${BATS_VARNISH_ENABLED:-"false"}
 
+export BATS_UID=$(id -u)
+
 @test "[$TEST_FILE] Create Docker external volumes (local)" {
   command docker volume create -d local ${BATS_PHP_SCRIPTS_VOLUME_NAME}
 }

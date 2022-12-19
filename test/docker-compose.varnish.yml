@@ -20,6 +20,7 @@ services:
   php:
     image: ${BATS_PHP_DOCKER_IMAGE_NAME}
     container_name: php
+    user: "${BATS_UID}"
     ports:
       - 6081:6081
     environment: 

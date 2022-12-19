@@ -76,7 +76,7 @@ RUN mkdir -p /home/default /opt/etc /opt/bin/container-entrypoint.d /opt/src /va
     && cp /usr/share/zoneinfo/Europe/Brussels /etc/localtime \
     && echo "Europe/Brussels" > /etc/timezone \
     && echo "Add non-privileged user ..." \
-    && adduser -D -u 1001 -g default -s /sbin/nologin default \
+    && adduser -D -u 1001 -g default -G root -s /sbin/nologin default \
     && echo "Configure OpCache ..." \
     && echo 'opcache.memory_consumption=128' > /usr/local/etc/php/conf.d/opcache-recommended.ini \
     && echo 'opcache.interned_strings_buffer=8' >> /usr/local/etc/php/conf.d/opcache-recommended.ini \
@@ -95,7 +95,7 @@ RUN mkdir -p /home/default /opt/etc /opt/bin/container-entrypoint.d /opt/src /va
     && chown -Rf 1001:0 /home/default /opt /etc/ssmtp /usr/local/etc /var/run/php-fpm /var/lock \
                         /var/log/supervisord.log /etc/supervisord /var/run/supervisord.pid \
                         /etc/varnish /var/lib/varnish \
-    && chmod -R ug+rw /home/default /opt /etc/ssmtp /usr/local/etc /var/run/php-fpm \
+    && chmod -R ug+rw /home/default /opt /etc/ssmtp /usr/local/etc /var/run/php-fpm /var/lock \
                       /var/log/supervisord.log /etc/supervisord /var/run/supervisord.pid \
                       /etc/varnish /var/lib/varnish \
     && find /opt -type d -exec chmod ug+x {} \; \
@@ -179,7 +179,7 @@ RUN apk add --update --no-cache --virtual .php-apache-rundeps apache2 apache2-ut
     && rm -rf /var/cache/apk/* \
     && echo "Setup permissions on filesystem for non-privileged user ..." \
     && chown -Rf 1001:0 /etc/apache2 /run/apache2 /var/run/apache2 /var/log/apache2 /var/www/html \
-    && chmod -R ug+rw /etc/apache2 /run/apache2 /var/run/apache2 /var/log/apache2 /var/lock /var/www/html \
+    && chmod -R ug+rw /etc/apache2 /run/apache2 /var/run/apache2 /var/log/apache2 /var/www/html \
     && find /run/apache2 -type d -exec chmod ug+x {} \; \
     && find /etc/apache2 -type d -exec chmod ug+x {} \; \
     && find /run/apache2 -type d -exec chmod ug+x {} \; \
@@ -210,7 +210,7 @@ RUN apk add --update --no-cache --virtual .php-apache-rundeps apache2 apache2-ut
     && rm -rf /var/cache/apk/* \
     && echo "Setup permissions on filesystem for non-privileged user ..." \
     && chown -Rf 1001:0 /etc/apache2 /run/apache2 /var/run/apache2 /var/log/apache2 /var/www/html \
-    && chmod -R ug+rw /etc/apache2 /run/apache2 /var/run/apache2 /var/log/apache2 /var/lock /var/www/html \
+    && chmod -R ug+rw /etc/apache2 /run/apache2 /var/run/apache2 /var/log/apache2 /var/www/html \
     && find /run/apache2 -type d -exec chmod ug+x {} \; \
     && find /etc/apache2 -type d -exec chmod ug+x {} \; \
     && find /run/apache2 -type d -exec chmod ug+x {} \; \
