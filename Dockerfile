@@ -31,8 +31,9 @@ ENV MAIL_SMTP_SERVER="" \
     HOME=/home/default \
     PATH=/opt/bin:/usr/local/bin:/usr/bin:$PATH
 
-COPY etc/php/ /usr/local/etc/
-COPY etc/ssmtp/ /etc/ssmtp/
+COPY etc/php/conf.d/ /usr/local/etc/php/conf.d/
+COPY etc/php/php-fpm.d/ /opt/etc/php/php-fpm.d/
+COPY etc/ssmtp/ /opt/etc/ssmtp/
 COPY bin/ /usr/local/bin/
 
 RUN mkdir -p /home/default /opt/etc /opt/bin/container-entrypoint.d /opt/src /var/lock \
@@ -66,7 +67,7 @@ RUN mkdir -p /home/default /opt/etc /opt/bin/container-entrypoint.d /opt/src /va
                                       bash tar gettext ssmtp postgresql-client postgresql-libs \
                                       libjpeg-turbo freetype libpng libwebp libxpm mailx coreutils libxslt \
                                       mysql-client jq wget icu-libs libxml2 python3 py3-pip groff supervisor \
-                                      varnish tidyhtml \
+                                      varnish tidyhtml gomplate \
     && rm /etc/supervisord.conf \
     && mkdir -p /var/run/php-fpm /etc/supervisord/supervisord.d \
     && touch /var/log/supervisord.log /var/run/supervisord.pid /etc/varnish/secret \
