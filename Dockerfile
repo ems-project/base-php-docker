@@ -31,8 +31,9 @@ ENV MAIL_SMTP_SERVER="" \
     HOME=/home/default \
     PATH=/opt/bin:/usr/local/bin:/usr/bin:$PATH
 
-COPY --chmod=775 --chown=1001:0 etc/ssmtp/ /etc/ssmtp/
-COPY --chmod=775 --chown=1001:0 etc/php/ /usr/local/etc/
+COPY --chmod=775 --chown=1001:0 etc/php/conf.d/ /usr/local/etc/php/conf.d/
+COPY --chmod=775 --chown=1001:0 etc/php/php-fpm.d/ /opt/etc/php/php-fpm.d/
+COPY --chmod=775 --chown=1001:0 etc/ssmtp/ /opt/etc/ssmtp/
 COPY --chmod=775 --chown=1001:0 bin/ /usr/local/bin/
 
 RUN mkdir -p /home/default /opt/etc /opt/bin/container-entrypoint.d /opt/src /var/lock \
@@ -61,7 +62,7 @@ RUN mkdir -p /home/default /opt/etc /opt/bin/container-entrypoint.d /opt/src /va
                                       bash gettext ssmtp postgresql-client postgresql-libs \
                                       libjpeg-turbo freetype libpng libwebp libxpm mailx libxslt \
                                       mysql-client jq icu-libs libxml2 python3 py3-pip groff supervisor \
-                                      varnish tidyhtml \
+                                      varnish tidyhtml gomplate \
     && rm /etc/supervisord.conf \
     && mkdir -p /var/run/php-fpm /etc/supervisord/supervisord.d \
     && touch /var/log/supervisord.log /var/run/supervisord.pid /etc/varnish/secret \
@@ -86,14 +87,15 @@ RUN mkdir -p /home/default /opt/etc /opt/bin/container-entrypoint.d /opt/src /va
     && apk del .build-deps \
     && rm -rf /var/cache/apk/* \
     && echo "Setup permissions on filesystem for non-privileged user ..." \
-    && chown -Rf 1001:0 /home/default /opt /var/run/php-fpm /var/lock \
+    && chown -Rf 1001:0 /home/default /opt /etc/ssmtp /usr/local/etc /var/run/php-fpm /var/lock \
                         /var/log/supervisord.log /etc/supervisord /var/run/supervisord.pid \
                         /etc/varnish /var/lib/varnish \
-    && chmod -R ug+rw /home/default /opt /var/run/php-fpm \
+    && chmod -R ug+rw /home/default /opt /etc/ssmtp /usr/local/etc /var/run/php-fpm \
                       /var/log/supervisord.log /etc/supervisord /var/run/supervisord.pid \
                       /etc/varnish /var/lib/varnish \
     && find /opt -type d -exec chmod ug+x {} \; \
-    && find /var/lock -type d -exec chmod ug+x {} \;  
+    && find /var/lock -type d -exec chmod ug+x {} \; \
+    && find /usr/local/etc -type d -exec chmod ug+x {} \; 
 
 USER 1001
 
