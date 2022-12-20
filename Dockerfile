@@ -31,6 +31,8 @@ ENV MAIL_SMTP_SERVER="" \
     HOME=/home/default \
     PATH=/opt/bin:/usr/local/bin:/usr/bin:$PATH
 
+COPY --from=hairyhenderson/gomplate:stable /gomplate /usr/bin/gomplate
+
 COPY --chmod=775 --chown=1001:0 etc/php/conf.d/ /usr/local/etc/php/conf.d/
 COPY --chmod=775 --chown=1001:0 etc/php/php-fpm.d/ /opt/etc/php/php-fpm.d/
 COPY --chmod=775 --chown=1001:0 etc/ssmtp/ /opt/etc/ssmtp/
@@ -62,7 +64,7 @@ RUN mkdir -p /home/default /opt/etc /opt/bin/container-entrypoint.d /opt/src /va
                                       bash gettext ssmtp postgresql-client postgresql-libs \
                                       libjpeg-turbo freetype libpng libwebp libxpm mailx libxslt \
                                       mysql-client jq icu-libs libxml2 python3 py3-pip groff supervisor \
-                                      varnish tidyhtml gomplate \
+                                      varnish tidyhtml \
     && rm /etc/supervisord.conf \
     && mkdir -p /var/run/php-fpm /etc/supervisord/supervisord.d \
     && touch /var/log/supervisord.log /var/run/supervisord.pid /etc/varnish/secret \
