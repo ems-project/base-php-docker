@@ -45,17 +45,13 @@ EOL
 function configure-phpfpm {
 
   echo "  Setup SSMTP Configuration File ..."
-  FILE=/etc/ssmtp/ssmtp.conf
-  if [ -w "$FILE" ]; then
-    echo "    Write permission is granted, fill environment variables in $FILE"
-    if [ -n "${MAIL_SMTP_SERVER+x}" ]; then
-      sed -i "s|\${MAIL_SMTP_SERVER}|${MAIL_SMTP_SERVER}|g" $FILE
-    fi
-    if [ -n "${MAIL_FROM_DOMAIN+x}" ]; then
-      sed -i "s|\${MAIL_FROM_DOMAIN}|${MAIL_FROM_DOMAIN}|g" $FILE
-    fi
+  DIR=/etc/ssmtp
+  if [ -w "$DIR" ]; then
+    gomplate \
+      -f /opt/etc/ssmtp/ssmtp.conf.tmpl \
+      -o /etc/ssmtp/ssmtp.conf
   else
-    echo "    Write permission is NOT granted on $FILE, fill environment variables."
+    echo "    Write permission is NOT granted on $DIR, fill environment variables."
   fi
 
   if [[ "${PHP_FPM_MAX_CHILDREN_AUTO_RESIZING}" == "true" ]]; then
@@ -86,20 +82,14 @@ function configure-phpfpm {
   echo "    > php_value[memory_limit]=${PHP_FPM_REQUEST_MAX_MEMORY_IN_MEGABYTES}M"
 
   echo "  Setup PHP-FPM Pool Configuration File(s) ..."
-  PATTERN=/usr/local/etc/php-fpm.d/*
-  for FILE in $PATTERN ; do
-    if [ -w "$FILE" ]; then 
-      echo "    Write permission is granted, try to apply default configuration in $FILE with sed."
-      if [ -n "${PHP_FPM_MAX_CHILDREN+x}" ]; then
-        sed -i "s|\${PHP_FPM_MAX_CHILDREN}|${PHP_FPM_MAX_CHILDREN}|g" $FILE
-      fi
-      if [ -n "${PHP_FPM_REQUEST_MAX_MEMORY_IN_MEGABYTES+x}" ]; then
-        sed -i "s|\${PHP_FPM_REQUEST_MAX_MEMORY_IN_MEGABYTES}|${PHP_FPM_REQUEST_MAX_MEMORY_IN_MEGABYTES}|g" $FILE
-      fi
-    else
-      echo "    Write permission is NOT granted on $FILE, do not try to apply default configuration."
-    fi
-  done
+  DIR=/usr/local/etc/php-fpm.d
+  if [ -w "$DIR" ]; then 
+    gomplate \
+      -f /opt/etc/php/php-fpm.d/zzz-base-php.conf.tmpl \
+      -o ${DIR}/zzz-base-php.conf
+  else
+    echo "    Write permission is NOT granted on $DIR, do not try to apply default configuration."
+  fi
 
   echo "  Running extra script(s) ..."
   if [ ! -f "/var/lock/phpinit" ]; then
