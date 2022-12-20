@@ -62,7 +62,7 @@ RUN mkdir -p /home/default /opt/etc /opt/bin/container-entrypoint.d /opt/src /va
     && apk add --update --no-cache --virtual .ems-phpext-rundeps $runDeps \
     && apk add --update --upgrade --no-cache --virtual .ems-rundeps tzdata \
                                       bash gettext ssmtp postgresql-client postgresql-libs \
-                                      libjpeg-turbo freetype libpng libwebp libxpm mailx libxslt \
+                                      libjpeg-turbo freetype libpng libwebp libxpm mailx libxslt coreutils \
                                       mysql-client jq icu-libs libxml2 python3 py3-pip groff supervisor \
                                       varnish tidyhtml \
     && rm /etc/supervisord.conf \
