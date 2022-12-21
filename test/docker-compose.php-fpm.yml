@@ -1,4 +1,4 @@
-version: "2"
+version: "3"
 
 services:
 
@@ -36,7 +36,9 @@ services:
   php-fpm:
     image: ${BATS_PHP_DOCKER_IMAGE_NAME}
     container_name: php-fpm
+    user: "${BATS_UID}"
     environment: 
+      - PHP_FPM_MAX_CHILDREN_AUTO_RESIZING=${BATS_PHP_FPM_MAX_CHILDREN_AUTO_RESIZING}
       - PHP_FPM_MAX_CHILDREN=${BATS_PHP_FPM_MAX_CHILDREN}
       - PHP_FPM_REQUEST_MAX_MEMORY_IN_MEGABYTES=${BATS_PHP_FPM_REQUEST_MAX_MEMORY_IN_MEGABYTES}
       - CONTAINER_HEAP_PERCENT=${BATS_CONTAINER_HEAP_PERCENT}
@@ -46,6 +48,7 @@ services:
       - DB_USER=${BATS_DB_USER}
       - DB_PASSWORD=${BATS_DB_PASSWORD}
       - DB_NAME=${BATS_DB_NAME}
+      - VARNISH_ENABLED=${BATS_VARNISH_ENABLED}
     links:
       - ${BATS_STORAGE_SERVICE_NAME}:${BATS_STORAGE_SERVICE_NAME}
     depends_on:

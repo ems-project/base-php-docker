@@ -1,4 +1,4 @@
-version: "2"
+version: "3"
 
 services:
 
@@ -20,6 +20,7 @@ services:
   php:
     image: ${BATS_PHP_DOCKER_IMAGE_NAME}
     container_name: php
+    user: "${BATS_UID}"
     ports:
       - 9000:9000
     environment: 
@@ -32,6 +33,7 @@ services:
       - DB_USER=${BATS_DB_USER}
       - DB_PASSWORD=${BATS_DB_PASSWORD}
       - DB_NAME=${BATS_DB_NAME}
+      - VARNISH_ENABLED=${BATS_VARNISH_ENABLED}
     links:
       - ${BATS_STORAGE_SERVICE_NAME}:${BATS_STORAGE_SERVICE_NAME}
     depends_on:

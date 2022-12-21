@@ -13,6 +13,7 @@ export BATS_DB_USER="${BATS_DB_USER:-example}"
 export BATS_DB_PASSWORD="${BATS_DB_PASSWORD:-example}"
 export BATS_DB_NAME="${BATS_DB_NAME:-example}"
 
+export BATS_PHP_FPM_MAX_CHILDREN_AUTO_RESIZING="${BATS_PHP_FPM_MAX_CHILDREN_AUTO_RESIZING:-true}"
 export BATS_PHP_FPM_MAX_CHILDREN="${BATS_PHP_FPM_MAX_CHILDREN:-4}"
 export BATS_PHP_FPM_REQUEST_MAX_MEMORY_IN_MEGABYTES="${BATS_PHP_FPM_REQUEST_MAX_MEMORY_IN_MEGABYTES:-128}"
 export BATS_CONTAINER_HEAP_PERCENT="${BATS_CONTAINER_HEAP_PERCENT:-0.80}"
@@ -25,6 +26,10 @@ export BATS_SOURCES_VOLUME_NAME=${BATS_SOURCES_VOLUME_NAME:-php_sources}
 export BATS_NGINX_CONFIG_VOLUME_NAME=${BATS_NGINX_CONFIG_VOLUME_NAME:-nginx_config}
 
 export BATS_PHP_DOCKER_IMAGE_NAME="${PHPFPM_PRD_DOCKER_IMAGE_NAME:-docker.io/elasticms/base-php-fpm:latest}"
+
+export BATS_VARNISH_ENABLED=${BATS_VARNISH_ENABLED:-"false"}
+
+export BATS_UID=$(id -u)
 
 @test "[$TEST_FILE] Create Docker external volumes (local)" {
   command docker volume create -d local ${BATS_PHP_SCRIPTS_VOLUME_NAME}
@@ -77,6 +82,8 @@ export BATS_PHP_DOCKER_IMAGE_NAME="${PHPFPM_PRD_DOCKER_IMAGE_NAME:-docker.io/ela
   docker_wait_for_log php-fpm 60 "NOTICE: fpm is running, pid 1"
   docker_wait_for_log php-fpm 60 "Running PHP script when Docker container start ..."
   docker_wait_for_log php-fpm 60 "Running Shell script when Docker container start ..."
+  docker_wait_for_log php-fpm 60 "> pm.max_children=3"
+  docker_wait_for_log php-fpm 60 "> php_value\[memory_limit\]=128M"
   docker_wait_for_log mysql 60 "Starting MySQL"
 }
 
@@ -103,6 +110,38 @@ export BATS_PHP_DOCKER_IMAGE_NAME="${PHPFPM_PRD_DOCKER_IMAGE_NAME:-docker.io/ela
 @test "[$TEST_FILE] Check for MySQL Connection CheckUp response message" {
   retry 12 5 curl_container nginx :9000/check-mysql.php -H "Host: localhost" -s 
   assert_output -l -r "Check MySQL Connection Done."
+}
+
+@test "[$TEST_FILE] Stop PHP-FPM test containers" {
+  command docker-compose -f ${BATS_TEST_DIRNAME%/}/docker-compose.php-fpm.yml stop php-fpm
+}
+
+@test "[$TEST_FILE] Re-Start PHP-FPM test containers without PHP-FPM Auto-Sizing" {
+  export BATS_PHP_FPM_MAX_CHILDREN_AUTO_RESIZING=false
+  export BATS_PHP_FPM_MAX_CHILDREN=40
+  export BATS_PHP_FPM_REQUEST_MAX_MEMORY_IN_MEGABYTES=16
+  command docker-compose -f ${BATS_TEST_DIRNAME%/}/docker-compose.php-fpm.yml up -d php-fpm
+}
+
+@test "[$TEST_FILE] Check for startup messages in containers logs 2" {
+  docker_wait_for_log php-fpm 60 "> pm.max_children=40"
+  docker_wait_for_log php-fpm 60 "> php_value\[memory_limit\]=16M"
+}
+
+@test "[$TEST_FILE] Stop PHP-FPM test containers without PHP-FPM Auto-Sizing" {
+  command docker-compose -f ${BATS_TEST_DIRNAME%/}/docker-compose.php-fpm.yml stop php-fpm
+}
+
+@test "[$TEST_FILE] Re-Start PHP-FPM test containers with PHP-FPM Auto-Sizing" {
+  export BATS_PHP_FPM_MAX_CHILDREN_AUTO_RESIZING=true
+  export BATS_PHP_FPM_MAX_CHILDREN=40
+  export BATS_PHP_FPM_REQUEST_MAX_MEMORY_IN_MEGABYTES=16
+  command docker-compose -f ${BATS_TEST_DIRNAME%/}/docker-compose.php-fpm.yml up -d php-fpm
+}
+
+@test "[$TEST_FILE] Check for startup messages in containers logs 3" {
+  docker_wait_for_log php-fpm 60 "> pm.max_children=26"
+  docker_wait_for_log php-fpm 60 "> php_value\[memory_limit\]=16M"
 }
 
 @test "[$TEST_FILE] Stop all and delete test containers" {
