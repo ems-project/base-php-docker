@@ -2,18 +2,20 @@
 
 Docker base image is the basic image on which you add layers (which are basically filesystem changes) and create a final image containing your App.  
 
-## Features
+# Features
 
 Use [Official PHP Docker image](https://hub.docker.com/_/php) as parent.  
-Use [Supervisord] as manager for Webserver **and** PHP-FPM.  Supervisord is therefore process 1.  
+Use [Supervisor](http://supervisord.org/) as manager for Webserver **and** PHP-FPM.  Supervisord is therefore process 1.  
 Run container as non-privileged.  
 Container Entrypoint hooks available.  
 
-Installation of [Nginx](https://pkgs.alpinelinux.org/package/v3.16/main/x86_64/nginx).  
-Installation of [Apache 2.4](https://pkgs.alpinelinux.org/package/v3.16/main/x86_64/apache2).  
-Installation of [Varnish](https://pkgs.alpinelinux.org/package/v3.16/main/x86_64/varnish).  
+- Installation of [Nginx](https://pkgs.alpinelinux.org/package/v3.16/main/x86_64/nginx).  
+- Installation of [Apache 2.4](https://pkgs.alpinelinux.org/package/v3.16/main/x86_64/apache2).  
+- Installation of [Varnish](https://pkgs.alpinelinux.org/package/v3.16/main/x86_64/varnish).  
 
 # Build
+
+Build locally Docker images :  
 
 ```sh
 make build[-fpm|-apache|-nginx|-all][-dev] PHP_VERSION=<PHP Version you want to build> [ DOCKER_IMAGE_NAME=<PHP Docker Image Name you want to build> ]
@@ -60,6 +62,8 @@ __Provide docker images__ :
 
 # Test
 
+Test Docker images builded locally :  
+
 ```sh
 make test[-fpm|-apache|-nginx|-all][-dev] PHP_VERSION=<PHP Version you want to test>
 ```
@@ -96,30 +100,49 @@ This image is based and use the official PHP Docker Hub image [`docker.io/php:7.
 It is configured and configurable to support any PHP application.  
 It use the default php.ini-production configuration files and Supervisor to help automate the Docker image.  
 
-- Supervisor
-- Varnish
+- [Supervisor](http://supervisord.org/)
+- [Varnish](https://varnish-cache.org/)
 - PHP Extensions :
-  - Redis
-  - APCu
-- AWS CLI
-
-## `docker.io/elasticms/base-php:<version>-apache[-prd]`  
-
-This variant contains Debian's Apache httpd in conjunction with PHP-FPM and uses [Supervisord] as manager for Apache **and** PHP-FPM.  
-
-## `docker.io/elasticms/base-php:<version>-nginx[-prd]`  
-
-This variant contains Nginx Webserver in conjunction with PHP-FPM and uses [Supervisord] as manager for Nginx **and** PHP-FPM.  
+  - [Redis](https://pecl.php.net/package/redis)
+  - [APCu](https://pecl.php.net/package/apcu)
+- [AWS CLI](https://github.com/aws/aws-cli)
 
 ## `docker.io/elasticms/base-php:<version>-dev`
 
-This image ship and use the default php.ini-development configuration files.  
+This image use `base-php:<version>-fpm-prd` (see above) as parent layer.  
+It use the default php.ini-development configuration files.  
 It is strongly recommended to not use this image in production environments!  
 
-- Composer
-- xdebug
+In addition to the parent layer, this variant include install :
 
-## **Warning** : The following images are deprecated and are no longer maintained.  They will be removed soon, please update your dockerfiles and docker-dompose.yml files 
+- [Composer](https://github.com/composer/composer)
+- PHP Extension : [xdebug](https://xdebug.org/)
+
+## `docker.io/elasticms/base-php:<version>-apache[-prd]`  
+
+This image use `base-php:<version>-fpm-prd` (see above) as parent layer.  
+This variant contains Apache httpd in conjunction with PHP-FPM and uses supervisor as manager for Apache **and** PHP-FPM.  
+
+## `docker.io/elasticms/base-php:<version>-nginx[-prd]`  
+
+This image use `base-php:<version>-fpm-prd` (see above) as parent layer.  
+This variant contains Nginx Webserver in conjunction with PHP-FPM and uses supervisor as manager for Nginx **and** PHP-FPM.  
+
+## `docker.io/elasticms/base-php:<version>-apache-dev`
+
+This image use `base-php:<version>-fpm-dev` (see above) as parent layer.  
+This variant contains Apache Webserver in conjunction with PHP-FPM and uses supervisor as manager for Apache **and** PHP-FPM.  
+It is strongly recommended to not use this image in production environments!  
+
+## `docker.io/elasticms/base-php:<version>-nginx-dev`
+
+This image use `base-php:<version>-fpm-dev` (see above) as parent layer.  
+This variant contains Nginx Webserver in conjunction with PHP-FPM and uses supervisor as manager for Nginx **and** PHP-FPM.  
+It is strongly recommended to not use this image in production environments!  
+
+## **Warning** : The following images are deprecated and are no longer maintained.  
+
+> They will be removed soon, please update your dockerfiles and docker-compose.yml files ...  
 
 | Deprecated Image Name | Replaced Image Name |
 | -- | -- |
