@@ -121,14 +121,14 @@ It is strongly recommended to not use this image in production environments!
 
 ## **Warning** : The following images are deprecated and are no longer maintained.  They will be removed soon, please update your dockerfiles and docker-dompose.yml files 
 
-> [DEPRECATED] - WIL BE REMOVED SOON  
-> [DEPRECATED] `docker.io/elasticms/base-php-fpm:<version>`  
-> [DEPRECATED] `docker.io/elasticms/base-php-dev:<version>`  
-> [DEPRECATED] `docker.io/elasticms/base-apache-fpm:<version>`  
-> [DEPRECATED] `docker.io/elasticms/base-apache-dev:<version>`  
-> [DEPRECATED] `docker.io/elasticms/base-nginx-fpm:<version>`  
-> [DEPRECATED] `docker.io/elasticms/base-nginx-dev:<version>`  
-> [DEPRECATED] - WIL BE REMOVED SOON  
+| Deprecated Image Name | Replaced Image Name |
+| -- | -- |
+| `docker.io/elasticms/base-php-fpm:<version>` | `docker.io/elasticms/base-php:<version>-fpm[-prd]` |
+| `docker.io/elasticms/base-php-dev:<version>` | `docker.io/elasticms/base-php:<version>-fpm-dev` |
+| `docker.io/elasticms/base-apache-fpm:<version>` | `docker.io/elasticms/base-php:<version>-apache[-prd]` |
+| `docker.io/elasticms/base-apache-dev:<version>` | `docker.io/elasticms/base-php:<version>-apache-dev` |
+| `docker.io/elasticms/base-nginx-fpm:<version>` | `docker.io/elasticms/base-php:<version>-nginx[-prd]` |
+| `docker.io/elasticms/base-nginx-dev:<version>` | `docker.io/elasticms/base-php:<version>-nginx-dev` |
 
 ## PHP-FPM Configuration
 
