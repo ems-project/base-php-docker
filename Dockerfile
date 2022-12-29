@@ -15,17 +15,17 @@ ARG PHP_EXT_REDIS_VERSION_ARG
 ARG PHP_EXT_APCU_VERSION_ARG
 ARG PHP_EXT_XDEBUG_VERSION_ARG
 
-LABEL eu.elasticms.base-php-fpm.build-date=$BUILD_DATE_ARG \
-      eu.elasticms.base-php-fpm.name="" \
-      eu.elasticms.base-php-fpm.description="" \
-      eu.elasticms.base-php-fpm.url="https://hub.docker.com/repository/docker/elasticms/base-php-fpm" \
-      eu.elasticms.base-php-fpm.vcs-ref=$VCS_REF_ARG \
-      eu.elasticms.base-php-fpm.vcs-url="https://github.com/ems-project/docker-php-fpm" \
-      eu.elasticms.base-php-fpm.vendor="sebastian.molle@gmail.com" \
-      eu.elasticms.base-php-fpm.version="$VERSION_ARG" \
-      eu.elasticms.base-php-fpm.release="$RELEASE_ARG" \
-      eu.elasticms.base-php-fpm.environment="prod" \
-      eu.elasticms.base-php-fpm.schema-version="1.0" 
+LABEL be.fgov.elasticms.base.build-date=$BUILD_DATE_ARG \
+      be.fgov.elasticms.base.name="" \
+      be.fgov.elasticms.base.description="" \
+      be.fgov.elasticms.base.url="https://hub.docker.com/repository/docker/elasticms/base-php" \
+      be.fgov.elasticms.base.vcs-ref=$VCS_REF_ARG \
+      be.fgov.elasticms.base.vcs-url="https://github.com/ems-project/docker-php-fpm" \
+      be.fgov.elasticms.base.vendor="sebastian.molle@gmail.com" \
+      be.fgov.elasticms.base.version="$VERSION_ARG" \
+      be.fgov.elasticms.base.release="$RELEASE_ARG" \
+      be.fgov.elasticms.base.environment="prod" \
+      be.fgov.elasticms.base.schema-version="1.0" 
 
 USER root
 
@@ -128,7 +128,7 @@ CMD ["php-fpm", "-F", "-R"]
 
 FROM fpm-prd AS fpm-dev
 
-LABEL eu.elasticms.base-php-fpm.environment="dev"
+LABEL be.fgov.elasticms.base.environment="dev"
 
 USER root
 
@@ -176,7 +176,7 @@ USER 1001
 
 FROM fpm-prd AS apache-prd
 
-LABEL eu.elasticms.base-php-fpm.webserver="apache"
+LABEL be.fgov.elasticms.base.webserver="apache"
 
 USER root
 
@@ -207,7 +207,7 @@ CMD ["/usr/bin/supervisord", "-c", "/etc/supervisord/supervisord.conf"]
 
 FROM fpm-dev AS apache-dev
 
-LABEL eu.elasticms.base-php-fpm.webserver="apache"
+LABEL be.fgov.elasticms.base.webserver="apache"
 
 USER root
 
@@ -238,7 +238,7 @@ CMD ["/usr/bin/supervisord", "-c", "/etc/supervisord/supervisord.conf"]
 
 FROM fpm-prd AS nginx-prd
 
-LABEL eu.elasticms.base-php-fpm.webserver="nginx"
+LABEL be.fgov.elasticms.base.webserver="nginx"
 
 USER root
 
@@ -273,7 +273,7 @@ CMD ["/usr/bin/supervisord", "-c", "/etc/supervisord/supervisord.conf"]
 
 FROM fpm-dev AS nginx-dev
 
-LABEL eu.elasticms.base-php-fpm.webserver="nginx"
+LABEL be.fgov.elasticms.base.webserver="nginx"
 
 USER root
 
