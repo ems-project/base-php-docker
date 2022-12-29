@@ -1,6 +1,6 @@
 ARG VERSION_ARG
 
-FROM php:${VERSION_ARG}-fpm-alpine3.16 AS php-fpm-prod
+FROM php:${VERSION_ARG:-7.4.33}-fpm-alpine3.16 AS fpm-prd
 
 ARG VERSION_ARG
 ARG RELEASE_ARG
@@ -115,7 +115,7 @@ HEALTHCHECK --start-period=10s --interval=1m --timeout=5s --retries=5 \
 
 CMD ["php-fpm", "-F", "-R"]
 
-FROM php-fpm-prod AS php-fpm-dev
+FROM fpm-prd AS fpm-dev
 
 LABEL eu.elasticms.base-php-fpm.environment="dev"
 
@@ -166,7 +166,7 @@ EXPOSE 9003
 
 USER 1001
 
-FROM php-fpm-prod AS apache-prod
+FROM fpm-prd AS apache-prd
 
 LABEL eu.elasticms.base-php-fpm.webserver="apache"
 
@@ -197,7 +197,7 @@ HEALTHCHECK --start-period=10s --interval=1m --timeout=5s --retries=5 \
 
 CMD ["/usr/bin/supervisord", "-c", "/etc/supervisord/supervisord.conf"]
 
-FROM php-fpm-dev AS apache-dev
+FROM fpm-dev AS apache-dev
 
 LABEL eu.elasticms.base-php-fpm.webserver="apache"
 
@@ -228,7 +228,7 @@ HEALTHCHECK --start-period=10s --interval=1m --timeout=5s --retries=5 \
 
 CMD ["/usr/bin/supervisord", "-c", "/etc/supervisord/supervisord.conf"]
 
-FROM php-fpm-prod AS nginx-prod
+FROM fpm-prd AS nginx-prd
 
 LABEL eu.elasticms.base-php-fpm.webserver="nginx"
 
@@ -263,7 +263,7 @@ HEALTHCHECK --start-period=10s --interval=1m --timeout=5s --retries=5 \
 
 CMD ["/usr/bin/supervisord", "-c", "/etc/supervisord/supervisord.conf"]
 
-FROM php-fpm-dev AS nginx-dev
+FROM fpm-dev AS nginx-dev
 
 LABEL eu.elasticms.base-php-fpm.webserver="nginx"
 

@@ -13,69 +13,122 @@ Installation of [Nginx](https://pkgs.alpinelinux.org/package/v3.16/main/x86_64/n
 Installation of [Apache 2.4](https://pkgs.alpinelinux.org/package/v3.16/main/x86_64/apache2).  
 Installation of [Varnish](https://pkgs.alpinelinux.org/package/v3.16/main/x86_64/varnish).  
 
-## Build
+# Build
 
-```
-set -a
-source .build.env
-set +a
-
-docker build --build-arg VERSION_ARG=${PHP_VERSION} \
-             --build-arg RELEASE_ARG=snapshot \
-             --build-arg BUILD_DATE_ARG="" \
-             --build-arg VCS_REF_ARG="" \
-             --target php-fpm-prod \
-             -t ${PHPFPM_PRD_DOCKER_IMAGE_NAME}:latest .
-
-docker build --build-arg VERSION_ARG=${PHP_VERSION} \
-             --build-arg RELEASE_ARG=snapshot \
-             --build-arg BUILD_DATE_ARG="" \
-             --build-arg VCS_REF_ARG="" \
-             --target php-fpm-dev \
-             -t ${PHPFPM_DEV_DOCKER_IMAGE_NAME}:latest .
-
-docker build --build-arg VERSION_ARG=${PHP_VERSION} \
-             --build-arg RELEASE_ARG=snapshot \
-             --build-arg BUILD_DATE_ARG="" \
-             --build-arg VCS_REF_ARG="" \
-             --target apache-prod \
-             -t ${APACHE_PRD_DOCKER_IMAGE_NAME}:latest .
-
-docker build --build-arg VERSION_ARG=${PHP_VERSION} \
-             --build-arg RELEASE_ARG=snapshot \
-             --build-arg BUILD_DATE_ARG="" \
-             --build-arg VCS_REF_ARG="" \
-             --target apache-dev \
-             -t ${APACHE_DEV_DOCKER_IMAGE_NAME}:latest .
-
-docker build --build-arg VERSION_ARG=${PHP_VERSION} \
-             --build-arg RELEASE_ARG=snapshot \
-             --build-arg BUILD_DATE_ARG="" \
-             --build-arg VCS_REF_ARG="" \
-             --target nginx-prod \
-             -t ${NGINX_PRD_DOCKER_IMAGE_NAME}:latest .
-
-docker build --build-arg VERSION_ARG=${PHP_VERSION} \
-             --build-arg RELEASE_ARG=snapshot \
-             --build-arg BUILD_DATE_ARG="" \
-             --build-arg VCS_REF_ARG="" \
-             --target nginx-prod \
-             -t ${NGINX_DEV_DOCKER_IMAGE_NAME}:latest .
+```sh
+make build[-fpm|-apache|-nginx|-all][-dev] PHP_VERSION=<PHP Version you want to build> [ DOCKER_IMAGE_NAME=<PHP Docker Image Name you want to build> ]
 ```
 
-## Test 
+## Example building __fpm__ variant __prd__ Docker image
 
-```
-set -a
-source .build.env
-set +a
-
-bats test/tests.apache.bats
-bats test/tests.nginx.bats
-bats test/tests.php-fpm.bats
-bats test/tests.varnish.bats
+```sh
+make build-fpm PHP_VERSION=7.4.33
 ```
 
+__Provide docker image__ : `docker.io/elasticms/base-php:7.4.33-fpm-prd`
+
+## Example building __fpm__ variant __dev__ Docker image
+
+```sh
+make build-fpm-dev PHP_VERSION=7.4.33
+```
+
+__Provide docker image__ : `docker.io/elasticms/base-php:7.4.33-fpm-dev`
+
+## Example building __nginx__ variant __dev__ Docker image
+
+```sh
+make build-nginx-dev PHP_VERSION=7.4.33
+```
+
+__Provide docker image__ : `docker.io/elasticms/base-php:7.4.33-nginx-dev`
+
+## Example building __all__ variants Docker image
+
+```sh
+make build-all PHP_VERSION=7.4.33
+```
+
+__Provide docker images__ : 
+
+- `docker.io/elasticms/base-php:7.4.33-fpm-prd`
+- `docker.io/elasticms/base-php:7.4.33-fpm-dev`
+- `docker.io/elasticms/base-php:7.4.33-apache-prd`
+- `docker.io/elasticms/base-php:7.4.33-apache-dev`
+- `docker.io/elasticms/base-php:7.4.33-nginx-prd`
+- `docker.io/elasticms/base-php:7.4.33-nginx-dev`
+
+# Test
+
+```sh
+make test[-fpm|-apache|-nginx|-all][-dev] PHP_VERSION=<PHP Version you want to test>
+```
+
+## Example testing of __prd__ builded docker image
+
+```sh
+make test PHP_VERSION=7.4.33
+```
+
+## Example testing of __dev__ builded docker image
+
+```sh
+make test-dev PHP_VERSION=7.4.33
+```
+
+# Releases
+
+Releases are done via GitHub actions and uploaded on Docker Hub.
+
+# Supported tags and respective Dockerfile links
+
+- [`7.4.x-fpm`, `7.4-fpm`, `7-fpm`, `7.4.x-fpm-prd`, `7.4-fpm-prd`, `7-fpm-prd`, `7.4.y-fpm-dev`, `7.4-fpm-dev`, `7-fpm-dev`](Dockerfile)
+- [`7.4.x-apache`, `7.4-apache`, `7-apache`, `7.4.x-apache-prd`, `7.4-apache-prd`, `7-apache-prd`, `7.4.y-apache-dev`, `7.4-apache-dev`, `7-apache-dev`](Dockerfile)
+- [`7.4.x-nginx`, `7.4-nginx`, `7-nginx`, `7.4.x-nginx-prd`, `7.4-nginx-prd`, `7-nginx-prd`, `7.4.y-nginx-dev`, `7.4-nginx-dev`, `7-nginx-dev`](Dockerfile)
+
+# Image Variants
+
+The `docker.io/elasticms/base-php` images come in many flavors, each designed for a specific use case.
+
+## `docker.io/elasticms/base-php:<version>-fpm[-prd]`  
+
+This image is based and use the official PHP Docker Hub image [`docker.io/php:7.4.x-fpm-alpine3.16`](https://hub.docker.com/_/php) as parent.  
+It is configured and configurable to support any PHP application.  
+It use the default php.ini-production configuration files and Supervisor to help automate the Docker image.  
+
+- Supervisor
+- Varnish
+- PHP Extensions :
+  - Redis
+  - APCu
+- AWS CLI
+
+## `docker.io/elasticms/base-php:<version>-apache[-prd]`  
+
+This variant contains Debian's Apache httpd in conjunction with PHP-FPM and uses [Supervisord] as manager for Apache **and** PHP-FPM.  
+
+## `docker.io/elasticms/base-php:<version>-nginx[-prd]`  
+
+This variant contains Nginx Webserver in conjunction with PHP-FPM and uses [Supervisord] as manager for Nginx **and** PHP-FPM.  
+
+## `docker.io/elasticms/base-php:<version>-dev`
+
+This image ship and use the default php.ini-development configuration files.  
+It is strongly recommended to not use this image in production environments!  
+
+- Composer
+- xdebug
+
+## **Warning** : The following images are deprecated and are no longer maintained.  They will be removed soon, please update your dockerfiles and docker-dompose.yml files 
+
+> [DEPRECATED] - WIL BE REMOVED SOON  
+> [DEPRECATED] `docker.io/elasticms/base-php-fpm:<version>`  
+> [DEPRECATED] `docker.io/elasticms/base-php-dev:<version>`  
+> [DEPRECATED] `docker.io/elasticms/base-apache-fpm:<version>`  
+> [DEPRECATED] `docker.io/elasticms/base-apache-dev:<version>`  
+> [DEPRECATED] `docker.io/elasticms/base-nginx-fpm:<version>`  
+> [DEPRECATED] `docker.io/elasticms/base-nginx-dev:<version>`  
+> [DEPRECATED] - WIL BE REMOVED SOON  
 
 ## PHP-FPM Configuration
 
