@@ -8,6 +8,10 @@ ARG VERSION_ARG
 ARG RELEASE_ARG
 ARG BUILD_DATE_ARG
 ARG VCS_REF_ARG
+ARG AWS_CLI_VERSION_ARG
+ARG PHP_EXT_REDIS_VERSION_ARG
+ARG PHP_EXT_APCU_VERSION_ARG
+ARG PHP_EXT_XDEBUG_VERSION_ARG
 
 LABEL eu.elasticms.base-php-fpm.build-date=$BUILD_DATE_ARG \
       eu.elasticms.base-php-fpm.name="" \
@@ -25,8 +29,11 @@ USER root
 
 ENV MAIL_SMTP_SERVER="" \
     MAIL_FROM_DOMAIN="" \
-    AWS_CLI_VERSION=1.20.58 \
+    AWS_CLI_VERSION=${AWS_CLI_VERSION_ARG:-1.20.58} \
     AWS_CLI_DOWNLOAD_URL="https://github.com/aws/aws-cli/archive" \
+    PHP_EXT_REDIS_VERSION=${PHP_EXT_REDIS_VERSION_ARG:-5.3.1} \
+    PHP_EXT_APCU_VERSION=${PHP_EXT_APCU_VERSION_ARG:-5.1.19} \
+    PHP_EXT_XDEBUG_VERSION=${PHP_EXT_XDEBUG_VERSION_ARG:-3.1.6} \
     PHP_FPM_MAX_CHILDREN=${PHP_FPM_MAX_CHILDREN:-5} \
     PHP_FPM_REQUEST_MAX_MEMORY_IN_MEGABYTES=${PHP_FPM_REQUEST_MAX_MEMORY_IN_MEGABYTES:-128} \
     CONTAINER_HEAP_PERCENT=${CONTAINER_HEAP_PERCENT:-0.80} \
@@ -57,8 +64,8 @@ RUN mkdir -p /home/default /opt/etc /opt/bin/container-entrypoint.d /opt/src /va
     && docker-php-ext-install -j "$(nproc)" soap bz2 fileinfo gettext intl pcntl pgsql \
                                             pdo_pgsql simplexml ldap gd ldap mysqli pdo_mysql \
                                             zip opcache bcmath exif tidy xsl \
-    && pecl install APCu-5.1.19 \
-    && pecl install redis-5.3.1 \
+    && pecl install APCu-${PHP_EXT_APCU_VERSION} \
+    && pecl install redis-${PHP_EXT_REDIS_VERSION} \
     && docker-php-ext-enable apcu redis \
     && runDeps="$( \
        scanelf --needed --nobanner --format '%n#p' --recursive /usr/local/lib/php/extensions \
@@ -131,7 +138,7 @@ COPY --from=node /usr/local/bin /usr/local/bin
 
 RUN echo "Install and Configure required extra PHP packages ..." \
     && apk add --update --no-cache --virtual .build-deps $PHPIZE_DEPS autoconf \
-    && pecl install xdebug-3.1.6 \
+    && pecl install xdebug-${PHP_EXT_XDEBUG_VERSION} \
     && docker-php-ext-enable xdebug \
     && runDeps="$( \
        scanelf --needed --nobanner --format '%n#p' --recursive /usr/local/lib/php/extensions \
