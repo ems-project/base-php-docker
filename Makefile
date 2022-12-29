@@ -62,6 +62,7 @@ _build-%:
 		-e _BUILD_ARGS_TARGET="$*"
 
 _builder:
+	@echo "Build [${DOCKER_IMAGE_NAME}:${_BUILD_ARGS_TAG}] Docker image ..."
 	@docker build \
 		--build-arg VERSION_ARG="${PHP_VERSION}" \
 		--build-arg RELEASE_ARG="${_BUILD_ARGS_TAG}" \
