@@ -1,6 +1,8 @@
 ARG VERSION_ARG
 ARG NODE_VERSION_ARG
+ARG COMPOSER_VERSION_ARG
 
+FROM composer:${COMPOSER_VERSION_ARG:-2.5.1} AS composer
 FROM node:${NODE_VERSION_ARG:-18}-alpine3.16 AS node
 FROM php:${VERSION_ARG:-7.4.33}-fpm-alpine3.16 AS fpm-prd
 
@@ -130,6 +132,8 @@ LABEL eu.elasticms.base-php-fpm.environment="dev"
 
 USER root
 
+COPY --from=composer /usr/bin/composer /usr/bin/composer
+
 COPY --from=node /usr/lib /usr/lib
 COPY --from=node /usr/local/share /usr/local/share
 COPY --from=node /usr/local/lib /usr/local/lib
@@ -157,15 +161,7 @@ RUN echo "Install and Configure required extra PHP packages ..." \
     && echo 'xdebug.client_host=host.docker.internal' >> /usr/local/etc/php/conf.d/xdebug-default.ini \
     && cp "$PHP_INI_DIR/php.ini-development" "$PHP_INI_DIR/php.ini" \
     && rm -rf /var/cache/apk/* \
-    && echo "Download and install Composer ..." \
-    && curl -sSfLk https://getcomposer.org/installer -o /tmp/composer-setup.php \
-    && curl -sSfLk https://composer.github.io/installer.sig -o /tmp/composer-setup.sig \
-    && COMPOSER_INSTALLER_SHA384SUM=$(cat /tmp/composer-setup.sig) \
-    && echo "$COMPOSER_INSTALLER_SHA384SUM /tmp/composer-setup.php" | sha384sum -c \
-    && php /tmp/composer-setup.php --disable-tls --install-dir=/usr/local/bin \
-    && rm /tmp/composer-setup.php /tmp/composer-setup.sig \
-    && ln -s /usr/local/bin/composer.phar /usr/local/bin/composer \
-    && chmod +x /usr/local/bin/composer.phar /usr/local/bin/composer \
+    && echo "Configure Composer ..." \
     && mkdir /home/default/.composer \
     && chown 1001:0 /home/default/.composer \
     && chmod -R ug+rw /home/default/.composer \
