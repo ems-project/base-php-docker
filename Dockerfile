@@ -151,7 +151,7 @@ RUN echo "Install and Configure required extra PHP packages ..." \
        | awk 'system("[ -e /usr/local/lib/" $1 " ]") == 0 { next } { print "so:" $1 }' \
        )" \
     && apk add --no-cache --virtual .php-dev-phpext-rundeps $runDeps \
-    && apk add --no-cache --virtual .php-dev-rundeps git npm patch \
+    && apk add --no-cache --virtual .php-dev-rundeps git patch \
     && apk del .build-deps \
     && echo "Configure Xdebug ..." \
     && echo '[xdebug]' >> /usr/local/etc/php/conf.d/xdebug-default.ini \
