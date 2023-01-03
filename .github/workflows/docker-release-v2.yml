@@ -305,7 +305,7 @@ jobs:
           IMAGE_VARIANT: ${{ matrix.image-variant }}
 
       - name: Tag docker image "${{ needs.init.outputs.docker-image-name }}:${{ needs.init.outputs.github-ci-sha-short }}-${{ matrix.image-variant }} for release"
-        id: prep-sign
+        id: prep-sign-tagging
         run: |
           docker tag ${{ needs.init.outputs.docker-image-name }}:${{ needs.init.outputs.github-ci-sha-short }}-${{ matrix.image-variant }} \
                      ${{ needs.init.outputs.docker-image-name }}:${{ needs.init.outputs.github-ci-sha-short }}-${{ steps.prep-sign.outputs.image-flavor }}
