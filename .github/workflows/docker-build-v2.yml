@@ -1,0 +1,94 @@
+name: Docker Build (V2)
+
+on:
+  push:
+    branches:
+      - '7.4'
+  pull_request:
+
+jobs:
+
+  build-docker-images:
+
+    strategy:
+      matrix:
+        image-variant: [fpm-prd,apache-prd,nginx-prd,fpm-dev,apache-dev,nginx-dev]
+
+    runs-on: ubuntu-20.04
+
+    steps:
+      - uses: actions/checkout@v3
+
+      - name: Fill GitHub Environment Variables
+        uses: FranzDiebold/github-env-vars-action@v2
+
+      - name: Fill PHP Version Environment Variable
+        uses: c-py/action-dotenv-to-setenv@v4
+        with:
+          env-file: .build.env
+
+      - name: Prepare Workflow Environment
+        id: prep
+        run: |
+          echo "docker-image-name=${DOCKER_IMAGE_NAME}" >> $GITHUB_OUTPUT
+          echo "build-date=$(date -u +'%Y-%m-%dT%H:%M:%SZ')" >> $GITHUB_OUTPUT
+
+      - name: Fill "${{ steps.prep.outputs.docker-image-name }}" Docker Image metadata
+        id: meta
+        uses: docker/metadata-action@v4
+        with:
+          github-token: ${{ secrets.GITHUB_TOKEN }}
+          images: "${{ steps.prep.outputs.docker-image-name }}"
+          tags: |
+            type=raw,value=rc-${{ matrix.image-variant }}
+
+      - name: Set up Docker Buildx
+        id: buildx
+        uses: docker/setup-buildx-action@v2
+
+      - name: Cache Docker layers
+        uses: actions/cache@v3
+        with:
+          path: /tmp/.buildx-cache
+          key: ${{ runner.os }}-buildx-${{ github.sha }}
+          restore-keys: |
+            ${{ runner.os }}-buildx-
+
+      - name: Build "${{ steps.prep.outputs.docker-image-name }}" Docker Image
+        id: build
+        uses: docker/build-push-action@v3
+        with:
+          builder: ${{ steps.buildx.outputs.name }}
+          context: .
+          file: Dockerfile
+          target: ${{ matrix.image-variant }}
+          build-args: |
+            VERSION_ARG=${{ env.PHP_VERSION }}
+            RELEASE_ARG=${{ env.CI_RUN_ID }}
+            VCS_REF_ARG=${{ env.CI_SHA }}
+            BUILD_DATE_ARG=${{ steps.prep.outputs.build-date }}
+          push: false
+          load: true
+          tags: ${{ steps.meta.outputs.tags }}
+          labels: ${{ steps.meta.outputs.labels }}
+          outputs: type=docker,dest=/tmp/image.tar
+
+      - name: Install Docker Squash
+        id: install-squash
+        run: |
+          pip install docker-squash
+
+      - name: Squash "${{ steps.prep.outputs.docker-image-name }}" Docker Images
+        id: squash
+        run: |
+          cat /tmp/image.tar | docker load
+          docker-squash --message "Build and Squashed in GitHub Action" \
+            --tag ${{ steps.prep.outputs.docker-image-name }}:rc-${{ matrix.image-variant }} \
+            --output-path /tmp/image.tar \
+            ${{ steps.prep.outputs.docker-image-name }}:rc-${{ matrix.image-variant }}
+          cat /tmp/image.tar | docker load
+
+      - name: Check Docker Images
+        run: |
+          docker image inspect ${{ steps.prep.outputs.docker-image-name }}:rc-${{ matrix.image-variant }}
+          docker history ${{ steps.prep.outputs.docker-image-name }}:rc-${{ matrix.image-variant }}

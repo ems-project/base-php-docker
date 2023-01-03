@@ -2,80 +2,156 @@
 
 Docker base image is the basic image on which you add layers (which are basically filesystem changes) and create a final image containing your App.  
 
-## Features
+# Features
 
 Use [Official PHP Docker image](https://hub.docker.com/_/php) as parent.  
-Use [Supervisord] as manager for Webserver **and** PHP-FPM.  Supervisord is therefore process 1.  
+Use [Supervisor](http://supervisord.org/) as manager for Webserver **and** PHP-FPM.  Supervisord is therefore process 1.  
 Run container as non-privileged.  
 Container Entrypoint hooks available.  
 
-Installation of [Nginx](https://pkgs.alpinelinux.org/package/v3.16/main/x86_64/nginx).  
-Installation of [Apache 2.4](https://pkgs.alpinelinux.org/package/v3.16/main/x86_64/apache2).  
-Installation of [Varnish](https://pkgs.alpinelinux.org/package/v3.16/main/x86_64/varnish).  
+- Installation of [Nginx](https://pkgs.alpinelinux.org/package/v3.16/main/x86_64/nginx).  
+- Installation of [Apache 2.4](https://pkgs.alpinelinux.org/package/v3.16/main/x86_64/apache2).  
+- Installation of [Varnish](https://pkgs.alpinelinux.org/package/v3.16/main/x86_64/varnish).  
 
-## Build
+# Build
 
-```
-set -a
-source .build.env
-set +a
+Build locally Docker images :  
 
-docker build --build-arg VERSION_ARG=${PHP_VERSION} \
-             --build-arg RELEASE_ARG=snapshot \
-             --build-arg BUILD_DATE_ARG="" \
-             --build-arg VCS_REF_ARG="" \
-             --target php-fpm-prod \
-             -t ${PHPFPM_PRD_DOCKER_IMAGE_NAME}:latest .
-
-docker build --build-arg VERSION_ARG=${PHP_VERSION} \
-             --build-arg RELEASE_ARG=snapshot \
-             --build-arg BUILD_DATE_ARG="" \
-             --build-arg VCS_REF_ARG="" \
-             --target php-fpm-dev \
-             -t ${PHPFPM_DEV_DOCKER_IMAGE_NAME}:latest .
-
-docker build --build-arg VERSION_ARG=${PHP_VERSION} \
-             --build-arg RELEASE_ARG=snapshot \
-             --build-arg BUILD_DATE_ARG="" \
-             --build-arg VCS_REF_ARG="" \
-             --target apache-prod \
-             -t ${APACHE_PRD_DOCKER_IMAGE_NAME}:latest .
-
-docker build --build-arg VERSION_ARG=${PHP_VERSION} \
-             --build-arg RELEASE_ARG=snapshot \
-             --build-arg BUILD_DATE_ARG="" \
-             --build-arg VCS_REF_ARG="" \
-             --target apache-dev \
-             -t ${APACHE_DEV_DOCKER_IMAGE_NAME}:latest .
-
-docker build --build-arg VERSION_ARG=${PHP_VERSION} \
-             --build-arg RELEASE_ARG=snapshot \
-             --build-arg BUILD_DATE_ARG="" \
-             --build-arg VCS_REF_ARG="" \
-             --target nginx-prod \
-             -t ${NGINX_PRD_DOCKER_IMAGE_NAME}:latest .
-
-docker build --build-arg VERSION_ARG=${PHP_VERSION} \
-             --build-arg RELEASE_ARG=snapshot \
-             --build-arg BUILD_DATE_ARG="" \
-             --build-arg VCS_REF_ARG="" \
-             --target nginx-prod \
-             -t ${NGINX_DEV_DOCKER_IMAGE_NAME}:latest .
+```sh
+make build[-fpm|-apache|-nginx|-all][-dev] PHP_VERSION=<PHP Version you want to build> [ DOCKER_IMAGE_NAME=<PHP Docker Image Name you want to build> ]
 ```
 
-## Test 
+## Example building __fpm__ variant __prd__ Docker image
 
-```
-set -a
-source .build.env
-set +a
-
-bats test/tests.apache.bats
-bats test/tests.nginx.bats
-bats test/tests.php-fpm.bats
-bats test/tests.varnish.bats
+```sh
+make build-fpm PHP_VERSION=7.4.33
 ```
 
+__Provide docker image__ : `docker.io/elasticms/base-php:7.4.33-fpm-prd`
+
+## Example building __fpm__ variant __dev__ Docker image
+
+```sh
+make build-fpm-dev PHP_VERSION=7.4.33
+```
+
+__Provide docker image__ : `docker.io/elasticms/base-php:7.4.33-fpm-dev`
+
+## Example building __nginx__ variant __dev__ Docker image
+
+```sh
+make build-nginx-dev PHP_VERSION=7.4.33
+```
+
+__Provide docker image__ : `docker.io/elasticms/base-php:7.4.33-nginx-dev`
+
+## Example building __all__ variants Docker image
+
+```sh
+make build-all PHP_VERSION=7.4.33
+```
+
+__Provide docker images__ : 
+
+- `docker.io/elasticms/base-php:7.4.33-fpm-prd`
+- `docker.io/elasticms/base-php:7.4.33-fpm-dev`
+- `docker.io/elasticms/base-php:7.4.33-apache-prd`
+- `docker.io/elasticms/base-php:7.4.33-apache-dev`
+- `docker.io/elasticms/base-php:7.4.33-nginx-prd`
+- `docker.io/elasticms/base-php:7.4.33-nginx-dev`
+
+# Test
+
+Test Docker images builded locally :  
+
+```sh
+make test[-fpm|-apache|-nginx|-all][-dev] PHP_VERSION=<PHP Version you want to test>
+```
+
+## Example testing of __prd__ builded docker image
+
+```sh
+make test PHP_VERSION=7.4.33
+```
+
+## Example testing of __dev__ builded docker image
+
+```sh
+make test-dev PHP_VERSION=7.4.33
+```
+
+# Releases
+
+Releases are done via GitHub actions and uploaded on Docker Hub.
+
+# Supported tags and respective Dockerfile links
+
+- [`7.4.x-fpm`, `7.4-fpm`, `7-fpm`, `7.4.x-fpm-prd`, `7.4-fpm-prd`, `7-fpm-prd`, `7.4.y-fpm-dev`, `7.4-fpm-dev`, `7-fpm-dev`](Dockerfile)
+- [`7.4.x-apache`, `7.4-apache`, `7-apache`, `7.4.x-apache-prd`, `7.4-apache-prd`, `7-apache-prd`, `7.4.y-apache-dev`, `7.4-apache-dev`, `7-apache-dev`](Dockerfile)
+- [`7.4.x-nginx`, `7.4-nginx`, `7-nginx`, `7.4.x-nginx-prd`, `7.4-nginx-prd`, `7-nginx-prd`, `7.4.y-nginx-dev`, `7.4-nginx-dev`, `7-nginx-dev`](Dockerfile)
+
+# Image Variants
+
+The `docker.io/elasticms/base-php` images come in many flavors, each designed for a specific use case.
+
+## `docker.io/elasticms/base-php:<version>-fpm[-prd]`  
+
+This image is based and use the official PHP Docker Hub image [`docker.io/php:7.4.x-fpm-alpine3.16`](https://hub.docker.com/_/php) as parent.  
+It is configured and configurable to support any PHP application.  
+It use the default php.ini-production configuration files and Supervisor to help automate the Docker image.  
+
+- [Supervisor](http://supervisord.org/)
+- [Varnish](https://varnish-cache.org/)
+- PHP Extensions :
+  - [Redis](https://pecl.php.net/package/redis)
+  - [APCu](https://pecl.php.net/package/apcu)
+- [AWS CLI](https://github.com/aws/aws-cli)
+
+## `docker.io/elasticms/base-php:<version>-dev`
+
+This image use `base-php:<version>-fpm-prd` (see above) as parent layer.  
+It use the default php.ini-development configuration files.  
+It is strongly recommended to not use this image in production environments!  
+
+In addition to the parent layer, this variant include install :
+
+- [Composer](https://github.com/composer/composer)
+- PHP Extension : [xdebug](https://xdebug.org/)
+
+## `docker.io/elasticms/base-php:<version>-apache[-prd]`  
+
+This image use `base-php:<version>-fpm-prd` (see above) as parent layer.  
+This variant contains Apache httpd in conjunction with PHP-FPM and uses supervisor as manager for Apache **and** PHP-FPM.  
+
+## `docker.io/elasticms/base-php:<version>-nginx[-prd]`  
+
+This image use `base-php:<version>-fpm-prd` (see above) as parent layer.  
+This variant contains Nginx Webserver in conjunction with PHP-FPM and uses supervisor as manager for Nginx **and** PHP-FPM.  
+
+## `docker.io/elasticms/base-php:<version>-apache-dev`
+
+This image use `base-php:<version>-fpm-dev` (see above) as parent layer.  
+This variant contains Apache Webserver in conjunction with PHP-FPM and uses supervisor as manager for Apache **and** PHP-FPM.  
+It is strongly recommended to not use this image in production environments!  
+
+## `docker.io/elasticms/base-php:<version>-nginx-dev`
+
+This image use `base-php:<version>-fpm-dev` (see above) as parent layer.  
+This variant contains Nginx Webserver in conjunction with PHP-FPM and uses supervisor as manager for Nginx **and** PHP-FPM.  
+It is strongly recommended to not use this image in production environments!  
+
+## **Warning** : The following images are deprecated and are no longer maintained.  
+
+> They will be removed soon, please update your dockerfiles and docker-compose.yml files ...  
+
+| Deprecated Image Name | Replaced Image Name |
+| -- | -- |
+| `docker.io/elasticms/base-php-fpm:<version>` | `docker.io/elasticms/base-php:<version>-fpm[-prd]` |
+| `docker.io/elasticms/base-php-dev:<version>` | `docker.io/elasticms/base-php:<version>-fpm-dev` |
+| `docker.io/elasticms/base-apache-fpm:<version>` | `docker.io/elasticms/base-php:<version>-apache[-prd]` |
+| `docker.io/elasticms/base-apache-dev:<version>` | `docker.io/elasticms/base-php:<version>-apache-dev` |
+| `docker.io/elasticms/base-nginx-fpm:<version>` | `docker.io/elasticms/base-php:<version>-nginx[-prd]` |
+| `docker.io/elasticms/base-nginx-dev:<version>` | `docker.io/elasticms/base-php:<version>-nginx-dev` |
 
 ## PHP-FPM Configuration
 
