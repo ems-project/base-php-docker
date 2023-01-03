@@ -82,7 +82,6 @@ jobs:
             type=raw,value=${{ needs.init.outputs.github-ci-sha-short }}-${{ matrix.image-variant }}
             type=raw,value=${{ needs.init.outputs.version-patch }}-${{ matrix.image-variant }}
             type=raw,value=${{ needs.init.outputs.version-minor }}-${{ matrix.image-variant }}
-            type=raw,value=${{ needs.init.outputs.version-major }}-${{ matrix.image-variant }}
 
       - name: Build "${{ needs.init.outputs.docker-image-name }}:${{ needs.init.outputs.github-ci-sha-short }}-${{ matrix.image-variant }}" Docker Image
         id: build
@@ -250,20 +249,11 @@ jobs:
           private-key: ${{ secrets.DOCKER_PRIVATE_KEY }}
           private-key-passphrase: ${{ secrets.DOCKER_PRIVATE_KEY_PASSPHRASE }}
 
-      - name: Sign and push docker image "${{ needs.init.outputs.docker-image-name }}:${{ needs.init.outputs.version-major }}-${{ matrix.image-variant }}"
-        uses: sudo-bot/action-docker-sign@latest
-        with:
-          image-ref: "${{ needs.init.outputs.docker-image-name }}:${{ needs.init.outputs.version-major }}-${{ matrix.image-variant }}"
-          private-key-id: "${{ secrets.DOCKER_PRIVATE_KEY_ID }}"
-          private-key: ${{ secrets.DOCKER_PRIVATE_KEY }}
-          private-key-passphrase: ${{ secrets.DOCKER_PRIVATE_KEY_PASSPHRASE }}
-
       - name: Check Docker Images pull's
         run: |
           docker pull ${{ needs.init.outputs.docker-image-name }}:${{ needs.init.outputs.github-ci-sha-short }}-${{ matrix.image-variant }}
           docker pull ${{ needs.init.outputs.docker-image-name }}:${{ needs.init.outputs.version-patch }}-${{ matrix.image-variant }}
           docker pull ${{ needs.init.outputs.docker-image-name }}:${{ needs.init.outputs.version-minor }}-${{ matrix.image-variant }}
-          docker pull ${{ needs.init.outputs.docker-image-name }}:${{ needs.init.outputs.version-major }}-${{ matrix.image-variant }}
 
   sign-prd:
 
@@ -313,8 +303,6 @@ jobs:
                      ${{ needs.init.outputs.docker-image-name }}:${{ needs.init.outputs.version-patch }}-${{ steps.prep-sign.outputs.image-flavor }}
           docker tag ${{ needs.init.outputs.docker-image-name }}:${{ needs.init.outputs.version-minor }}-${{ matrix.image-variant }} \
                      ${{ needs.init.outputs.docker-image-name }}:${{ needs.init.outputs.version-minor }}-${{ steps.prep-sign.outputs.image-flavor }}
-          docker tag ${{ needs.init.outputs.docker-image-name }}:${{ needs.init.outputs.version-major }}-${{ matrix.image-variant }} \
-                     ${{ needs.init.outputs.docker-image-name }}:${{ needs.init.outputs.version-major }}-${{ steps.prep-sign.outputs.image-flavor }}
 
       - name: Sign and push docker image "${{ needs.init.outputs.docker-image-name }}:${{ needs.init.outputs.github-ci-sha-short }}-${{ matrix.image-variant }}"
         uses: sudo-bot/action-docker-sign@latest
@@ -364,22 +352,6 @@ jobs:
           private-key: ${{ secrets.DOCKER_PRIVATE_KEY }}
           private-key-passphrase: ${{ secrets.DOCKER_PRIVATE_KEY_PASSPHRASE }}
 
-      - name: Sign and push docker image "${{ needs.init.outputs.docker-image-name }}:${{ needs.init.outputs.version-major }}-${{ matrix.image-variant }}"
-        uses: sudo-bot/action-docker-sign@latest
-        with:
-          image-ref: "${{ needs.init.outputs.docker-image-name }}:${{ needs.init.outputs.version-major }}-${{ matrix.image-variant }}"
-          private-key-id: "${{ secrets.DOCKER_PRIVATE_KEY_ID }}"
-          private-key: ${{ secrets.DOCKER_PRIVATE_KEY }}
-          private-key-passphrase: ${{ secrets.DOCKER_PRIVATE_KEY_PASSPHRASE }}
-
-      - name: Sign and push docker image "${{ needs.init.outputs.docker-image-name }}:${{ needs.init.outputs.version-major }}-${{ steps.prep-sign.outputs.image-flavor }}"
-        uses: sudo-bot/action-docker-sign@latest
-        with:
-          image-ref: "${{ needs.init.outputs.docker-image-name }}:${{ needs.init.outputs.version-major }}-${{ steps.prep-sign.outputs.image-flavor }}"
-          private-key-id: "${{ secrets.DOCKER_PRIVATE_KEY_ID }}"
-          private-key: ${{ secrets.DOCKER_PRIVATE_KEY }}
-          private-key-passphrase: ${{ secrets.DOCKER_PRIVATE_KEY_PASSPHRASE }}
-
       - name: Check Docker Images pull's
         run: |
           docker pull ${{ needs.init.outputs.docker-image-name }}:${{ needs.init.outputs.github-ci-sha-short }}-${{ matrix.image-variant }}
@@ -388,8 +360,6 @@ jobs:
           docker pull ${{ needs.init.outputs.docker-image-name }}:${{ needs.init.outputs.version-patch }}-${{ steps.prep-sign.outputs.image-flavor }}
           docker pull ${{ needs.init.outputs.docker-image-name }}:${{ needs.init.outputs.version-minor }}-${{ matrix.image-variant }}
           docker pull ${{ needs.init.outputs.docker-image-name }}:${{ needs.init.outputs.version-minor }}-${{ steps.prep-sign.outputs.image-flavor }}
-          docker pull ${{ needs.init.outputs.docker-image-name }}:${{ needs.init.outputs.version-major }}-${{ matrix.image-variant }}
-          docker pull ${{ needs.init.outputs.docker-image-name }}:${{ needs.init.outputs.version-major }}-${{ steps.prep-sign.outputs.image-flavor }}
 
   cleanup:
 
