@@ -23,6 +23,7 @@ services:
     user: "${BATS_UID}"
     ports:
       - 9000:9000
+      - 6081:6081
     environment: 
       - PHP_FPM_MAX_CHILDREN=${BATS_PHP_FPM_MAX_CHILDREN}
       - PHP_FPM_REQUEST_MAX_MEMORY_IN_MEGABYTES=${BATS_PHP_FPM_REQUEST_MAX_MEMORY_IN_MEGABYTES}
@@ -34,6 +35,7 @@ services:
       - DB_PASSWORD=${BATS_DB_PASSWORD}
       - DB_NAME=${BATS_DB_NAME}
       - VARNISH_ENABLED=${BATS_VARNISH_ENABLED}
+      - VARNISH_VCL_CONF_CUSTOM=${BATS_VARNISH_VCL_CONF_CUSTOM}
     links:
       - ${BATS_STORAGE_SERVICE_NAME}:${BATS_STORAGE_SERVICE_NAME}
     depends_on:
@@ -41,6 +43,7 @@ services:
     command: ["/usr/bin/supervisord","-c","/etc/supervisord/supervisord.conf"]
     volumes:
       - php_scripts:/opt/bin/container-entrypoint.d
+      - "${PWD}/test/etc/varnish/my-vcl-test-file.vcl:${BATS_VARNISH_VCL_CONF_CUSTOM}"
     networks:
       - default
     mem_limit: 512m
