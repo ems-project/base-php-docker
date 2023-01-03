@@ -40,7 +40,7 @@ jobs:
           VERSION_MAJOR_MINOR_PATCH=${GITHUB_REF_NAME}
           VERSION_MAJOR_MINOR=${VERSION_MAJOR_MINOR_PATCH%.*}
           VERSION_MAJOR=${VERSION_MAJOR_MINOR%.*}
-          echo "docker-image-name=${PHPFPM_PRD_DOCKER_IMAGE_NAME}" >> $GITHUB_OUTPUT
+          echo "docker-image-name=${DOCKER_IMAGE_NAME}" >> $GITHUB_OUTPUT
           echo "version-patch=${VERSION_MAJOR_MINOR_PATCH}" >> $GITHUB_OUTPUT
           echo "version-minor=${VERSION_MAJOR_MINOR}" >> $GITHUB_OUTPUT
           echo "version-major=${VERSION_MAJOR}" >> $GITHUB_OUTPUT
@@ -111,7 +111,7 @@ jobs:
           cat /tmp/builded.tar | docker load
           docker-squash --message "Build and Squashed in GitHub Action" \
             --tag ${{ needs.init.outputs.docker-image-name }}:${{ needs.init.outputs.github-ci-sha-short }}-${{ matrix.image-variant }} \
-            --output-path /tmp/phpfpm-prd-squashed.tar \
+            --output-path /tmp/squashed.tar \
             --cleanup \
             ${{ needs.init.outputs.docker-image-name }}:${{ needs.init.outputs.github-ci-sha-short }}-${{ matrix.image-variant }}
           cat /tmp/squashed.tar | docker load
@@ -196,6 +196,7 @@ jobs:
   sign-dev:
 
     strategy:
+      max-parallel: 1
       matrix:
         image-variant: [fpm-dev,apache-dev,nginx-dev]
 
@@ -258,6 +259,7 @@ jobs:
   sign-prd:
 
     strategy:
+      max-parallel: 1
       matrix:
         image-variant: [fpm-prd,apache-prd,nginx-prd]
 
@@ -295,7 +297,7 @@ jobs:
           IMAGE_VARIANT: ${{ matrix.image-variant }}
 
       - name: Tag docker image "${{ needs.init.outputs.docker-image-name }}:${{ needs.init.outputs.github-ci-sha-short }}-${{ matrix.image-variant }} for release"
-        id: prep-sign
+        id: prep-sign-tagging
         run: |
           docker tag ${{ needs.init.outputs.docker-image-name }}:${{ needs.init.outputs.github-ci-sha-short }}-${{ matrix.image-variant }} \
                      ${{ needs.init.outputs.docker-image-name }}:${{ needs.init.outputs.github-ci-sha-short }}-${{ steps.prep-sign.outputs.image-flavor }}
@@ -365,7 +367,7 @@ jobs:
 
     strategy:
       matrix:
-        image-variant: [fpm-prd,apache-prd,nginx-prd]
+        image-variant: [fpm-prd,apache-prd,nginx-prd,fpm-dev,apache-dev,nginx-dev]
 
     runs-on: ubuntu-20.04
     needs: [sign-prd,sign-dev]

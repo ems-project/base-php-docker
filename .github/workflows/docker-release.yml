@@ -494,21 +494,21 @@ jobs:
 
       - name: Test "${{ needs.init.outputs.phpfpm-prd-docker-image-name }}" Docker Image
         env:
-          PHPFPM_PRD_DOCKER_IMAGE_NAME: ${{ needs.init.outputs.phpfpm-prd-docker-image-name }}:${{ needs.init.outputs.github-ci-sha-short }}
+          DOCKER_IMAGE_NAME: ${{ needs.init.outputs.phpfpm-prd-docker-image-name }}:${{ needs.init.outputs.github-ci-sha-short }}
         run: |
           docker network create docker_default
           docker pull appropriate/curl:latest
-          bats -r test/tests.php-fpm.bats
+          bats -r test/tests.fpm.bats
 
       - name: Test "${{ needs.init.outputs.apache-prd-docker-image-name }}" Docker Image
         env:
-          APACHE_PRD_DOCKER_IMAGE_NAME: ${{ needs.init.outputs.apache-prd-docker-image-name }}:${{ needs.init.outputs.github-ci-sha-short }}
+          DOCKER_IMAGE_NAME: ${{ needs.init.outputs.apache-prd-docker-image-name }}:${{ needs.init.outputs.github-ci-sha-short }}
         run: |
           bats -r test/tests.apache.bats
 
       - name: Test "${{ needs.init.outputs.nginx-prd-docker-image-name }}" Docker Image
         env:
-          NGINX_PRD_DOCKER_IMAGE_NAME: ${{ needs.init.outputs.nginx-prd-docker-image-name }}:${{ needs.init.outputs.github-ci-sha-short }}
+          DOCKER_IMAGE_NAME: ${{ needs.init.outputs.nginx-prd-docker-image-name }}:${{ needs.init.outputs.github-ci-sha-short }}
         run: |
           bats -r test/tests.nginx.bats
 
