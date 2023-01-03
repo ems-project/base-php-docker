@@ -397,7 +397,7 @@ jobs:
 
     strategy:
       matrix:
-        image-variant: [fpm-prd,apache-prd,nginx-prd]
+        image-variant: [fpm-prd,apache-prd,nginx-prd,fpm-dev,apache-dev,nginx-dev]
 
     runs-on: ubuntu-20.04
     needs: [sign-prd,sign-dev]

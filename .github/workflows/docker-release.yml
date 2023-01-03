@@ -504,7 +504,7 @@ jobs:
         run: |
           docker network create docker_default
           docker pull appropriate/curl:latest
-          bats -r test/tests.php-fpm.bats
+          bats -r test/tests.fpm.bats
 
       - name: Test "${{ needs.init.outputs.apache-prd-docker-image-name }}" Docker Image
         env:
