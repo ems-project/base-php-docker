@@ -177,7 +177,7 @@ jobs:
           builder: ${{ steps.buildx.outputs.name }}
           context: .
           file: Dockerfile
-          target: php-fpm-prod
+          target: fpm-prd
           build-args: |
             VERSION_ARG=${{ needs.init.outputs.version-patch }}
             RELEASE_ARG=${{ needs.init.outputs.github-ci-run-id }}
@@ -194,7 +194,7 @@ jobs:
           builder: ${{ steps.buildx.outputs.name }}
           context: .
           file: Dockerfile
-          target: php-fpm-dev
+          target: fpm-dev
           build-args: |
             VERSION_ARG=${{ needs.init.outputs.version-patch }}
             RELEASE_ARG=${{ needs.init.outputs.github-ci-run-id }}
@@ -211,7 +211,7 @@ jobs:
           builder: ${{ steps.buildx.outputs.name }}
           context: .
           file: Dockerfile
-          target: apache-prod
+          target: apache-prd
           build-args: |
             VERSION_ARG=${{ needs.init.outputs.version-patch }}
             RELEASE_ARG=${{ needs.init.outputs.github-ci-run-id }}
@@ -245,7 +245,7 @@ jobs:
           builder: ${{ steps.buildx.outputs.name }}
           context: .
           file: Dockerfile
-          target: nginx-prod
+          target: nginx-prd
           build-args: |
             VERSION_ARG=${{ needs.init.outputs.version-patch }}
             RELEASE_ARG=${{ needs.init.outputs.github-ci-run-id }}
@@ -511,6 +511,12 @@ jobs:
           APACHE_PRD_DOCKER_IMAGE_NAME: ${{ needs.init.outputs.apache-prd-docker-image-name }}:${{ needs.init.outputs.github-ci-sha-short }}
         run: |
           bats -r test/tests.apache.bats
+
+      - name: Test "${{ needs.init.outputs.apache-prd-docker-image-name }}" (Varnished) Docker Image
+        env:
+          APACHE_PRD_DOCKER_IMAGE_NAME: ${{ needs.init.outputs.apache-prd-docker-image-name }}:${{ needs.init.outputs.github-ci-sha-short }}
+        run: |
+          bats -r test/tests.varnish.bats
 
       - name: Test "${{ needs.init.outputs.nginx-prd-docker-image-name }}" Docker Image
         env:
