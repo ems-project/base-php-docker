@@ -21,9 +21,10 @@ export BATS_STORAGE_SERVICE_NAME="mysql"
 
 export BATS_PHP_SCRIPTS_VOLUME_NAME=${BATS_PHP_SCRIPTS_VOLUME_NAME:-php_scripts}
 
-export BATS_PHP_DOCKER_IMAGE_NAME="${APACHE_PRD_DOCKER_IMAGE_NAME:-docker.io/elasticms/base-php-apache:latest}"
+export BATS_PHP_DOCKER_IMAGE_NAME="${DOCKER_IMAGE_NAME:-docker.io/elasticms/base-php:8.0-apache}"
 
 export BATS_VARNISH_ENABLED=${BATS_VARNISH_ENABLED:-"false"}
+export BATS_VARNISH_VCL_CONF_CUSTOM=${BATS_VARNISH_VCL_CONF_CUSTOM:-"/etc/varnish/bats.vcl"}
 
 export BATS_UID=$(id -u)
 
@@ -87,6 +88,58 @@ export BATS_UID=$(id -u)
 
 @test "[$TEST_FILE] Check for Monitoring /server-status page response code 200" {
   retry 12 5 curl_container php :9000/server-status -H "Host: default.localhost" -s -w %{http_code} -o /dev/null
+  assert_output -l 0 $'200'
+}
+
+@test "[$TEST_FILE] Stop PHP test containers" {
+  command docker-compose -f ${BATS_TEST_DIRNAME%/}/docker-compose.apache.yml stop php
+}
+
+@test "[$TEST_FILE] Re-Start PHP test containers with Varnish enabled" {
+  export BATS_VARNISH_ENABLED=true
+  command docker-compose -f ${BATS_TEST_DIRNAME%/}/docker-compose.apache.yml up -d php
+}
+
+@test "[$TEST_FILE] Re-Check for startup messages in containers logs" {
+  docker_wait_for_log php 60 "INFO success: apache entered RUNNING state"
+  docker_wait_for_log php 60 "INFO success: php-fpm entered RUNNING state"
+  docker_wait_for_log php 60 "Running PHP script when Docker container start ..."
+  docker_wait_for_log php 60 "Running Shell script when Docker container start ..."
+  docker_wait_for_log mysql 60 "Starting MySQL"
+}
+
+@test "[$TEST_FILE] Re-Check for Index page response code 200 via Varnish" {
+  retry 12 5 curl_container php :6081/index.php -H "Host: default.localhost" -s -w %{http_code} -o /dev/null
+  assert_output -l 0 $'200'
+}
+
+@test "[$TEST_FILE] Re-Check for Index page response message via Varnish" {
+  retry 12 5 curl_container php :6081/index.php -H "Host: default.localhost" -s 
+  assert_output -l -r "Docker Base image - Default index.php page"
+}
+
+@test "[$TEST_FILE] Re-Check for MySQL Connection CheckUp response code 200 via Varnish" {
+  retry 12 5 curl_container php :6081/check-mysql.php -H "Host: default.localhost" -s -w %{http_code} -o /dev/null
+  assert_output -l 0 $'200'
+}
+
+@test "[$TEST_FILE] Re-Check for MySQL Connection CheckUp response message via Varnish" {
+  retry 12 5 curl_container php :6081/check-mysql.php -H "Host: default.localhost" -s 
+  assert_output -l -r "Check MySQL Connection Done."
+}
+
+@test "[$TEST_FILE] Re-Check for Monitoring /real-time-status page response code 200 via Varnish" {
+  retry 12 5 curl_container php :6081/real-time-status -H "Host: default.localhost" -s -w %{http_code} -o /dev/null
+  assert_output -l 0 $'200'
+}
+
+@test "[$TEST_FILE] Re-Check for Monitoring /status page response code 200 via Varnish" {
+  retry 12 5 curl_container php :6081/status -H "Host: default.localhost" -s -w %{http_code} -o /dev/null
+  assert_output -l 0 $'200'
+}
+
+@test "[$TEST_FILE] Re-Check for Monitoring /server-status page response code 200 via Varnish" {
+  retry 12 5 curl_container php :6081/server-status -H "Host: default.localhost" -s -w %{http_code} -o /dev/null
   assert_output -l 0 $'200'
 }
 
