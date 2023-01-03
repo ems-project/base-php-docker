@@ -107,7 +107,7 @@ jobs:
           builder: ${{ steps.buildx.outputs.name }}
           context: .
           file: Dockerfile
-          target: php-fpm-prod
+          target: fpm-prd
           build-args: |
             VERSION_ARG=${{ env.PHP_VERSION }}
             RELEASE_ARG=${{ env.CI_RUN_ID }}
@@ -126,7 +126,7 @@ jobs:
           builder: ${{ steps.buildx.outputs.name }}
           context: .
           file: Dockerfile
-          target: php-fpm-dev
+          target: fpm-dev
           build-args: |
             VERSION_ARG=${{ env.PHP_VERSION }}
             RELEASE_ARG=${{ env.CI_RUN_ID }}
@@ -145,7 +145,7 @@ jobs:
           builder: ${{ steps.buildx.outputs.name }}
           context: .
           file: Dockerfile
-          target: apache-prod
+          target: apache-prd
           build-args: |
             VERSION_ARG=${{ env.PHP_VERSION }}
             RELEASE_ARG=${{ env.CI_RUN_ID }}
@@ -183,7 +183,7 @@ jobs:
           builder: ${{ steps.buildx.outputs.name }}
           context: .
           file: Dockerfile
-          target: nginx-prod
+          target: nginx-prd
           build-args: |
             VERSION_ARG=${{ env.PHP_VERSION }}
             RELEASE_ARG=${{ env.CI_RUN_ID }}
