@@ -1,30 +1,41 @@
 ARG VERSION_ARG
+ARG NODE_VERSION_ARG
+ARG COMPOSER_VERSION_ARG
 
-FROM php:${VERSION_ARG}-fpm-alpine3.16 AS php-fpm-prod
+FROM composer:${COMPOSER_VERSION_ARG:-2.5.1} AS composer
+FROM node:${NODE_VERSION_ARG:-18}-alpine3.16 AS node
+FROM php:${VERSION_ARG:-8.1.13}-fpm-alpine3.16 AS fpm-prd
 
 ARG VERSION_ARG
 ARG RELEASE_ARG
 ARG BUILD_DATE_ARG
 ARG VCS_REF_ARG
+ARG AWS_CLI_VERSION_ARG
+ARG PHP_EXT_REDIS_VERSION_ARG
+ARG PHP_EXT_APCU_VERSION_ARG
+ARG PHP_EXT_XDEBUG_VERSION_ARG
 
-LABEL eu.elasticms.base-php-fpm.build-date=$BUILD_DATE_ARG \
-      eu.elasticms.base-php-fpm.name="" \
-      eu.elasticms.base-php-fpm.description="" \
-      eu.elasticms.base-php-fpm.url="https://hub.docker.com/repository/docker/elasticms/base-php-fpm" \
-      eu.elasticms.base-php-fpm.vcs-ref=$VCS_REF_ARG \
-      eu.elasticms.base-php-fpm.vcs-url="https://github.com/ems-project/docker-php-fpm" \
-      eu.elasticms.base-php-fpm.vendor="sebastian.molle@gmail.com" \
-      eu.elasticms.base-php-fpm.version="$VERSION_ARG" \
-      eu.elasticms.base-php-fpm.release="$RELEASE_ARG" \
-      eu.elasticms.base-php-fpm.environment="prod" \
-      eu.elasticms.base-php-fpm.schema-version="1.0" 
+LABEL be.fgov.elasticms.base.build-date=$BUILD_DATE_ARG \
+      be.fgov.elasticms.base.name="" \
+      be.fgov.elasticms.base.description="" \
+      be.fgov.elasticms.base.url="https://hub.docker.com/repository/docker/elasticms/base-php" \
+      be.fgov.elasticms.base.vcs-ref=$VCS_REF_ARG \
+      be.fgov.elasticms.base.vcs-url="https://github.com/ems-project/docker-php-fpm" \
+      be.fgov.elasticms.base.vendor="sebastian.molle@gmail.com" \
+      be.fgov.elasticms.base.version="$VERSION_ARG" \
+      be.fgov.elasticms.base.release="$RELEASE_ARG" \
+      be.fgov.elasticms.base.environment="prod" \
+      be.fgov.elasticms.base.schema-version="1.0" 
 
 USER root
 
 ENV MAIL_SMTP_SERVER="" \
     MAIL_FROM_DOMAIN="" \
-    AWS_CLI_VERSION=1.20.58 \
+    AWS_CLI_VERSION=${AWS_CLI_VERSION_ARG:-1.20.58} \
     AWS_CLI_DOWNLOAD_URL="https://github.com/aws/aws-cli/archive" \
+    PHP_EXT_REDIS_VERSION=${PHP_EXT_REDIS_VERSION_ARG:-5.3.7} \
+    PHP_EXT_APCU_VERSION=${PHP_EXT_APCU_VERSION_ARG:-5.1.21} \
+    PHP_EXT_XDEBUG_VERSION=${PHP_EXT_XDEBUG_VERSION_ARG:-3.2.0} \
     PHP_FPM_MAX_CHILDREN=${PHP_FPM_MAX_CHILDREN:-5} \
     PHP_FPM_REQUEST_MAX_MEMORY_IN_MEGABYTES=${PHP_FPM_REQUEST_MAX_MEMORY_IN_MEGABYTES:-128} \
     CONTAINER_HEAP_PERCENT=${CONTAINER_HEAP_PERCENT:-0.80} \
@@ -39,6 +50,11 @@ COPY --chmod=775 --chown=1001:0 etc/ssmtp/ /opt/etc/ssmtp/
 COPY --chmod=775 --chown=1001:0 bin/ /usr/local/bin/
 
 RUN mkdir -p /home/default /opt/etc /opt/bin/container-entrypoint.d /opt/src /var/lock \
+    && chmod +x /usr/local/bin/apk-list \
+                /usr/local/bin/container-entrypoint \
+                /usr/local/bin/wait-for-it \
+    && echo "Upgrade all already installed packages ..." \
+    && apk upgrade --available \
     && echo "Install and Configure required extra PHP packages ..." \
     && apk add --update --no-cache --virtual .build-deps $PHPIZE_DEPS autoconf freetype-dev icu-dev \
                                                 libjpeg-turbo-dev libpng-dev libwebp-dev libxpm-dev \
@@ -50,8 +66,8 @@ RUN mkdir -p /home/default /opt/etc /opt/bin/container-entrypoint.d /opt/src /va
     && docker-php-ext-install -j "$(nproc)" soap bz2 fileinfo gettext intl pcntl pgsql \
                                             pdo_pgsql ldap gd ldap mysqli pdo_mysql \
                                             zip bcmath exif tidy xsl \
-    && pecl install APCu-5.1.21 \
-    && pecl install redis-5.3.7 \
+    && pecl install APCu-${PHP_EXT_APCU_VERSION} \
+    && pecl install redis-${PHP_EXT_REDIS_VERSION} \
     && docker-php-ext-enable apcu redis opcache \
     && runDeps="$( \
        scanelf --needed --nobanner --format '%n#p' --recursive /usr/local/lib/php/extensions \
@@ -110,15 +126,23 @@ HEALTHCHECK --start-period=10s --interval=1m --timeout=5s --retries=5 \
 
 CMD ["php-fpm", "-F", "-R"]
 
-FROM php-fpm-prod AS php-fpm-dev
+FROM fpm-prd AS fpm-dev
 
-LABEL eu.elasticms.base-php-fpm.environment="dev"
+LABEL be.fgov.elasticms.base.environment="dev"
 
 USER root
 
+COPY --from=composer /usr/bin/composer /usr/bin/composer
+
+COPY --from=node /usr/lib /usr/lib
+COPY --from=node /usr/local/share /usr/local/share
+COPY --from=node /usr/local/lib /usr/local/lib
+COPY --from=node /usr/local/include /usr/local/include
+COPY --from=node /usr/local/bin /usr/local/bin
+
 RUN echo "Install and Configure required extra PHP packages ..." \
     && apk add --update --no-cache --virtual .build-deps $PHPIZE_DEPS autoconf coreutils linux-headers \
-    && pecl install xdebug-3.2.0 \
+    && pecl install xdebug-${PHP_EXT_XDEBUG_VERSION} \
     && docker-php-ext-enable xdebug \
     && runDeps="$( \
        scanelf --needed --nobanner --format '%n#p' --recursive /usr/local/lib/php/extensions \
@@ -135,15 +159,8 @@ RUN echo "Install and Configure required extra PHP packages ..." \
     && echo 'xdebug.client_port=9003' >> /usr/local/etc/php/conf.d/xdebug-default.ini \
     && echo 'xdebug.client_host=host.docker.internal' >> /usr/local/etc/php/conf.d/xdebug-default.ini \
     && cp "$PHP_INI_DIR/php.ini-development" "$PHP_INI_DIR/php.ini" \
-    && echo "Download and install Composer ..." \
-    && curl -sSfLk https://getcomposer.org/installer -o /tmp/composer-setup.php \
-    && curl -sSfLk https://composer.github.io/installer.sig -o /tmp/composer-setup.sig \
-    && COMPOSER_INSTALLER_SHA384SUM=$(cat /tmp/composer-setup.sig) \
-    && echo "$COMPOSER_INSTALLER_SHA384SUM /tmp/composer-setup.php" | sha384sum -c \
-    && php /tmp/composer-setup.php --disable-tls --install-dir=/usr/local/bin \
-    && rm /tmp/composer-setup.php /tmp/composer-setup.sig \
-    && ln -s /usr/local/bin/composer.phar /usr/local/bin/composer \
-    && chmod +x /usr/local/bin/composer.phar /usr/local/bin/composer \
+    && rm -rf /var/cache/apk/* \
+    && echo "Configure Composer ..." \
     && mkdir /home/default/.composer \
     && chown 1001:0 /home/default/.composer \
     && chmod -R ug+rw /home/default/.composer \
@@ -154,40 +171,9 @@ EXPOSE 9003
 
 USER 1001
 
-FROM php-fpm-prod AS apache-prod
+FROM fpm-prd AS apache-prd
 
-LABEL eu.elasticms.base-php-fpm.webserver="apache"
-
-USER root
-
-COPY --chmod=775 --chown=1001:0 etc/apache2/ /etc/apache2/
-COPY --chmod=775 --chown=1001:0 etc/supervisord.apache/ /etc/supervisord/
-COPY --chmod=775 --chown=1001:0 src/ /var/www/html/
-
-RUN apk add --update --no-cache --virtual .php-apache-rundeps apache2 apache2-utils apache2-proxy apache2-ssl \
-    && mkdir -p /run/apache2 /var/run/apache2 /var/log/apache2 \
-    && rm -rf /var/cache/apk/* \
-    && echo "Setup permissions on filesystem for non-privileged user ..." \
-    && chown -Rf 1001:0 /etc/apache2 /run/apache2 /var/run/apache2 /var/log/apache2 /var/www/html \
-    && chmod -R ug+rw /etc/apache2 /run/apache2 /var/run/apache2 /var/log/apache2 /var/www/html \
-    && find /run/apache2 -type d -exec chmod ug+x {} \; \
-    && find /etc/apache2 -type d -exec chmod ug+x {} \; \
-    && find /run/apache2 -type d -exec chmod ug+x {} \; \
-    && find /var/run/apache2 -type d -exec chmod ug+x {} \; \
-    && find /var/log/apache2 -type d -exec chmod ug+x {} \; 
-
-USER 1001
-
-ENTRYPOINT ["container-entrypoint"]
-
-HEALTHCHECK --start-period=10s --interval=1m --timeout=5s --retries=5 \
-        CMD curl --fail --header "Host: default.localhost" http://localhost:9000/index.php || exit 1
-
-CMD ["/usr/bin/supervisord", "-c", "/etc/supervisord/supervisord.conf"]
-
-FROM php-fpm-dev AS apache-dev
-
-LABEL eu.elasticms.base-php-fpm.webserver="apache"
+LABEL be.fgov.elasticms.base.webserver="apache"
 
 USER root
 
@@ -216,9 +202,40 @@ HEALTHCHECK --start-period=10s --interval=1m --timeout=5s --retries=5 \
 
 CMD ["/usr/bin/supervisord", "-c", "/etc/supervisord/supervisord.conf"]
 
-FROM php-fpm-prod AS nginx-prod
+FROM fpm-dev AS apache-dev
 
-LABEL eu.elasticms.base-php-fpm.webserver="nginx"
+LABEL be.fgov.elasticms.base.webserver="apache"
+
+USER root
+
+COPY --chmod=775 --chown=1001:0 etc/apache2/ /etc/apache2/
+COPY --chmod=775 --chown=1001:0 etc/supervisord.apache/ /etc/supervisord/
+COPY --chmod=775 --chown=1001:0 src/ /var/www/html/
+
+RUN apk add --update --no-cache --virtual .php-apache-rundeps apache2 apache2-utils apache2-proxy apache2-ssl \
+    && mkdir -p /run/apache2 /var/run/apache2 /var/log/apache2 \
+    && rm -rf /var/cache/apk/* \
+    && echo "Setup permissions on filesystem for non-privileged user ..." \
+    && chown -Rf 1001:0 /etc/apache2 /run/apache2 /var/run/apache2 /var/log/apache2 /var/www/html \
+    && chmod -R ug+rw /etc/apache2 /run/apache2 /var/run/apache2 /var/log/apache2 /var/www/html \
+    && find /run/apache2 -type d -exec chmod ug+x {} \; \
+    && find /etc/apache2 -type d -exec chmod ug+x {} \; \
+    && find /run/apache2 -type d -exec chmod ug+x {} \; \
+    && find /var/run/apache2 -type d -exec chmod ug+x {} \; \
+    && find /var/log/apache2 -type d -exec chmod ug+x {} \; 
+
+USER 1001
+
+ENTRYPOINT ["container-entrypoint"]
+
+HEALTHCHECK --start-period=10s --interval=1m --timeout=5s --retries=5 \
+        CMD curl --fail --header "Host: default.localhost" http://localhost:9000/index.php || exit 1
+
+CMD ["/usr/bin/supervisord", "-c", "/etc/supervisord/supervisord.conf"]
+
+FROM fpm-prd AS nginx-prd
+
+LABEL be.fgov.elasticms.base.webserver="nginx"
 
 USER root
 
@@ -250,9 +267,9 @@ HEALTHCHECK --start-period=10s --interval=1m --timeout=5s --retries=5 \
 
 CMD ["/usr/bin/supervisord", "-c", "/etc/supervisord/supervisord.conf"]
 
-FROM php-fpm-dev AS nginx-dev
+FROM fpm-dev AS nginx-dev
 
-LABEL eu.elasticms.base-php-fpm.webserver="nginx"
+LABEL be.fgov.elasticms.base.webserver="nginx"
 
 USER root
 
