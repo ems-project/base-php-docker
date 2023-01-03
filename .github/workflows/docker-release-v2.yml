@@ -112,7 +112,7 @@ jobs:
           cat /tmp/builded.tar | docker load
           docker-squash --message "Build and Squashed in GitHub Action" \
             --tag ${{ needs.init.outputs.docker-image-name }}:${{ needs.init.outputs.github-ci-sha-short }}-${{ matrix.image-variant }} \
-            --output-path /tmp/phpfpm-prd-squashed.tar \
+            --output-path /tmp/squashed.tar \
             --cleanup \
             ${{ needs.init.outputs.docker-image-name }}:${{ needs.init.outputs.github-ci-sha-short }}-${{ matrix.image-variant }}
           cat /tmp/squashed.tar | docker load
