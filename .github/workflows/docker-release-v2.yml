@@ -188,6 +188,7 @@ jobs:
       - name: Test "${{ needs.init.outputs.docker-image-name }}:${{ needs.init.outputs.github-ci-sha-short }}-${{ matrix.image-variant }}" Docker Image
         env:
           DOCKER_IMAGE_NAME: ${{ needs.init.outputs.docker-image-name }}:${{ needs.init.outputs.github-ci-sha-short }}-${{ matrix.image-variant }}
+          PHP_VERSION: ${{ needs.init.outputs.version-patch }}
         run: |
           docker network create docker_default
           docker pull appropriate/curl:latest
