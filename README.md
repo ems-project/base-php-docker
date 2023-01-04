@@ -72,13 +72,13 @@ make test[-fpm|-apache|-nginx|-cli|-all][-dev] PHP_VERSION=<PHP Version you want
 ## Example testing of __prd__ builded docker image
 
 ```sh
-make test PHP_VERSION=8.1.13
+make test PHP_VERSION=8.2.0
 ```
 
 ## Example testing of __dev__ builded docker image
 
 ```sh
-make test-dev PHP_VERSION=8.1.13
+make test-dev PHP_VERSION=8.2.0
 ```
 
 # Releases
