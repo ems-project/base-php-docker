@@ -53,7 +53,7 @@ jobs:
 
     strategy:
       matrix:
-        image-variant: [fpm-prd,apache-prd,nginx-prd,fpm-dev,apache-dev,nginx-dev]
+        image-variant: [fpm-prd,apache-prd,nginx-prd,cli-prd,fpm-dev,apache-dev,nginx-dev,cli-dev]
 
     runs-on: ubuntu-20.04
     needs: init
@@ -136,7 +136,7 @@ jobs:
 
     strategy:
       matrix:
-        image-variant: [fpm-prd,apache-prd,nginx-prd,fpm-dev,apache-dev,nginx-dev]
+        image-variant: [fpm-prd,apache-prd,nginx-prd,cli-prd,fpm-dev,apache-dev,nginx-dev,cli-dev]
 
     runs-on: ubuntu-20.04
     needs: [init,build]
@@ -198,7 +198,7 @@ jobs:
     strategy:
       max-parallel: 1
       matrix:
-        image-variant: [fpm-dev,apache-dev,nginx-dev]
+        image-variant: [fpm-dev,apache-dev,nginx-dev,cli-dev]
 
     runs-on: ubuntu-20.04
     needs:  [init,tests]
@@ -261,7 +261,7 @@ jobs:
     strategy:
       max-parallel: 1
       matrix:
-        image-variant: [fpm-prd,apache-prd,nginx-prd]
+        image-variant: [fpm-prd,apache-prd,nginx-prd,cli-prd]
 
     runs-on: ubuntu-20.04
     needs:  [init,tests]
@@ -367,7 +367,7 @@ jobs:
 
     strategy:
       matrix:
-        image-variant: [fpm-prd,apache-prd,nginx-prd,fpm-dev,apache-dev,nginx-dev]
+        image-variant: [fpm-prd,apache-prd,nginx-prd,cli-prd,fpm-dev,apache-dev,nginx-dev,cli-dev]
 
     runs-on: ubuntu-20.04
     needs: [sign-prd,sign-dev]
