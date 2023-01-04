@@ -83,7 +83,6 @@ jobs:
             type=raw,value=${{ steps.prep.outputs.github-ci-sha-short }}
             type=raw,value=${{ steps.prep.outputs.version-patch }}
             type=raw,value=${{ steps.prep.outputs.version-minor }}
-            type=raw,value=${{ steps.prep.outputs.version-major }}
             type=raw,value=latest
 
       - name: Fill "${{ steps.prep.outputs.phpfpm-dev-docker-image-name }}" Docker Image metadata
@@ -96,7 +95,6 @@ jobs:
             type=raw,value=${{ steps.prep.outputs.github-ci-sha-short }}
             type=raw,value=${{ steps.prep.outputs.version-patch }}
             type=raw,value=${{ steps.prep.outputs.version-minor }}
-            type=raw,value=${{ steps.prep.outputs.version-major }}
             type=raw,value=latest
 
       - name: Fill "${{ steps.prep.outputs.apache-prd-docker-image-name }}" Docker Image metadata
@@ -109,7 +107,6 @@ jobs:
             type=raw,value=${{ steps.prep.outputs.github-ci-sha-short }}
             type=raw,value=${{ steps.prep.outputs.version-patch }}
             type=raw,value=${{ steps.prep.outputs.version-minor }}
-            type=raw,value=${{ steps.prep.outputs.version-major }}
             type=raw,value=latest
 
       - name: Fill "${{ steps.prep.outputs.apache-dev-docker-image-name }}" Docker Image metadata
@@ -122,7 +119,6 @@ jobs:
             type=raw,value=${{ steps.prep.outputs.github-ci-sha-short }}
             type=raw,value=${{ steps.prep.outputs.version-patch }}
             type=raw,value=${{ steps.prep.outputs.version-minor }}
-            type=raw,value=${{ steps.prep.outputs.version-major }}
             type=raw,value=latest
 
       - name: Fill "${{ steps.prep.outputs.nginx-prd-docker-image-name }}" Docker Image metadata
@@ -135,7 +131,6 @@ jobs:
             type=raw,value=${{ steps.prep.outputs.github-ci-sha-short }}
             type=raw,value=${{ steps.prep.outputs.version-patch }}
             type=raw,value=${{ steps.prep.outputs.version-minor }}
-            type=raw,value=${{ steps.prep.outputs.version-major }}
             type=raw,value=latest
 
       - name: Fill "${{ steps.prep.outputs.nginx-dev-docker-image-name }}" Docker Image metadata
@@ -148,7 +143,6 @@ jobs:
             type=raw,value=${{ steps.prep.outputs.github-ci-sha-short }}
             type=raw,value=${{ steps.prep.outputs.version-patch }}
             type=raw,value=${{ steps.prep.outputs.version-minor }}
-            type=raw,value=${{ steps.prep.outputs.version-major }}
             type=raw,value=latest
 
   build:
@@ -177,7 +171,7 @@ jobs:
           builder: ${{ steps.buildx.outputs.name }}
           context: .
           file: Dockerfile
-          target: php-fpm-prod
+          target: fpm-prd
           build-args: |
             VERSION_ARG=${{ needs.init.outputs.version-patch }}
             RELEASE_ARG=${{ needs.init.outputs.github-ci-run-id }}
@@ -194,7 +188,7 @@ jobs:
           builder: ${{ steps.buildx.outputs.name }}
           context: .
           file: Dockerfile
-          target: php-fpm-dev
+          target: fpm-dev
           build-args: |
             VERSION_ARG=${{ needs.init.outputs.version-patch }}
             RELEASE_ARG=${{ needs.init.outputs.github-ci-run-id }}
@@ -211,7 +205,7 @@ jobs:
           builder: ${{ steps.buildx.outputs.name }}
           context: .
           file: Dockerfile
-          target: apache-prod
+          target: apache-prd
           build-args: |
             VERSION_ARG=${{ needs.init.outputs.version-patch }}
             RELEASE_ARG=${{ needs.init.outputs.github-ci-run-id }}
@@ -245,7 +239,7 @@ jobs:
           builder: ${{ steps.buildx.outputs.name }}
           context: .
           file: Dockerfile
-          target: nginx-prod
+          target: nginx-prd
           build-args: |
             VERSION_ARG=${{ needs.init.outputs.version-patch }}
             RELEASE_ARG=${{ needs.init.outputs.github-ci-run-id }}
@@ -500,21 +494,21 @@ jobs:
 
       - name: Test "${{ needs.init.outputs.phpfpm-prd-docker-image-name }}" Docker Image
         env:
-          PHPFPM_PRD_DOCKER_IMAGE_NAME: ${{ needs.init.outputs.phpfpm-prd-docker-image-name }}:${{ needs.init.outputs.github-ci-sha-short }}
+          DOCKER_IMAGE_NAME: ${{ needs.init.outputs.phpfpm-prd-docker-image-name }}:${{ needs.init.outputs.github-ci-sha-short }}
         run: |
           docker network create docker_default
           docker pull appropriate/curl:latest
-          bats -r test/tests.php-fpm.bats
+          bats -r test/tests.fpm.bats
 
       - name: Test "${{ needs.init.outputs.apache-prd-docker-image-name }}" Docker Image
         env:
-          APACHE_PRD_DOCKER_IMAGE_NAME: ${{ needs.init.outputs.apache-prd-docker-image-name }}:${{ needs.init.outputs.github-ci-sha-short }}
+          DOCKER_IMAGE_NAME: ${{ needs.init.outputs.apache-prd-docker-image-name }}:${{ needs.init.outputs.github-ci-sha-short }}
         run: |
           bats -r test/tests.apache.bats
 
       - name: Test "${{ needs.init.outputs.nginx-prd-docker-image-name }}" Docker Image
         env:
-          NGINX_PRD_DOCKER_IMAGE_NAME: ${{ needs.init.outputs.nginx-prd-docker-image-name }}:${{ needs.init.outputs.github-ci-sha-short }}
+          DOCKER_IMAGE_NAME: ${{ needs.init.outputs.nginx-prd-docker-image-name }}:${{ needs.init.outputs.github-ci-sha-short }}
         run: |
           bats -r test/tests.nginx.bats
 
@@ -605,14 +599,6 @@ jobs:
           private-key: ${{ secrets.DOCKER_PRIVATE_KEY }}
           private-key-passphrase: ${{ secrets.DOCKER_PRIVATE_KEY_PASSPHRASE }}
 
-      - name: Sign and push docker image "${{ needs.init.outputs.phpfpm-prd-docker-image-name }}:${{ needs.init.outputs.version-major }}"
-        uses: sudo-bot/action-docker-sign@latest
-        with:
-          image-ref: "${{ needs.init.outputs.phpfpm-prd-docker-image-name }}:${{ needs.init.outputs.version-major }}"
-          private-key-id: "${{ secrets.DOCKER_PRIVATE_KEY_ID }}"
-          private-key: ${{ secrets.DOCKER_PRIVATE_KEY }}
-          private-key-passphrase: ${{ secrets.DOCKER_PRIVATE_KEY_PASSPHRASE }}
-
       - name: Sign and push docker image "${{ needs.init.outputs.phpfpm-prd-docker-image-name }}:latest"
         uses: sudo-bot/action-docker-sign@latest
         with:
@@ -641,14 +627,6 @@ jobs:
         uses: sudo-bot/action-docker-sign@latest
         with:
           image-ref: "${{ needs.init.outputs.phpfpm-dev-docker-image-name }}:${{ needs.init.outputs.version-minor }}"
-          private-key-id: "${{ secrets.DOCKER_PRIVATE_KEY_ID }}"
-          private-key: ${{ secrets.DOCKER_PRIVATE_KEY }}
-          private-key-passphrase: ${{ secrets.DOCKER_PRIVATE_KEY_PASSPHRASE }}
-
-      - name: Sign and push docker image "${{ needs.init.outputs.phpfpm-dev-docker-image-name }}:${{ needs.init.outputs.version-major }}"
-        uses: sudo-bot/action-docker-sign@latest
-        with:
-          image-ref: "${{ needs.init.outputs.phpfpm-dev-docker-image-name }}:${{ needs.init.outputs.version-major }}"
           private-key-id: "${{ secrets.DOCKER_PRIVATE_KEY_ID }}"
           private-key: ${{ secrets.DOCKER_PRIVATE_KEY }}
           private-key-passphrase: ${{ secrets.DOCKER_PRIVATE_KEY_PASSPHRASE }}
@@ -685,14 +663,6 @@ jobs:
           private-key: ${{ secrets.DOCKER_PRIVATE_KEY }}
           private-key-passphrase: ${{ secrets.DOCKER_PRIVATE_KEY_PASSPHRASE }}
 
-      - name: Sign and push docker image "${{ needs.init.outputs.apache-prd-docker-image-name }}:${{ needs.init.outputs.version-major }}"
-        uses: sudo-bot/action-docker-sign@latest
-        with:
-          image-ref: "${{ needs.init.outputs.apache-prd-docker-image-name }}:${{ needs.init.outputs.version-major }}"
-          private-key-id: "${{ secrets.DOCKER_PRIVATE_KEY_ID }}"
-          private-key: ${{ secrets.DOCKER_PRIVATE_KEY }}
-          private-key-passphrase: ${{ secrets.DOCKER_PRIVATE_KEY_PASSPHRASE }}
-
       - name: Sign and push docker image "${{ needs.init.outputs.apache-prd-docker-image-name }}:latest"
         uses: sudo-bot/action-docker-sign@latest
         with:
@@ -721,14 +691,6 @@ jobs:
         uses: sudo-bot/action-docker-sign@latest
         with:
           image-ref: "${{ needs.init.outputs.apache-dev-docker-image-name }}:${{ needs.init.outputs.version-minor }}"
-          private-key-id: "${{ secrets.DOCKER_PRIVATE_KEY_ID }}"
-          private-key: ${{ secrets.DOCKER_PRIVATE_KEY }}
-          private-key-passphrase: ${{ secrets.DOCKER_PRIVATE_KEY_PASSPHRASE }}
-
-      - name: Sign and push docker image "${{ needs.init.outputs.apache-dev-docker-image-name }}:${{ needs.init.outputs.version-major }}"
-        uses: sudo-bot/action-docker-sign@latest
-        with:
-          image-ref: "${{ needs.init.outputs.apache-dev-docker-image-name }}:${{ needs.init.outputs.version-major }}"
           private-key-id: "${{ secrets.DOCKER_PRIVATE_KEY_ID }}"
           private-key: ${{ secrets.DOCKER_PRIVATE_KEY }}
           private-key-passphrase: ${{ secrets.DOCKER_PRIVATE_KEY_PASSPHRASE }}
@@ -765,14 +727,6 @@ jobs:
           private-key: ${{ secrets.DOCKER_PRIVATE_KEY }}
           private-key-passphrase: ${{ secrets.DOCKER_PRIVATE_KEY_PASSPHRASE }}
 
-      - name: Sign and push docker image "${{ needs.init.outputs.nginx-prd-docker-image-name }}:${{ needs.init.outputs.version-major }}"
-        uses: sudo-bot/action-docker-sign@latest
-        with:
-          image-ref: "${{ needs.init.outputs.nginx-prd-docker-image-name }}:${{ needs.init.outputs.version-major }}"
-          private-key-id: "${{ secrets.DOCKER_PRIVATE_KEY_ID }}"
-          private-key: ${{ secrets.DOCKER_PRIVATE_KEY }}
-          private-key-passphrase: ${{ secrets.DOCKER_PRIVATE_KEY_PASSPHRASE }}
-
       - name: Sign and push docker image "${{ needs.init.outputs.nginx-prd-docker-image-name }}:latest"
         uses: sudo-bot/action-docker-sign@latest
         with:
@@ -805,14 +759,6 @@ jobs:
           private-key: ${{ secrets.DOCKER_PRIVATE_KEY }}
           private-key-passphrase: ${{ secrets.DOCKER_PRIVATE_KEY_PASSPHRASE }}
 
-      - name: Sign and push docker image "${{ needs.init.outputs.nginx-dev-docker-image-name }}:${{ needs.init.outputs.version-major }}"
-        uses: sudo-bot/action-docker-sign@latest
-        with:
-          image-ref: "${{ needs.init.outputs.nginx-dev-docker-image-name }}:${{ needs.init.outputs.version-major }}"
-          private-key-id: "${{ secrets.DOCKER_PRIVATE_KEY_ID }}"
-          private-key: ${{ secrets.DOCKER_PRIVATE_KEY }}
-          private-key-passphrase: ${{ secrets.DOCKER_PRIVATE_KEY_PASSPHRASE }}
-
       - name: Sign and push docker image "${{ needs.init.outputs.nginx-dev-docker-image-name }}:latest"
         uses: sudo-bot/action-docker-sign@latest
         with:
@@ -826,32 +772,26 @@ jobs:
           docker pull ${{ needs.init.outputs.phpfpm-prd-docker-image-name }}:${{ needs.init.outputs.github-ci-sha-short }}
           docker pull ${{ needs.init.outputs.phpfpm-prd-docker-image-name }}:${{ needs.init.outputs.version-patch }}
           docker pull ${{ needs.init.outputs.phpfpm-prd-docker-image-name }}:${{ needs.init.outputs.version-minor }}
-          docker pull ${{ needs.init.outputs.phpfpm-prd-docker-image-name }}:${{ needs.init.outputs.version-major }}
           docker pull ${{ needs.init.outputs.phpfpm-prd-docker-image-name }}:latest
           docker pull ${{ needs.init.outputs.phpfpm-dev-docker-image-name }}:${{ needs.init.outputs.github-ci-sha-short }}
           docker pull ${{ needs.init.outputs.phpfpm-dev-docker-image-name }}:${{ needs.init.outputs.version-patch }}
           docker pull ${{ needs.init.outputs.phpfpm-dev-docker-image-name }}:${{ needs.init.outputs.version-minor }}
-          docker pull ${{ needs.init.outputs.phpfpm-dev-docker-image-name }}:${{ needs.init.outputs.version-major }}
           docker pull ${{ needs.init.outputs.phpfpm-dev-docker-image-name }}:latest
           docker pull ${{ needs.init.outputs.apache-prd-docker-image-name }}:${{ needs.init.outputs.github-ci-sha-short }}
           docker pull ${{ needs.init.outputs.apache-prd-docker-image-name }}:${{ needs.init.outputs.version-patch }}
           docker pull ${{ needs.init.outputs.apache-prd-docker-image-name }}:${{ needs.init.outputs.version-minor }}
-          docker pull ${{ needs.init.outputs.apache-prd-docker-image-name }}:${{ needs.init.outputs.version-major }}
           docker pull ${{ needs.init.outputs.apache-prd-docker-image-name }}:latest
           docker pull ${{ needs.init.outputs.apache-dev-docker-image-name }}:${{ needs.init.outputs.github-ci-sha-short }}
           docker pull ${{ needs.init.outputs.apache-dev-docker-image-name }}:${{ needs.init.outputs.version-patch }}
           docker pull ${{ needs.init.outputs.apache-dev-docker-image-name }}:${{ needs.init.outputs.version-minor }}
-          docker pull ${{ needs.init.outputs.apache-dev-docker-image-name }}:${{ needs.init.outputs.version-major }}
           docker pull ${{ needs.init.outputs.apache-dev-docker-image-name }}:latest
           docker pull ${{ needs.init.outputs.nginx-prd-docker-image-name }}:${{ needs.init.outputs.github-ci-sha-short }}
           docker pull ${{ needs.init.outputs.nginx-prd-docker-image-name }}:${{ needs.init.outputs.version-patch }}
           docker pull ${{ needs.init.outputs.nginx-prd-docker-image-name }}:${{ needs.init.outputs.version-minor }}
-          docker pull ${{ needs.init.outputs.nginx-prd-docker-image-name }}:${{ needs.init.outputs.version-major }}
           docker pull ${{ needs.init.outputs.nginx-prd-docker-image-name }}:latest
           docker pull ${{ needs.init.outputs.nginx-dev-docker-image-name }}:${{ needs.init.outputs.github-ci-sha-short }}
           docker pull ${{ needs.init.outputs.nginx-dev-docker-image-name }}:${{ needs.init.outputs.version-patch }}
           docker pull ${{ needs.init.outputs.nginx-dev-docker-image-name }}:${{ needs.init.outputs.version-minor }}
-          docker pull ${{ needs.init.outputs.nginx-dev-docker-image-name }}:${{ needs.init.outputs.version-major }}
           docker pull ${{ needs.init.outputs.nginx-dev-docker-image-name }}:latest
 
       - name: Create the Mattermost Message
@@ -862,27 +802,21 @@ jobs:
           echo "| :--- | :--- |" >> mattermost.json
           echo "| ${{ steps.prep.outputs.dockerhub_phpfpm_prd_image }}:${{ steps.prep.outputs.version_major_minor_patch }} | PHP Only |" >> mattermost.json
           echo "| ${{ steps.prep.outputs.dockerhub_phpfpm_prd_image }}:${{ steps.prep.outputs.version_major_minor }} | PHP Only |" >> mattermost.json
-          echo "| ${{ steps.prep.outputs.dockerhub_phpfpm_prd_image }}:${{ steps.prep.outputs.version_major }} | PHP Only |" >> mattermost.json
           echo "| ${{ steps.prep.outputs.dockerhub_phpfpm_prd_image }}:latest | PHP Only |" >> mattermost.json
           echo "| ${{ steps.prep.outputs.dockerhub_phpfpm_dev_image }}:${{ steps.prep.outputs.version_major_minor_patch }} | PHP + Composer |" >> mattermost.json
           echo "| ${{ steps.prep.outputs.dockerhub_phpfpm_dev_image }}:${{ steps.prep.outputs.version_major_minor }} | PHP + Composer |" >> mattermost.json
-          echo "| ${{ steps.prep.outputs.dockerhub_phpfpm_dev_image }}:${{ steps.prep.outputs.version_major }} | PHP + Composer |" >> mattermost.json
           echo "| ${{ steps.prep.outputs.dockerhub_phpfpm_dev_image }}:latest | PHP + Composer |" >> mattermost.json
           echo "| ${{ steps.prep.outputs.dockerhub_apache_prd_image }}:${{ steps.prep.outputs.version_major_minor_patch }} | PHP + Apache WebServer |" >> mattermost.json
           echo "| ${{ steps.prep.outputs.dockerhub_apache_prd_image }}:${{ steps.prep.outputs.version_major_minor }} | PHP + Apache WebServer |" >> mattermost.json
-          echo "| ${{ steps.prep.outputs.dockerhub_apache_prd_image }}:${{ steps.prep.outputs.version_major }} | PHP + Apache WebServer |" >> mattermost.json
           echo "| ${{ steps.prep.outputs.dockerhub_apache_prd_image }}:latest | PHP + Apache WebServer |" >> mattermost.json
           echo "| ${{ steps.prep.outputs.dockerhub_apache_dev_image }}:${{ steps.prep.outputs.version_major_minor_patch }} | PHP + Apache WebServer + Composer |" >> mattermost.json
           echo "| ${{ steps.prep.outputs.dockerhub_apache_dev_image }}:${{ steps.prep.outputs.version_major_minor }} | PHP + Apache WebServer + Composer |" >> mattermost.json
-          echo "| ${{ steps.prep.outputs.dockerhub_apache_dev_image }}:${{ steps.prep.outputs.version_major }} | PHP + Apache WebServer + Composer |" >> mattermost.json
           echo "| ${{ steps.prep.outputs.dockerhub_apache_dev_image }}:latest | PHP + Apache WebServer + Composer |" >> mattermost.json
           echo "| ${{ steps.prep.outputs.dockerhub_nginx_prd_image }}:${{ steps.prep.outputs.version_major_minor_patch }} | PHP + NGinx WebServer |" >> mattermost.json
           echo "| ${{ steps.prep.outputs.dockerhub_nginx_prd_image }}:${{ steps.prep.outputs.version_major_minor }} | PHP + NGinx WebServer |" >> mattermost.json
-          echo "| ${{ steps.prep.outputs.dockerhub_nginx_prd_image }}:${{ steps.prep.outputs.version_major }} | PHP + NGinx WebServer |" >> mattermost.json
           echo "| ${{ steps.prep.outputs.dockerhub_nginx_prd_image }}:latest | PHP + NGinx WebServer |" >> mattermost.json
           echo "| ${{ steps.prep.outputs.dockerhub_nginx_dev_image }}:${{ steps.prep.outputs.version_major_minor_patch }} | PHP + NGinx WebServer + Composer |" >> mattermost.json
           echo "| ${{ steps.prep.outputs.dockerhub_nginx_dev_image }}:${{ steps.prep.outputs.version_major_minor }} | PHP + NGinx WebServer + Composer |" >> mattermost.json
-          echo "| ${{ steps.prep.outputs.dockerhub_nginx_dev_image }}:${{ steps.prep.outputs.version_major }} | PHP + NGinx WebServer + Composer |" >> mattermost.json
           echo "| ${{ steps.prep.outputs.dockerhub_nginx_dev_image }}:latest | PHP + NGinx WebServer + Composer |" >> mattermost.json
           echo "\"}" >> mattermost.json
           cat mattermost.json
@@ -953,7 +887,6 @@ jobs:
               ${{ needs.init.outputs.phpfpm-prd-docker-image-name }}:latest \
               ${{ needs.init.outputs.phpfpm-prd-docker-image-name }}:${{ needs.init.outputs.version-patch }} \
               ${{ needs.init.outputs.phpfpm-prd-docker-image-name }}:${{ needs.init.outputs.version-minor }} \
-              ${{ needs.init.outputs.phpfpm-prd-docker-image-name }}:${{ needs.init.outputs.version-major }} \
               --amend
 
 #        - name: Sign and push the manifest "${{ needs.init.outputs.imagename }}:${{ needs.init.outputs.version_major_minor_patch }}"
