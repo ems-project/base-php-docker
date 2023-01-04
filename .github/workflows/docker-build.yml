@@ -55,7 +55,7 @@ jobs:
             type=raw,value=rc
 
       - name: Fill "${{ steps.prep.outputs.phpcli-prd-docker-image-name }}" Docker Image metadata
-        id: meta-phpfpm-prd
+        id: meta-phpcli-prd
         uses: docker/metadata-action@v4
         with:
           github-token: ${{ secrets.GITHUB_TOKEN }}
