@@ -633,6 +633,7 @@ jobs:
       - name: Test "${{ needs.init.outputs.phpcli-prd-docker-image-name }}" Docker Image
         env:
           DOCKER_IMAGE_NAME: ${{ needs.init.outputs.phpcli-prd-docker-image-name }}:${{ needs.init.outputs.github-ci-sha-short }}
+          PHP_VERSION: ${{ needs.init.outputs.version-patch }}
         run: |
           bats -r test/tests.cli.bats
 
