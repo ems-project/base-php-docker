@@ -410,6 +410,8 @@ USER 1001
 
 FROM cli-prd AS cli-dev
 
+LABEL be.fgov.elasticms.base.environment="dev"
+
 ENV PHP_EXT_XDEBUG_VERSION=${PHP_EXT_XDEBUG_VERSION_ARG:-3.2.0}
 
 USER root
