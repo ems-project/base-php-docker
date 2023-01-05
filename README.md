@@ -18,7 +18,7 @@ Container Entrypoint hooks available.
 Build locally Docker images :  
 
 ```sh
-make build[-fpm|-apache|-nginx|-all][-dev] PHP_VERSION=<PHP Version you want to build> [ DOCKER_IMAGE_NAME=<PHP Docker Image Name you want to build> ]
+make build[-fpm|-apache|-nginx|-cli|-all][-dev] PHP_VERSION=<PHP Version you want to build> [ DOCKER_IMAGE_NAME=<PHP Docker Image Name you want to build> ]
 ```
 
 ## Example building __fpm__ variant __prd__ Docker image
@@ -59,13 +59,14 @@ __Provide docker images__ :
 - `docker.io/elasticms/base-php:8.0.26-apache-dev`
 - `docker.io/elasticms/base-php:8.0.26-nginx-prd`
 - `docker.io/elasticms/base-php:8.0.26-nginx-dev`
-
+- `docker.io/elasticms/base-php:8.0.26-cli-prd`
+- `docker.io/elasticms/base-php:8.0.26-cli-dev`
 # Test
 
 Test Docker images builded locally :  
 
 ```sh
-make test[-fpm|-apache|-nginx|-all][-dev] PHP_VERSION=<PHP Version you want to test>
+make test[-fpm|-apache|-nginx|-cli|-all][-dev] PHP_VERSION=<PHP Version you want to test>
 ```
 
 ## Example testing of __prd__ builded docker image
@@ -89,6 +90,7 @@ Releases are done via GitHub actions and uploaded on Docker Hub.
 - [`8.0.x-fpm`, `8.0-fpm`, `8.0.x-fpm-prd`, `8.0-fpm-prd`, `8.0.y-fpm-dev`, `8.0-fpm-dev`](Dockerfile)
 - [`8.0.x-apache`, `8.0-apache`, `8.0.x-apache-prd`, `8.0-apache-prd`, `8.0.y-apache-dev`, `8.0-apache-dev`](Dockerfile)
 - [`8.0.x-nginx`, `8.0-nginx`, `8.0.x-nginx-prd`, `8.0-nginx-prd`, `8.0.y-nginx-dev`, `8.0-nginx-dev`](Dockerfile)
+- [`8.0.x-cli`, `8.0-cli`, `8.0.x-cli-prd`, `8.0-cli-prd`, `8.0.y-cli-dev`, `8.0-cli-dev`](Dockerfile)
 
 # Image Variants
 
@@ -128,6 +130,15 @@ This variant contains Apache httpd in conjunction with PHP-FPM and uses supervis
 This image use `base-php:<version>-fpm-prd` (see above) as parent layer.  
 This variant contains Nginx Webserver in conjunction with PHP-FPM and uses supervisor as manager for Nginx **and** PHP-FPM.  
 
+## `docker.io/elasticms/base-php:<version>-cli[-prd]`  
+
+This variant contains the PHP CLI tool with default mods.  In addition we install and configure :
+
+- PHP Extensions :
+  - [Redis](https://pecl.php.net/package/redis)
+  - [APCu](https://pecl.php.net/package/apcu)
+- [AWS CLI](https://github.com/aws/aws-cli)
+
 ## `docker.io/elasticms/base-php:<version>-apache-dev`
 
 This image use `base-php:<version>-fpm-dev` (see above) as parent layer.  
@@ -139,6 +150,15 @@ It is strongly recommended to not use this image in production environments!
 This image use `base-php:<version>-fpm-dev` (see above) as parent layer.  
 This variant contains Nginx Webserver in conjunction with PHP-FPM and uses supervisor as manager for Nginx **and** PHP-FPM.  
 It is strongly recommended to not use this image in production environments!  
+
+## `docker.io/elasticms/base-php:<version>-cli-dev`  
+
+This image use `base-php:<version>-cli-prd` (see above) as parent layer.  
+
+In addition to the parent layer, this variant include install :
+
+- [Composer](https://github.com/composer/composer)
+- PHP Extension : [xdebug](https://xdebug.org/)
 
 ## **Warning** : The following images are deprecated and are no longer maintained.  
 
@@ -152,6 +172,8 @@ It is strongly recommended to not use this image in production environments!
 | `docker.io/elasticms/base-apache-dev:<version>` | `docker.io/elasticms/base-php:<version>-apache-dev` |
 | `docker.io/elasticms/base-nginx-fpm:<version>` | `docker.io/elasticms/base-php:<version>-nginx[-prd]` |
 | `docker.io/elasticms/base-nginx-dev:<version>` | `docker.io/elasticms/base-php:<version>-nginx-dev` |
+| `docker.io/elasticms/base-php-cli:<version>` | `docker.io/elasticms/base-php:<version>-cli[-prd]` |
+| `docker.io/elasticms/base-php-cli-dev:<version>` | `docker.io/elasticms/base-php:<version>-cli-dev` |
 
 ## PHP-FPM Configuration
 

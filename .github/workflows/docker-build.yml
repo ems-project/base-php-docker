@@ -28,6 +28,8 @@ jobs:
         run: |
           echo "phpfpm-prd-docker-image-name=${PHPFPM_PRD_DOCKER_IMAGE_NAME}" >> $GITHUB_OUTPUT
           echo "phpfpm-dev-docker-image-name=${PHPFPM_DEV_DOCKER_IMAGE_NAME}" >> $GITHUB_OUTPUT
+          echo "phpcli-prd-docker-image-name=${PHPCLI_PRD_DOCKER_IMAGE_NAME}" >> $GITHUB_OUTPUT
+          echo "phpcli-dev-docker-image-name=${PHPCLI_DEV_DOCKER_IMAGE_NAME}" >> $GITHUB_OUTPUT
           echo "apache-prd-docker-image-name=${APACHE_PRD_DOCKER_IMAGE_NAME}" >> $GITHUB_OUTPUT
           echo "apache-dev-docker-image-name=${APACHE_DEV_DOCKER_IMAGE_NAME}" >> $GITHUB_OUTPUT
           echo "nginx-prd-docker-image-name=${NGINX_PRD_DOCKER_IMAGE_NAME}" >> $GITHUB_OUTPUT
@@ -49,6 +51,24 @@ jobs:
         with:
           github-token: ${{ secrets.GITHUB_TOKEN }}
           images: "${{ steps.prep.outputs.phpfpm-dev-docker-image-name }}"
+          tags: |
+            type=raw,value=rc
+
+      - name: Fill "${{ steps.prep.outputs.phpcli-prd-docker-image-name }}" Docker Image metadata
+        id: meta-phpcli-prd
+        uses: docker/metadata-action@v4
+        with:
+          github-token: ${{ secrets.GITHUB_TOKEN }}
+          images: "${{ steps.prep.outputs.phpcli-prd-docker-image-name }}"
+          tags: |
+            type=raw,value=rc
+
+      - name: Fill "${{ steps.prep.outputs.phpcli-dev-docker-image-name }}" Docker Image metadata
+        id: meta-phpcli-dev
+        uses: docker/metadata-action@v4
+        with:
+          github-token: ${{ secrets.GITHUB_TOKEN }}
+          images: "${{ steps.prep.outputs.phpcli-dev-docker-image-name }}"
           tags: |
             type=raw,value=rc
 
@@ -137,6 +157,44 @@ jobs:
           tags: ${{ steps.meta-phpfpm-dev.outputs.tags }}
           labels: ${{ steps.meta-phpfpm-dev.outputs.labels }}
           outputs: type=docker,dest=/tmp/phpfpm-dev-myimage.tar
+
+      - name: Build "${{ steps.prep.outputs.phpcli-prd-docker-image-name }}" Docker Image
+        id: build-phpcli-prd
+        uses: docker/build-push-action@v3
+        with:
+          builder: ${{ steps.buildx.outputs.name }}
+          context: .
+          file: Dockerfile
+          target: fpm-prd
+          build-args: |
+            VERSION_ARG=${{ env.PHP_VERSION }}
+            RELEASE_ARG=${{ env.CI_RUN_ID }}
+            VCS_REF_ARG=${{ env.CI_SHA }}
+            BUILD_DATE_ARG=${{ steps.prep.outputs.build-date }}
+          push: false
+          load: true
+          tags: ${{ steps.meta-phpcli-prd.outputs.tags }}
+          labels: ${{ steps.meta-phpcli-prd.outputs.labels }}
+          outputs: type=docker,dest=/tmp/phpcli-prd-myimage.tar
+
+      - name: Build "${{ steps.prep.outputs.phpcli-dev-docker-image-name }}" Docker Image
+        id: build-phpcli-dev
+        uses: docker/build-push-action@v3
+        with:
+          builder: ${{ steps.buildx.outputs.name }}
+          context: .
+          file: Dockerfile
+          target: fpm-dev
+          build-args: |
+            VERSION_ARG=${{ env.PHP_VERSION }}
+            RELEASE_ARG=${{ env.CI_RUN_ID }}
+            VCS_REF_ARG=${{ env.CI_SHA }}
+            BUILD_DATE_ARG=${{ steps.prep.outputs.build-date }}
+          push: false
+          load: true
+          tags: ${{ steps.meta-phpcli-dev.outputs.tags }}
+          labels: ${{ steps.meta-phpcli-dev.outputs.labels }}
+          outputs: type=docker,dest=/tmp/phpcli-dev-myimage.tar
 
       - name: Build "${{ steps.prep.outputs.apache-prd-docker-image-name }}" Docker Image
         id: build-apache-prd
@@ -239,6 +297,26 @@ jobs:
             ${{ steps.prep.outputs.phpfpm-dev-docker-image-name }}:rc
           cat /tmp/phpfpm-dev-myimage.tar | docker load
 
+      - name: Squash "${{ steps.prep.outputs.phpcli-prd-docker-image-name }}" Docker Images
+        id: squash-phpcli-prd
+        run: |
+          cat /tmp/phpcli-prd-myimage.tar | docker load
+          docker-squash --verbose --message "Build and Squashed in GitHub Action" \
+            --tag ${{ steps.prep.outputs.phpcli-prd-docker-image-name }}:rc \
+            --output-path /tmp/phpcli-prd-myimage.tar \
+            ${{ steps.prep.outputs.phpcli-prd-docker-image-name }}:rc
+          cat /tmp/phpcli-prd-myimage.tar | docker load
+
+      - name: Squash "${{ steps.prep.outputs.phpcli-dev-docker-image-name }}" Docker Images
+        id: squash-phpcli-dev
+        run: |
+          cat /tmp/phpcli-dev-myimage.tar | docker load
+          docker-squash --verbose --message "Build and Squashed in GitHub Action" \
+            --tag ${{ steps.prep.outputs.phpcli-dev-docker-image-name }}:rc \
+            --output-path /tmp/phpcli-dev-myimage.tar \
+            ${{ steps.prep.outputs.phpcli-dev-docker-image-name }}:rc
+          cat /tmp/phpcli-dev-myimage.tar | docker load
+
       - name: Squash "${{ steps.prep.outputs.apache-prd-docker-image-name }}" Docker Images
         id: squash-apache-prd
         run: |
@@ -283,12 +361,16 @@ jobs:
         run: |
           docker image inspect ${{ steps.prep.outputs.phpfpm-prd-docker-image-name }}:rc
           docker image inspect ${{ steps.prep.outputs.phpfpm-dev-docker-image-name }}:rc
+          docker image inspect ${{ steps.prep.outputs.phpcli-prd-docker-image-name }}:rc
+          docker image inspect ${{ steps.prep.outputs.phpcli-dev-docker-image-name }}:rc
           docker image inspect ${{ steps.prep.outputs.apache-prd-docker-image-name }}:rc
           docker image inspect ${{ steps.prep.outputs.apache-dev-docker-image-name }}:rc
           docker image inspect ${{ steps.prep.outputs.nginx-prd-docker-image-name }}:rc
           docker image inspect ${{ steps.prep.outputs.nginx-dev-docker-image-name }}:rc
           docker history ${{ steps.prep.outputs.phpfpm-prd-docker-image-name }}:rc
           docker history ${{ steps.prep.outputs.phpfpm-dev-docker-image-name }}:rc
+          docker history ${{ steps.prep.outputs.phpcli-prd-docker-image-name }}:rc
+          docker history ${{ steps.prep.outputs.phpcli-dev-docker-image-name }}:rc
           docker history ${{ steps.prep.outputs.apache-prd-docker-image-name }}:rc
           docker history ${{ steps.prep.outputs.apache-dev-docker-image-name }}:rc
           docker history ${{ steps.prep.outputs.nginx-prd-docker-image-name }}:rc
