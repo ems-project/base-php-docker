@@ -15,7 +15,7 @@ _TEST_ARGS_VARIANT ?= fpm
 _TEST_ARGS_TAG ?= latest
 
 .DEFAULT_GOAL := help
-.PHONY: help build build-apache build-nginx build-dev build-apache-dev build-nginx-dev build-all test
+.PHONY: help build build-cli build-apache build-nginx build-dev build-cli-dev build-apache-dev build-nginx-dev build-all test test-dev test-fpm test-fpm-dev test-apache test-apache-dev test-nginx test-nginx-dev test-all
 
 help: # Show help for each of the Makefile recipes.
 	@grep -E '^[a-zA-Z0-9 -]+:.*#'  Makefile | sort | while read -r l; do printf "\033[1;32m$$(echo $$l | cut -f 1 -d':')\033[00m:$$(echo $$l | cut -f 2- -d'#')\n"; done
@@ -33,6 +33,9 @@ build-dev: # Build [fpm,apache,nginx] dev variant Docker images
 build-fpm: # Build [fpm] prd variant Docker image
 	@$(MAKE) -s _build-fpm-prd
 
+build-cli: # Build [cli] prd variant Docker image
+	@$(MAKE) -s _build-cli-prd
+
 build-apache: # Build [apache] prd variant Docker image
 	@$(MAKE) -s _build-apache-prd
 
@@ -40,6 +43,9 @@ build-nginx: # Build [nginx] prd Docker image
 	@$(MAKE) -s _build-nginx-prd
 
 build-fpm-dev: # Build [fpm] dev Docker image
+	@$(MAKE) -s _build-fpm-dev
+
+build-cli-dev: # Build [cli] dev Docker image
 	@$(MAKE) -s _build-fpm-dev
 
 build-apache-dev: # Build [apache] dev Docker image
@@ -51,6 +57,8 @@ build-nginx-dev: # Build [nginx] dev Docker image
 build-all: # Build [fpm,apache,nginx] [prd,dev] variants Docker images
 	@$(MAKE) -s _build-fpm-prd
 	@$(MAKE) -s _build-fpm-dev
+	@$(MAKE) -s _build-cli-prd
+	@$(MAKE) -s _build-cli-dev
 	@$(MAKE) -s _build-apache-prd
 	@$(MAKE) -s _build-apache-dev
 	@$(MAKE) -s _build-nginx-prd
@@ -71,15 +79,17 @@ _builder:
 		--target ${_BUILD_ARGS_TARGET} \
 		--tag ${DOCKER_IMAGE_NAME}:${_BUILD_ARGS_TAG} .
 
-test: # Test [fpm,apache,nginx] prd variant Docker images
+test: # Test [fpm,apache,nginx,cli] prd variant Docker images
 	@$(MAKE) -s _test-fpm-prd
 	@$(MAKE) -s _test-apache-prd
 	@$(MAKE) -s _test-nginx-prd
+	@$(MAKE) -s _test-cli-prd
 
-test-dev: # Test [fpm,apache,nginx] dev variant Docker images
+test-dev: # Test [fpm,apache,nginx,cli] dev variant Docker images
 	@$(MAKE) -s _test-fpm-dev
 	@$(MAKE) -s _test-apache-dev
 	@$(MAKE) -s _test-nginx-dev
+	@$(MAKE) -s _test-cli-dev
 
 test-fpm: # Test [fpm] prd variant Docker image
 	@$(MAKE) -s _test-fpm-prd
@@ -99,13 +109,21 @@ test-nginx: # Test [nginx] prd variant Docker image
 test-nginx-dev: ## Test [nginx] dev variant Docker image
 	@$(MAKE) -s _test-nginx-dev
 
-test-all: # Test [fpm,apache,nginx] [prd,dev] variant Docker images
+test-cli: # Test [cli] prd variant Docker image
+	@$(MAKE) -s _test-cli-prd
+
+test-cli-dev: ## Test [cli] dev variant Docker image
+	@$(MAKE) -s _test-cli-dev
+
+test-all: # Test [fpm,apache,nginx,cli] [prd,dev] variant Docker images
 	@$(MAKE) -s _test-fpm-prd
 	@$(MAKE) -s _test-apache-prd
 	@$(MAKE) -s _test-nginx-prd
+	@$(MAKE) -s _test-cli-prd
 	@$(MAKE) -s _test-fpm-dev
 	@$(MAKE) -s _test-apache-dev
 	@$(MAKE) -s _test-nginx-dev
+	@$(MAKE) -s _test-cli-dev
 
 _test-fpm-%:
 	@$(MAKE) -s _tester \
@@ -122,6 +140,11 @@ _test-nginx-%:
 		-e _TEST_ARGS_TAG="${PHP_VERSION}-nginx-$*" \
 		-e _TEST_ARGS_VARIANT="nginx"
 
+_test-cli-%:
+	@$(MAKE) -s _tester \
+		-e _TEST_ARGS_TAG="${PHP_VERSION}-cli-$*" \
+		-e _TEST_ARGS_VARIANT="cli"
+
 _tester: 
 	@$(MAKE) -s _bats \
 		-e DOCKER_IMAGE_NAME="${DOCKER_IMAGE_NAME}:${_TEST_ARGS_TAG}"
@@ -130,20 +153,28 @@ _bats:
 	@echo "Test [${DOCKER_IMAGE_NAME}] Docker image ..."
 	@bats test/tests.${_TEST_ARGS_VARIANT}.bats
 
-trim: # Trim [fpm,apache,nginx] prd variant Docker images
+trim: # Trim [fpm,apache,nginx,cli] prd variant Docker images
 	@$(MAKE) -s _trim-fpm-prd
 	@$(MAKE) -s _trim-apache-prd
 	@$(MAKE) -s _trim-nginx-prd
+	@$(MAKE) -s _trim-cli-prd
 
-trim-dev: # Trim [fpm,apache,nginx] dev variant Docker images
+trim-dev: # Trim [fpm,apache,nginx,cli] dev variant Docker images
 	@$(MAKE) -s _trim-fpm-dev
 	@$(MAKE) -s _trim-apache-dev
 	@$(MAKE) -s _trim-nginx-dev
+	@$(MAKE) -s _trim-cli-dev
 
 trim-fpm: # Test [fpm] prd variant Docker image
 	@$(MAKE) -s _trim-fpm-prd
 
 trim-fpm-dev: # Test [fpm] dev variant Docker image
+	@$(MAKE) -s _trim-fpm-dev
+
+trim-cli: # Test [cli] prd variant Docker image
+	@$(MAKE) -s _trim-fpm-prd
+
+trim-cli-dev: # Test [cli] dev variant Docker image
 	@$(MAKE) -s _trim-fpm-dev
 
 trim-apache: # Test [apache] prd variant Docker image
@@ -162,13 +193,19 @@ trim-all: # Test [fpm,apache,nginx] [prd,dev] variant Docker images
 	@$(MAKE) -s _trim-fpm-prd
 	@$(MAKE) -s _trim-apache-prd
 	@$(MAKE) -s _trim-nginx-prd
+	@$(MAKE) -s _trim-cli-prd
 	@$(MAKE) -s _trim-fpm-dev
 	@$(MAKE) -s _trim-apache-dev
 	@$(MAKE) -s _trim-nginx-dev
+	@$(MAKE) -s _trim-cli-dev
 
 _trim-fpm-%:
 	@$(MAKE) -s _squash \
 		-e _TEST_ARGS_TAG="${PHP_VERSION}-fpm-$*"
+
+_trim-cli-%:
+	@$(MAKE) -s _squash \
+		-e _TEST_ARGS_TAG="${PHP_VERSION}-cli-$*"
 
 _trim-apache-%:
 	@$(MAKE) -s _squash \
