@@ -46,7 +46,7 @@ build-fpm-dev: # Build [fpm] dev Docker image
 	@$(MAKE) -s _build-fpm-dev
 
 build-cli-dev: # Build [cli] dev Docker image
-	@$(MAKE) -s _build-fpm-dev
+	@$(MAKE) -s _build-cli-dev
 
 build-apache-dev: # Build [apache] dev Docker image
 	@$(MAKE) -s _build-apache-dev
