@@ -165,7 +165,7 @@ jobs:
           builder: ${{ steps.buildx.outputs.name }}
           context: .
           file: Dockerfile
-          target: fpm-prd
+          target: cli-prd
           build-args: |
             VERSION_ARG=${{ env.PHP_VERSION }}
             RELEASE_ARG=${{ env.CI_RUN_ID }}
@@ -184,7 +184,7 @@ jobs:
           builder: ${{ steps.buildx.outputs.name }}
           context: .
           file: Dockerfile
-          target: fpm-dev
+          target: cli-dev
           build-args: |
             VERSION_ARG=${{ env.PHP_VERSION }}
             RELEASE_ARG=${{ env.CI_RUN_ID }}
