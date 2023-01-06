@@ -1,6 +1,6 @@
-name: Docker Release V2
+name: Docker Release (Python 2) V2
 
-run-name: Docker Release V2 ${{ github.ref_name }} by @${{ github.actor }}
+run-name: Docker Release (Python 2) V2 ${{ github.ref_name }} by @${{ github.actor }}
 
 on:
   push:
@@ -91,7 +91,7 @@ jobs:
         with:
           builder: ${{ steps.buildx.outputs.name }}
           context: .
-          file: Dockerfile.cli-py2-node${{ matrix.py2-node-version }}
+          file: Dockerfile.cli-py2-node${{ matrix.node-version }}
           target: ${{ matrix.image-variant }}
           build-args: |
             VERSION_ARG=${{ needs.init.outputs.version-patch }}
