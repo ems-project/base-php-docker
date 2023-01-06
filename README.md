@@ -18,7 +18,7 @@ Container Entrypoint hooks available.
 Build locally Docker images :  
 
 ```sh
-make build[-fpm|-apache|-nginx|-all][-dev] PHP_VERSION=<PHP Version you want to build> [ DOCKER_IMAGE_NAME=<PHP Docker Image Name you want to build> ]
+make build[-fpm|-apache|-nginx|-cli|-all][-dev] PHP_VERSION=<PHP Version you want to build> [ DOCKER_IMAGE_NAME=<PHP Docker Image Name you want to build> ]
 ```
 
 ## Example building __fpm__ variant __prd__ Docker image
@@ -59,13 +59,15 @@ __Provide docker images__ :
 - `docker.io/elasticms/base-php:7.4.33-apache-dev`
 - `docker.io/elasticms/base-php:7.4.33-nginx-prd`
 - `docker.io/elasticms/base-php:7.4.33-nginx-dev`
+- `docker.io/elasticms/base-php:7.4.33-cli-prd`
+- `docker.io/elasticms/base-php:7.4.33-cli-dev`
 
 # Test
 
 Test Docker images builded locally :  
 
 ```sh
-make test[-fpm|-apache|-nginx|-all][-dev] PHP_VERSION=<PHP Version you want to test>
+make test[-fpm|-apache|-nginx|-cli|-all][-dev] PHP_VERSION=<PHP Version you want to test>
 ```
 
 ## Example testing of __prd__ builded docker image
@@ -89,6 +91,13 @@ Releases are done via GitHub actions and uploaded on Docker Hub.
 - [`7.4.x-fpm`, `7.4-fpm`, `7-fpm`, `7.4.x-fpm-prd`, `7.4-fpm-prd`, `7-fpm-prd`, `7.4.y-fpm-dev`, `7.4-fpm-dev`, `7-fpm-dev`](Dockerfile)
 - [`7.4.x-apache`, `7.4-apache`, `7-apache`, `7.4.x-apache-prd`, `7.4-apache-prd`, `7-apache-prd`, `7.4.y-apache-dev`, `7.4-apache-dev`, `7-apache-dev`](Dockerfile)
 - [`7.4.x-nginx`, `7.4-nginx`, `7-nginx`, `7.4.x-nginx-prd`, `7.4-nginx-prd`, `7-nginx-prd`, `7.4.y-nginx-dev`, `7.4-nginx-dev`, `7-nginx-dev`](Dockerfile)
+- [`7.4.x-cli`, `7.4-cli`, `7-cli`, `7.4.x-cli-prd`, `7.4-cli-prd`, `7-cli-prd`, `7.4.y-cli-dev`, `7.4-cli-dev`, `7-cli-dev`](Dockerfile)
+- [`7.4.x-cli-py2-node12`, `7.4-cli-py2-node12`, `7-cli-py2-node12`, `7.4.x-cli-py2-prd-node12`, `7.4-cli-py2-prd-node12`, `7-cli-py2-prd-node12`, `7.4.y-cli-py2-dev-node12`, `7.4-cli-py2-dev-node12`, `7-cli-py2-dev-node12`](Dockerfile.cli-py2-node12)
+- [`7.4.x-cli-py2-node13`, `7.4-cli-py2-node13`, `7-cli-py2-node13`, `7.4.x-cli-py2-prd-node13`, `7.4-cli-py2-prd-node13`, `7-cli-py2-prd-node13`, `7.4.y-cli-py2-dev-node13`, `7.4-cli-py2-dev-node13`, `7-cli-py2-dev-node13`](Dockerfile.cli-py2-node13)
+- [`7.4.x-cli-py2-node14`, `7.4-cli-py2-node14`, `7-cli-py2-node14`, `7.4.x-cli-py2-prd-node14`, `7.4-cli-py2-prd-node14`, `7-cli-py2-prd-node14`, `7.4.y-cli-py2-dev-node14`, `7.4-cli-py2-dev-node14`, `7-cli-py2-dev-node14`](Dockerfile.cli-py2-node14)
+- [`7.4.x-cli-py2-node15`, `7.4-cli-py2-node15`, `7-cli-py2-node15`, `7.4.x-cli-py2-prd-node15`, `7.4-cli-py2-prd-node15`, `7-cli-py2-prd-node15`, `7.4.y-cli-py2-dev-node15`, `7.4-cli-py2-dev-node15`, `7-cli-py2-dev-node15`](Dockerfile.cli-py2-node15)
+- [`7.4.x-cli-py2-node16`, `7.4-cli-py2-node16`, `7-cli-py2-node16`, `7.4.x-cli-py2-prd-node16`, `7.4-cli-py2-prd-node16`, `7-cli-py2-prd-node16`, `7.4.y-cli-py2-dev-node16`, `7.4-cli-py2-dev-node16`, `7-cli-py2-dev-node16`](Dockerfile.cli-py2-node16)
+
 
 # Image Variants
 
@@ -128,6 +137,26 @@ This variant contains Apache httpd in conjunction with PHP-FPM and uses supervis
 This image use `base-php:<version>-fpm-prd` (see above) as parent layer.  
 This variant contains Nginx Webserver in conjunction with PHP-FPM and uses supervisor as manager for Nginx **and** PHP-FPM.  
 
+## `docker.io/elasticms/base-php:<version>-cli[-prd]`  
+
+This variant contains the PHP CLI tool with default mods.  In addition we install and configure :
+
+- PHP Extensions :
+  - [Redis](https://pecl.php.net/package/redis)
+  - [APCu](https://pecl.php.net/package/apcu)
+- [AWS CLI](https://github.com/aws/aws-cli)
+
+## `docker.io/elasticms/base-php:<version>-cli-py2[-prd]-node<version>`  
+
+This variant contains the PHP CLI tool with default mods.  In addition we install and configure :
+
+- Python 2
+- NodeJS
+- PHP Extensions :
+  - [Redis](https://pecl.php.net/package/redis)
+  - [APCu](https://pecl.php.net/package/apcu)
+- [AWS CLI](https://github.com/aws/aws-cli)
+
 ## `docker.io/elasticms/base-php:<version>-apache-dev`
 
 This image use `base-php:<version>-fpm-dev` (see above) as parent layer.  
@@ -139,6 +168,24 @@ It is strongly recommended to not use this image in production environments!
 This image use `base-php:<version>-fpm-dev` (see above) as parent layer.  
 This variant contains Nginx Webserver in conjunction with PHP-FPM and uses supervisor as manager for Nginx **and** PHP-FPM.  
 It is strongly recommended to not use this image in production environments!  
+
+## `docker.io/elasticms/base-php:<version>-cli-dev`  
+
+This image use `base-php:<version>-cli-prd` (see above) as parent layer.  
+
+In addition to the parent layer, this variant include install :
+
+- [Composer](https://github.com/composer/composer)
+- PHP Extension : [xdebug](https://xdebug.org/)
+
+## `docker.io/elasticms/base-php:<version>-cli-py2-dev-node<version>`  
+
+This image use `base-php:<version>-cli-py2-prd-node<version>` (see above) as parent layer.  
+
+In addition to the parent layer, this variant include install :
+
+- [Composer](https://github.com/composer/composer)
+- PHP Extension : [xdebug](https://xdebug.org/)
 
 ## **Warning** : The following images are deprecated and are no longer maintained.  
 
@@ -152,6 +199,10 @@ It is strongly recommended to not use this image in production environments!
 | `docker.io/elasticms/base-apache-dev:<version>` | `docker.io/elasticms/base-php:<version>-apache-dev` |
 | `docker.io/elasticms/base-nginx-fpm:<version>` | `docker.io/elasticms/base-php:<version>-nginx[-prd]` |
 | `docker.io/elasticms/base-nginx-dev:<version>` | `docker.io/elasticms/base-php:<version>-nginx-dev` |
+| `docker.io/elasticms/base-php-cli:<version>` | `docker.io/elasticms/base-php:<version>-cli[-prd]` |
+| `docker.io/elasticms/base-php-cli-dev:<version>` | `docker.io/elasticms/base-php:<version>-cli-dev` |
+| `docker.io/elasticms/base-php-cli:<version>-py2-node<version>` | `docker.io/elasticms/base-php:<version>-py2-cli[-prd]-node<version>` |
+| `docker.io/elasticms/base-php-cli-dev:<version>-py2-node<version>` | `docker.io/elasticms/base-php:<version>-py2-cli-dev-node<version>` |
 
 ## PHP-FPM Configuration
 
