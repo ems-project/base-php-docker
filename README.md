@@ -119,6 +119,7 @@ In addition to the parent layer, this variant include install :
 
 - [Composer](https://github.com/composer/composer)
 - PHP Extension : [xdebug](https://xdebug.org/)
+- [NodeJS](https://hub.docker.com/_/node)
 
 ## `docker.io/elasticms/base-php:<version>-apache[-prd]`  
 
