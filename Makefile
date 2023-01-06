@@ -97,7 +97,7 @@ _builder:
 _builder_py2:
 	@echo "Build [${DOCKER_IMAGE_NAME}:${_BUILD_ARGS_TAG}] Docker image ..."
 	@docker build \
-	    -f Dockerfile.cli-py2 \
+	    -f Dockerfile.cli-py2-node${NODE_VERSION} \
 		--build-arg VERSION_ARG="${PHP_VERSION}" \
 		--build-arg NODE_VERSION_ARG="${NODE_VERSION}" \
 		--build-arg RELEASE_ARG="${_BUILD_ARGS_TAG}" \
