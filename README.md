@@ -1,4 +1,4 @@
-# Base Docker image [![Docker Build](https://github.com/ems-project/docker-php-fpm/actions/workflows/docker-build.yml/badge.svg?branch=8.1)](https://github.com/ems-project/docker-php-fpm/actions/workflows/docker-build.yml)
+# Base Docker image [![Docker Build](https://github.com/ems-project/docker-php-fpm/actions/workflows/docker-build.yml/badge.svg?branch=8.1)](https://github.com/ems-project/docker-php-fpm/actions/workflows/docker-build-v2.yml)
 
 Docker base image is the basic image on which you add layers (which are basically filesystem changes) and create a final image containing your App.  
 
