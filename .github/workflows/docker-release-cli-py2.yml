@@ -108,7 +108,7 @@ jobs:
         with:
           builder: ${{ steps.buildx.outputs.name }}
           context: .
-          file: Dockerfile.cli-py2
+          file: Dockerfile.cli-py2-node${{ matrix.py2-node-version }}
           target: cli-prd
           build-args: |
             VERSION_ARG=${{ needs.init.outputs.version-patch }}
@@ -126,7 +126,7 @@ jobs:
         with:
           builder: ${{ steps.buildx.outputs.name }}
           context: .
-          file: Dockerfile.cli-py2
+          file: Dockerfile.cli-py2-node${{ matrix.py2-node-version }}
           target: cli-dev
           build-args: |
             VERSION_ARG=${{ needs.init.outputs.version-patch }}

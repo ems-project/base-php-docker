@@ -91,7 +91,7 @@ jobs:
         with:
           builder: ${{ steps.buildx.outputs.name }}
           context: .
-          file: Dockerfile.cli-py2
+          file: Dockerfile.cli-py2-node${{ matrix.py2-node-version }}
           target: ${{ matrix.image-variant }}
           build-args: |
             VERSION_ARG=${{ needs.init.outputs.version-patch }}
