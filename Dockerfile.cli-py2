@@ -11,7 +11,7 @@ ARG PHP_EXT_XDEBUG_VERSION_ARG
 
 FROM composer:${COMPOSER_VERSION_ARG:-2.5.1} AS composer
 FROM node:${NODE_VERSION_ARG}-alpine3.15 AS node
-FROM php:${VERSION_ARG}-cli-alpine3.15 AS cli-prd
+FROM php:${VERSION_ARG:-7.4.33}-cli-alpine3.15 AS cli-prd
 
 LABEL be.fgov.elasticms.base.build-date=$BUILD_DATE_ARG \
       be.fgov.elasticms.base.name="" \
