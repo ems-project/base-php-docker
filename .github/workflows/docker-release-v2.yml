@@ -53,7 +53,7 @@ jobs:
 
     strategy:
       matrix:
-        image-variant: [fpm-prd,apache-prd,nginx-prd,fpm-dev,apache-dev,nginx-dev]
+        image-variant: [fpm-prd,apache-prd,nginx-prd,cli-prd,fpm-dev,apache-dev,nginx-dev,cli-dev]
 
     runs-on: ubuntu-20.04
     needs: init
@@ -137,7 +137,7 @@ jobs:
 
     strategy:
       matrix:
-        image-variant: [fpm-prd,apache-prd,nginx-prd,fpm-dev,apache-dev,nginx-dev]
+        image-variant: [fpm-prd,apache-prd,nginx-prd,cli-prd,fpm-dev,apache-dev,nginx-dev,cli-dev]
 
     runs-on: ubuntu-20.04
     needs: [init,build]
@@ -189,6 +189,7 @@ jobs:
       - name: Test "${{ needs.init.outputs.docker-image-name }}:${{ needs.init.outputs.github-ci-sha-short }}-${{ matrix.image-variant }}" Docker Image
         env:
           DOCKER_IMAGE_NAME: ${{ needs.init.outputs.docker-image-name }}:${{ needs.init.outputs.github-ci-sha-short }}-${{ matrix.image-variant }}
+          PHP_VERSION: ${{ needs.init.outputs.version-patch }}
         run: |
           docker network create docker_default
           docker pull appropriate/curl:latest
@@ -199,7 +200,7 @@ jobs:
     strategy:
       max-parallel: 1
       matrix:
-        image-variant: [fpm-dev,apache-dev,nginx-dev]
+        image-variant: [fpm-dev,apache-dev,nginx-dev,cli-dev]
 
     runs-on: ubuntu-20.04
     needs:  [init,tests]
@@ -271,7 +272,7 @@ jobs:
     strategy:
       max-parallel: 1
       matrix:
-        image-variant: [fpm-prd,apache-prd,nginx-prd]
+        image-variant: [fpm-prd,apache-prd,nginx-prd,cli-prd]
 
     runs-on: ubuntu-20.04
     needs:  [init,tests]
@@ -397,7 +398,7 @@ jobs:
 
     strategy:
       matrix:
-        image-variant: [fpm-prd,apache-prd,nginx-prd,fpm-dev,apache-dev,nginx-dev]
+        image-variant: [fpm-prd,apache-prd,nginx-prd,cli-prd,fpm-dev,apache-dev,nginx-dev,cli-dev]
 
     runs-on: ubuntu-20.04
     needs: [sign-prd,sign-dev]
