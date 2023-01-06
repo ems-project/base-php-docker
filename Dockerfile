@@ -22,7 +22,7 @@ LABEL be.fgov.elasticms.base.build-date=$BUILD_DATE_ARG \
       be.fgov.elasticms.base.vendor="sebastian.molle@gmail.com" \
       be.fgov.elasticms.base.version="$VERSION_ARG" \
       be.fgov.elasticms.base.release="$RELEASE_ARG" \
-      be.fgov.elasticms.base.environment="prod" \
+      be.fgov.elasticms.base.environment="prd" \
       be.fgov.elasticms.base.variant="fpm" \
       be.fgov.elasticms.base.schema-version="1.0" 
 
@@ -320,7 +320,7 @@ LABEL be.fgov.elasticms.base.build-date=$BUILD_DATE_ARG \
       be.fgov.elasticms.base.version="$VERSION_ARG" \
       be.fgov.elasticms.base.release="$RELEASE_ARG" \
       be.fgov.elasticms.base.node-version="$NODE_VERSION_ARG" \
-      be.fgov.elasticms.base.environment="prod" \
+      be.fgov.elasticms.base.environment="prd" \
       be.fgov.elasticms.base.variant="cli" \
       be.fgov.elasticms.base.schema-version="1.0" 
 
