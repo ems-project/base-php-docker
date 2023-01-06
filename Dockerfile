@@ -22,9 +22,9 @@ LABEL be.fgov.elasticms.base.build-date=$BUILD_DATE_ARG \
       be.fgov.elasticms.base.vendor="sebastian.molle@gmail.com" \
       be.fgov.elasticms.base.version="$VERSION_ARG" \
       be.fgov.elasticms.base.release="$RELEASE_ARG" \
-      be.fgov.elasticms.base.environment="prod" \
+      be.fgov.elasticms.base.environment="prd" \
       be.fgov.elasticms.base.variant="fpm" \
-      be.fgov.elasticms.base.schema-version="1.0" 
+      be.fgov.elasticms.base.schema-version="1.0"
 
 USER root
 
@@ -111,7 +111,7 @@ RUN mkdir -p /home/default /opt/etc /opt/bin/container-entrypoint.d /opt/src /va
                       /etc/varnish /var/lib/varnish \
     && find /opt -type d -exec chmod ug+x {} \; \
     && find /var/lock -type d -exec chmod ug+x {} \; \
-    && find /usr/local/etc -type d -exec chmod ug+x {} \; 
+    && find /usr/local/etc -type d -exec chmod ug+x {} \;
 
 USER 1001
 
@@ -128,8 +128,7 @@ FROM fpm-prd AS fpm-dev
 
 ENV PHP_EXT_XDEBUG_VERSION=${PHP_EXT_XDEBUG_VERSION_ARG:-3.1.6}
 
-LABEL be.fgov.elasticms.base.environment="dev" \
-      be.fgov.elasticms.base.node-version="$NODE_VERSION_ARG"
+LABEL be.fgov.elasticms.base.environment="dev"
 
 USER root
 
@@ -169,7 +168,7 @@ RUN echo "Install and Configure required extra PHP packages ..." \
     && echo "Setup permissions on filesystem for non-privileged user ..." \
     && chown -Rf 1001:0 /home/default \
     && chmod -R ug+rw /home/default \
-    && find /home/default -type d -exec chmod ug+x {} \; 
+    && find /home/default -type d -exec chmod ug+x {} \;
 
 EXPOSE 9003
 
@@ -195,7 +194,7 @@ RUN apk add --update --no-cache --virtual .php-apache-rundeps apache2 apache2-ut
     && find /etc/apache2 -type d -exec chmod ug+x {} \; \
     && find /run/apache2 -type d -exec chmod ug+x {} \; \
     && find /var/run/apache2 -type d -exec chmod ug+x {} \; \
-    && find /var/log/apache2 -type d -exec chmod ug+x {} \; 
+    && find /var/log/apache2 -type d -exec chmod ug+x {} \;
 
 USER 1001
 
@@ -226,7 +225,7 @@ RUN apk add --update --no-cache --virtual .php-apache-rundeps apache2 apache2-ut
     && find /etc/apache2 -type d -exec chmod ug+x {} \; \
     && find /run/apache2 -type d -exec chmod ug+x {} \; \
     && find /var/run/apache2 -type d -exec chmod ug+x {} \; \
-    && find /var/log/apache2 -type d -exec chmod ug+x {} \; 
+    && find /var/log/apache2 -type d -exec chmod ug+x {} \;
 
 USER 1001
 
@@ -261,7 +260,7 @@ RUN apk add --update --no-cache --virtual .php-nginx-rundeps nginx \
     && find /var/run/nginx -type d -exec chmod ug+x {} \; \
     && find /var/lib/nginx -type d -exec chmod ug+x {} \; \
     && find /var/tmp/nginx -type d -exec chmod ug+x {} \; \
-    && find /usr/share/nginx -type d -exec chmod ug+x {} \; 
+    && find /usr/share/nginx -type d -exec chmod ug+x {} \;
 
 USER 1001
 
@@ -296,7 +295,7 @@ RUN apk add --update --no-cache --virtual .php-nginx-rundeps nginx \
     && find /var/run/nginx -type d -exec chmod ug+x {} \; \
     && find /var/lib/nginx -type d -exec chmod ug+x {} \; \
     && find /var/tmp/nginx -type d -exec chmod ug+x {} \; \
-    && find /usr/share/nginx -type d -exec chmod ug+x {} \; 
+    && find /usr/share/nginx -type d -exec chmod ug+x {} \;
 
 USER 1001
 
@@ -327,7 +326,7 @@ LABEL be.fgov.elasticms.base.build-date=$BUILD_DATE_ARG \
       be.fgov.elasticms.base.node-version="$NODE_VERSION_ARG" \
       be.fgov.elasticms.base.environment="prd" \
       be.fgov.elasticms.base.variant="cli" \
-      be.fgov.elasticms.base.schema-version="1.0" 
+      be.fgov.elasticms.base.schema-version="1.0"
 
 USER root
 
@@ -408,7 +407,7 @@ RUN mkdir -p /home/default /opt/etc /opt/src /var/lock \
     && chown -Rf 1001:0 /home/default /opt /etc/ssmtp /var/lock \
     && chmod -R ug+rw /home/default /opt /etc/ssmtp \
     && find /opt -type d -exec chmod ug+x {} \; \
-    && find /var/lock -type d -exec chmod ug+x {} \; 
+    && find /var/lock -type d -exec chmod ug+x {} \;
 
 ENTRYPOINT ["container-entrypoint-cli"]
 
@@ -453,7 +452,7 @@ RUN echo "Install and Configure required extra PHP packages ..." \
     && echo "Setup permissions on filesystem for non-privileged user ..." \
     && chown -Rf 1001:0 /home/default \
     && chmod -R ug+rw /home/default \
-    && find /home/default -type d -exec chmod ug+x {} \; 
+    && find /home/default -type d -exec chmod ug+x {} \;
 
 EXPOSE 9003
 
