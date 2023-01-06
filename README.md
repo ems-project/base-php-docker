@@ -92,6 +92,12 @@ Releases are done via GitHub actions and uploaded on Docker Hub.
 - [`7.4.x-apache`, `7.4-apache`, `7-apache`, `7.4.x-apache-prd`, `7.4-apache-prd`, `7-apache-prd`, `7.4.y-apache-dev`, `7.4-apache-dev`, `7-apache-dev`](Dockerfile)
 - [`7.4.x-nginx`, `7.4-nginx`, `7-nginx`, `7.4.x-nginx-prd`, `7.4-nginx-prd`, `7-nginx-prd`, `7.4.y-nginx-dev`, `7.4-nginx-dev`, `7-nginx-dev`](Dockerfile)
 - [`7.4.x-cli`, `7.4-cli`, `7-cli`, `7.4.x-cli-prd`, `7.4-cli-prd`, `7-cli-prd`, `7.4.y-cli-dev`, `7.4-cli-dev`, `7-cli-dev`](Dockerfile)
+- [`7.4.x-cli-py2-node12`, `7.4-cli-py2-node12`, `7-cli-py2-node12`, `7.4.x-cli-py2-prd-node12`, `7.4-cli-py2-prd-node12`, `7-cli-py2-prd-node12`, `7.4.y-cli-py2-dev-node12`, `7.4-cli-py2-dev-node12`, `7-cli-py2-dev-node12`](Dockerfile.cli-py2-node12)
+- [`7.4.x-cli-py2-node13`, `7.4-cli-py2-node13`, `7-cli-py2-node13`, `7.4.x-cli-py2-prd-node13`, `7.4-cli-py2-prd-node13`, `7-cli-py2-prd-node13`, `7.4.y-cli-py2-dev-node13`, `7.4-cli-py2-dev-node13`, `7-cli-py2-dev-node13`](Dockerfile.cli-py2-node13)
+- [`7.4.x-cli-py2-node14`, `7.4-cli-py2-node14`, `7-cli-py2-node14`, `7.4.x-cli-py2-prd-node14`, `7.4-cli-py2-prd-node14`, `7-cli-py2-prd-node14`, `7.4.y-cli-py2-dev-node14`, `7.4-cli-py2-dev-node14`, `7-cli-py2-dev-node14`](Dockerfile.cli-py2-node14)
+- [`7.4.x-cli-py2-node15`, `7.4-cli-py2-node15`, `7-cli-py2-node15`, `7.4.x-cli-py2-prd-node15`, `7.4-cli-py2-prd-node15`, `7-cli-py2-prd-node15`, `7.4.y-cli-py2-dev-node15`, `7.4-cli-py2-dev-node15`, `7-cli-py2-dev-node15`](Dockerfile.cli-py2-node15)
+- [`7.4.x-cli-py2-node16`, `7.4-cli-py2-node16`, `7-cli-py2-node16`, `7.4.x-cli-py2-prd-node16`, `7.4-cli-py2-prd-node16`, `7-cli-py2-prd-node16`, `7.4.y-cli-py2-dev-node16`, `7.4-cli-py2-dev-node16`, `7-cli-py2-dev-node16`](Dockerfile.cli-py2-node16)
+
 
 # Image Variants
 
