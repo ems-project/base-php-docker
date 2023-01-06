@@ -161,21 +161,6 @@ In addition to the parent layer, this variant include install :
 - [Composer](https://github.com/composer/composer)
 - PHP Extension : [xdebug](https://xdebug.org/)
 
-## **Warning** : The following images are deprecated and are no longer maintained.  
-
-> They will be removed soon, please update your dockerfiles and docker-compose.yml files ...  
-
-| Deprecated Image Name | Replaced Image Name |
-| -- | -- |
-| `docker.io/elasticms/base-php-fpm:<version>` | `docker.io/elasticms/base-php:<version>-fpm[-prd]` |
-| `docker.io/elasticms/base-php-dev:<version>` | `docker.io/elasticms/base-php:<version>-fpm-dev` |
-| `docker.io/elasticms/base-apache-fpm:<version>` | `docker.io/elasticms/base-php:<version>-apache[-prd]` |
-| `docker.io/elasticms/base-apache-dev:<version>` | `docker.io/elasticms/base-php:<version>-apache-dev` |
-| `docker.io/elasticms/base-nginx-fpm:<version>` | `docker.io/elasticms/base-php:<version>-nginx[-prd]` |
-| `docker.io/elasticms/base-nginx-dev:<version>` | `docker.io/elasticms/base-php:<version>-nginx-dev` |
-| `docker.io/elasticms/base-php-cli:<version>` | `docker.io/elasticms/base-php:<version>-cli[-prd]` |
-| `docker.io/elasticms/base-php-cli-dev:<version>` | `docker.io/elasticms/base-php:<version>-cli-dev` |
-
 ## PHP-FPM Configuration
 
 You can change the amount of memory that PHP-FPM can use by changing / passing the environment variables ```PHP_FPM_MAX_CHILDREN``` and ```PHP_FPM_REQUEST_MAX_MEMORY_IN_MEGABYTES```.  
