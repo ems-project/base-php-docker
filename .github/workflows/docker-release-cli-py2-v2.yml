@@ -392,7 +392,7 @@ jobs:
         run: |
           docker pull ${{ needs.init.outputs.docker-image-name }}:${{ needs.init.outputs.github-ci-sha-short }}-py2-${{ matrix.image-variant }}-node${{ matrix.node-version }}
           docker pull ${{ needs.init.outputs.docker-image-name }}:${{ needs.init.outputs.github-ci-sha-short }}-py2-${{ steps.prep-sign.outputs.image-flavor }}-node${{ matrix.node-version }}
-          docker pull ${{ needs.init.outputs.docker-image-name }}:${{ needs.init.outputs.version-patch }}-py2-${{ matrix.image-variant }}-node${{ matrix.node-version }}}
+          docker pull ${{ needs.init.outputs.docker-image-name }}:${{ needs.init.outputs.version-patch }}-py2-${{ matrix.image-variant }}-node${{ matrix.node-version }}
           docker pull ${{ needs.init.outputs.docker-image-name }}:${{ needs.init.outputs.version-patch }}-py2-${{ steps.prep-sign.outputs.image-flavor }}-node${{ matrix.node-version }}
           docker pull ${{ needs.init.outputs.docker-image-name }}:${{ needs.init.outputs.version-minor }}-py2-${{ matrix.image-variant }}-node${{ matrix.node-version }}
           docker pull ${{ needs.init.outputs.docker-image-name }}:${{ needs.init.outputs.version-minor }}-py2-${{ steps.prep-sign.outputs.image-flavor }}-node${{ matrix.node-version }}
