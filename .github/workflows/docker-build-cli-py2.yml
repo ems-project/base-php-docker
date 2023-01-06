@@ -1,0 +1,137 @@
+name: Docker Build (Python 2)
+
+on:
+  push:
+    branches:
+      - '7.4'
+  pull_request:
+
+jobs:
+
+  build-py2-docker-images:
+
+    strategy:
+      matrix:
+        py2-node-version: [12,13,14,15,16]
+
+    runs-on: ubuntu-20.04
+
+    steps:
+      - uses: actions/checkout@v3
+
+      - name: Fill GitHub Environment Variables
+        uses: FranzDiebold/github-env-vars-action@v2
+
+      - name: Fill PHP Version Environment Variable
+        uses: c-py/action-dotenv-to-setenv@v4
+        with:
+          env-file: .build.env
+
+      - name: Prepare Workflow Environment
+        id: prep
+        run: |
+          echo "phpcli-prd-docker-image-name=${PHPCLI_PRD_DOCKER_IMAGE_NAME}" >> $GITHUB_OUTPUT
+          echo "phpcli-dev-docker-image-name=${PHPCLI_DEV_DOCKER_IMAGE_NAME}" >> $GITHUB_OUTPUT
+          echo "build-date=$(date -u +'%Y-%m-%dT%H:%M:%SZ')" >> $GITHUB_OUTPUT
+
+      - name: Fill "${{ steps.prep.outputs.phpcli-prd-docker-image-name }}" (py2-${{ matrix.py2-node-version }}) Docker Image metadata
+        id: meta-phpcli-prd-py2
+        uses: docker/metadata-action@v4
+        with:
+          github-token: ${{ secrets.GITHUB_TOKEN }}
+          images: "${{ steps.prep.outputs.phpcli-prd-docker-image-name }}"
+          tags: |
+            type=raw,value=rc-py2-node${{ matrix.py2-node-version }}
+
+      - name: Fill "${{ steps.prep.outputs.phpcli-dev-docker-image-name }}" (py2-node${{ matrix.py2-node-version }}) Docker Image metadata
+        id: meta-phpcli-dev-py2
+        uses: docker/metadata-action@v4
+        with:
+          github-token: ${{ secrets.GITHUB_TOKEN }}
+          images: "${{ steps.prep.outputs.phpcli-dev-docker-image-name }}"
+          tags: |
+            type=raw,value=rc-py2-node${{ matrix.py2-node-version }}
+
+      - name: Set up Docker Buildx
+        id: buildx
+        uses: docker/setup-buildx-action@v2
+
+      - name: Cache Docker layers
+        uses: actions/cache@v3
+        with:
+          path: /tmp/.buildx-cache
+          key: ${{ runner.os }}-buildx-${{ github.sha }}
+          restore-keys: |
+            ${{ runner.os }}-buildx-
+
+      - name: Build "${{ steps.prep.outputs.phpcli-prd-docker-image-name }}" (py2-node${{ matrix.py2-node-version }}) Docker Image
+        id: build-phpcli-prd-py2
+        uses: docker/build-push-action@v3
+        with:
+          builder: ${{ steps.buildx.outputs.name }}
+          context: .
+          file: Dockerfile.py2-node${{ matrix.py2-node-version }}
+          target: cli-prd
+          build-args: |
+            VERSION_ARG=${{ env.PHP_VERSION }}
+            RELEASE_ARG=${{ env.CI_RUN_ID }}
+            VCS_REF_ARG=${{ env.CI_SHA }}
+            BUILD_DATE_ARG=${{ steps.prep.outputs.build-date }}
+            NODE_VERSION_ARG=${{ matrix.py2-node-version }}
+          push: false
+          load: true
+          tags: ${{ steps.meta-phpcli-prd-py2.outputs.tags }}
+          labels: ${{ steps.meta-phpcli-prd-py2.outputs.labels }}
+          outputs: type=docker,dest=/tmp/phpcli-prd-py2-node${{ matrix.py2-node-version }}-myimage.tar
+
+      - name: Build "${{ steps.prep.outputs.phpcli-dev-docker-image-name }}" (py2-node${{ matrix.py2-node-version }}) Docker Image
+        id: build-phpcli-dev-py2
+        uses: docker/build-push-action@v3
+        with:
+          builder: ${{ steps.buildx.outputs.name }}
+          context: .
+          file: Dockerfile.cli-py2
+          target: cli-dev
+          build-args: |
+            VERSION_ARG=${{ env.PHP_VERSION }}
+            RELEASE_ARG=${{ env.CI_RUN_ID }}
+            VCS_REF_ARG=${{ env.CI_SHA }}
+            BUILD_DATE_ARG=${{ steps.prep.outputs.build-date }}
+            NODE_VERSION_ARG=${{ matrix.py2-node-version }}
+          push: false
+          load: true
+          tags: ${{ steps.meta-phpcli-dev-py2.outputs.tags }}
+          labels: ${{ steps.meta-phpcli-dev-py2.outputs.labels }}
+          outputs: type=docker,dest=/tmp/phpcli-dev-py2-node${{ matrix.py2-node-version }}-myimage.tar
+
+      - name: Install Docker Squash
+        id: install-squash
+        run: |
+          pip install docker-squash
+
+      - name: Squash "${{ steps.prep.outputs.phpcli-prd-docker-image-name }}" (py2-node${{ matrix.py2-node-version }}) Docker Images
+        id: squash-phpcli-prd-py2
+        run: |
+          cat /tmp/phpcli-prd-py2-node${{ matrix.py2-node-version }}-myimage.tar | docker load
+          docker-squash --verbose --message "Build and Squashed in GitHub Action" \
+            --tag ${{ steps.prep.outputs.phpcli-prd-docker-image-name }}:rc-py2-node${{ matrix.py2-node-version }} \
+            --output-path /tmp/phpcli-prd-py2-node${{ matrix.py2-node-version }}-myimage.tar \
+            ${{ steps.prep.outputs.phpcli-prd-docker-image-name }}:rc-py2-node${{ matrix.py2-node-version }}
+          cat /tmp/phpcli-prd-py2-node${{ matrix.py2-node-version }}-myimage.tar | docker load
+
+      - name: Squash "${{ steps.prep.outputs.phpcli-dev-docker-image-name }}" (py2-node${{ matrix.py2-node-version }}) Docker Images
+        id: squash-phpcli-dev-py2
+        run: |
+          cat /tmp/phpcli-dev-py2-node${{ matrix.py2-node-version }}-myimage.tar | docker load
+          docker-squash --verbose --message "Build and Squashed in GitHub Action" \
+            --tag ${{ steps.prep.outputs.phpcli-dev-docker-image-name }}:rc-py2-node${{ matrix.py2-node-version }} \
+            --output-path /tmp/phpcli-dev-py2-node${{ matrix.py2-node-version }}-myimage.tar \
+            ${{ steps.prep.outputs.phpcli-dev-docker-image-name }}:rc-py2-node${{ matrix.py2-node-version }}
+          cat /tmp/phpcli-dev-py2-node${{ matrix.py2-node-version }}-myimage.tar | docker load
+
+      - name: Check Docker Images
+        run: |
+          docker image inspect ${{ steps.prep.outputs.phpcli-prd-docker-image-name }}:rc-py2-node${{ matrix.py2-node-version }}
+          docker image inspect ${{ steps.prep.outputs.phpcli-dev-docker-image-name }}:rc-py2-node${{ matrix.py2-node-version }}
+          docker history ${{ steps.prep.outputs.phpcli-prd-docker-image-name }}:rc-py2-node${{ matrix.py2-node-version }}
+          docker history ${{ steps.prep.outputs.phpcli-dev-docker-image-name }}:rc-py2-node${{ matrix.py2-node-version }}

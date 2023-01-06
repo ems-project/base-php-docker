@@ -140,6 +140,17 @@ This variant contains the PHP CLI tool with default mods.  In addition we instal
   - [APCu](https://pecl.php.net/package/apcu)
 - [AWS CLI](https://github.com/aws/aws-cli)
 
+## `docker.io/elasticms/base-php:<version>-cli-py2[-prd]-node<version>`  
+
+This variant contains the PHP CLI tool with default mods.  In addition we install and configure :
+
+- Python 2
+- NodeJS
+- PHP Extensions :
+  - [Redis](https://pecl.php.net/package/redis)
+  - [APCu](https://pecl.php.net/package/apcu)
+- [AWS CLI](https://github.com/aws/aws-cli)
+
 ## `docker.io/elasticms/base-php:<version>-apache-dev`
 
 This image use `base-php:<version>-fpm-dev` (see above) as parent layer.  
@@ -161,6 +172,15 @@ In addition to the parent layer, this variant include install :
 - [Composer](https://github.com/composer/composer)
 - PHP Extension : [xdebug](https://xdebug.org/)
 
+## `docker.io/elasticms/base-php:<version>-cli-py2-dev-node<version>`  
+
+This image use `base-php:<version>-cli-py2-prd-node<version>` (see above) as parent layer.  
+
+In addition to the parent layer, this variant include install :
+
+- [Composer](https://github.com/composer/composer)
+- PHP Extension : [xdebug](https://xdebug.org/)
+
 ## **Warning** : The following images are deprecated and are no longer maintained.  
 
 > They will be removed soon, please update your dockerfiles and docker-compose.yml files ...  
@@ -175,6 +195,8 @@ In addition to the parent layer, this variant include install :
 | `docker.io/elasticms/base-nginx-dev:<version>` | `docker.io/elasticms/base-php:<version>-nginx-dev` |
 | `docker.io/elasticms/base-php-cli:<version>` | `docker.io/elasticms/base-php:<version>-cli[-prd]` |
 | `docker.io/elasticms/base-php-cli-dev:<version>` | `docker.io/elasticms/base-php:<version>-cli-dev` |
+| `docker.io/elasticms/base-php-cli:<version>-py2-node<version>` | `docker.io/elasticms/base-php:<version>-py2-cli[-prd]-node<version>` |
+| `docker.io/elasticms/base-php-cli-dev:<version>-py2-node<version>` | `docker.io/elasticms/base-php:<version>-py2-cli-dev-node<version>` |
 
 ## PHP-FPM Configuration
 
