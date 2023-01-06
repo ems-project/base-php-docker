@@ -263,14 +263,14 @@ jobs:
         run: |
           docker network create docker_default
           docker pull appropriate/curl:latest
-          bats -r test/tests.bats
+          bats -r test/tests.cli.bats
 
       - name: Test "${{ needs.init.outputs.phpcli-dev-docker-image-name }}:${{ needs.init.outputs.github-ci-sha-short }}-py2-node${{ matrix.py2-node-version }}" Docker Image
         env:
           PHP_DOCKER_IMAGE_NAME: ${{ needs.init.outputs.phpcli-dev-docker-image-name }}:${{ needs.init.outputs.github-ci-sha-short }}-py2-node${{ matrix.py2-node-version }}
           PHP_VERSION: ${{ needs.init.outputs.version-patch }}
         run: |
-          bats -r test/tests.bats
+          bats -r test/tests.cli.bats
 
   push:
 
