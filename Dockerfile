@@ -14,11 +14,11 @@ FROM node:${NODE_VERSION_ARG:-18}-alpine3.16 AS node
 FROM php:${VERSION_ARG:-8.1.13}-fpm-alpine3.16 AS fpm-prd
 
 LABEL be.fgov.elasticms.base.build-date=$BUILD_DATE_ARG \
-      be.fgov.elasticms.base.name="" \
-      be.fgov.elasticms.base.description="" \
+      be.fgov.elasticms.base.name="Base PHP 8.1.x Docker Image" \
+      be.fgov.elasticms.base.description="Docker base image is the basic image on which you add layers (which are basically filesystem changes) and create a final image containing your App." \
       be.fgov.elasticms.base.url="https://hub.docker.com/repository/docker/elasticms/base-php" \
       be.fgov.elasticms.base.vcs-ref=$VCS_REF_ARG \
-      be.fgov.elasticms.base.vcs-url="https://github.com/ems-project/docker-php-fpm" \
+      be.fgov.elasticms.base.vcs-url="https://github.com/ems-project/base-php-docker" \
       be.fgov.elasticms.base.vendor="sebastian.molle@gmail.com" \
       be.fgov.elasticms.base.version="$VERSION_ARG" \
       be.fgov.elasticms.base.release="$RELEASE_ARG" \
@@ -311,8 +311,8 @@ ARG BUILD_DATE_ARG
 ARG VCS_REF_ARG
 
 LABEL be.fgov.elasticms.base.build-date=$BUILD_DATE_ARG \
-      be.fgov.elasticms.base.name="" \
-      be.fgov.elasticms.base.description="" \
+      be.fgov.elasticms.base.name="Base PHP 8.1.x Docker Image (CLI)" \
+      be.fgov.elasticms.base.description="Docker base image is the basic image on which you add layers (which are basically filesystem changes) and create a final image containing your App.  This image contain only PHP CLI." \
       be.fgov.elasticms.base.url="https://hub.docker.com/repository/docker/elasticms/base-php" \
       be.fgov.elasticms.base.vcs-ref=$VCS_REF_ARG \
       be.fgov.elasticms.base.vcs-url="https://github.com/ems-project/base-php-docker" \
