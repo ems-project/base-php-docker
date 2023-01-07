@@ -11,7 +11,7 @@ ARG PHP_EXT_XDEBUG_VERSION_ARG
 
 FROM composer:${COMPOSER_VERSION_ARG:-2.5.1} AS composer
 FROM node:${NODE_VERSION_ARG:-18}-alpine3.16 AS node
-FROM php:${VERSION_ARG:-8.1.13}-fpm-alpine3.16 AS fpm-prd
+FROM php:${VERSION_ARG:-8.1.14}-fpm-alpine3.16 AS fpm-prd
 
 LABEL be.fgov.elasticms.base.build-date=$BUILD_DATE_ARG \
       be.fgov.elasticms.base.name="Base PHP 8.1.x Docker Image" \
@@ -303,7 +303,7 @@ HEALTHCHECK --start-period=10s --interval=1m --timeout=5s --retries=5 \
 
 CMD ["/usr/bin/supervisord", "-c", "/etc/supervisord/supervisord.conf"]
 
-FROM php:${VERSION_ARG:-8.1.13}-cli-alpine3.16 AS cli-prd
+FROM php:${VERSION_ARG:-8.1.14}-cli-alpine3.16 AS cli-prd
 
 ARG VERSION_ARG
 ARG RELEASE_ARG
