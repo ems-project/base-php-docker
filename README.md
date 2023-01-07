@@ -18,7 +18,14 @@ Container Entrypoint hooks available.
 Build locally Docker images :  
 
 ```sh
-make build[-fpm|-apache|-nginx|-cli|-all][-dev] PHP_VERSION=<PHP Version you want to build> [ DOCKER_IMAGE_NAME=<PHP Docker Image Name you want to build> ]
+make build[-fpm|-apache|-nginx|-cli|-all][-dev] [ PHP_VERSION=<PHP Version you want to build> ] \
+                                                [ DOCKER_IMAGE_NAME=<PHP Docker Image Name you want to build> ] \
+                                                [ NODE_VERSION=<NodeJS Version> ] \
+                                                [ COMPOSER_VERSION=<Composer Version> ] \
+                                                [ AWS_CLI_VERSION=<AWS CLI Version> ] \
+                                                [ PHP_EXT_REDIS_VERSION=<PHP Extension Redis Version> ] \
+                                                [ PHP_EXT_APCU_VERSION=<PHP Extension APCu Version> ] \
+                                                [ PHP_EXT_XDEBUG_VERSION=<PHP Extension XDebug Version> ]
 ```
 
 ## Example building __fpm__ variant __prd__ Docker image
@@ -28,6 +35,12 @@ make build-fpm PHP_VERSION=8.2.1
 ```
 
 __Provide docker image__ : `docker.io/elasticms/base-php:8.2.1-fpm-prd`
+
+```sh
+make build-fpm PHP_VERSION=8.2.1 DOCKER_IMAGE_NAME=docker.io/lambdauser/mybasephpimage
+```
+
+__Provide docker image__ : `docker.io/lambdauser/mybasephpimage:8.2.1-fpm-prd`
 
 ## Example building __fpm__ variant __dev__ Docker image
 

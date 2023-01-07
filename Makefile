@@ -76,6 +76,12 @@ _builder:
 		--build-arg RELEASE_ARG="${_BUILD_ARGS_TAG}" \
 		--build-arg BUILD_DATE_ARG="${BUILD_DATE}" \
 		--build-arg VCS_REF_ARG="${GIT_HASH}" \
+		--build-arg NODE_VERSION_ARG=${NODE_VERSION} \
+		--build-arg COMPOSER_VERSION_ARG=${COMPOSER_VERSION} \
+		--build-arg AWS_CLI_VERSION_ARG=${AWS_CLI_VERSION} \
+		--build-arg PHP_EXT_REDIS_VERSION_ARG=${PHP_EXT_REDIS_VERSION} \
+		--build-arg PHP_EXT_APCU_VERSION_ARG=${PHP_EXT_APCU_VERSION} \
+		--build-arg PHP_EXT_XDEBUG_VERSION_ARG=${PHP_EXT_XDEBUG_VERSION} \
 		--target ${_BUILD_ARGS_TARGET} \
 		--tag ${DOCKER_IMAGE_NAME}:${_BUILD_ARGS_TAG} .
 
