@@ -24,43 +24,43 @@ make build[-fpm|-apache|-nginx|-cli|-all][-dev] PHP_VERSION=<PHP Version you wan
 ## Example building __fpm__ variant __prd__ Docker image
 
 ```sh
-make build-fpm PHP_VERSION=8.2.0
+make build-fpm PHP_VERSION=8.2.1
 ```
 
-__Provide docker image__ : `docker.io/elasticms/base-php:8.2.0-fpm-prd`
+__Provide docker image__ : `docker.io/elasticms/base-php:8.2.1-fpm-prd`
 
 ## Example building __fpm__ variant __dev__ Docker image
 
 ```sh
-make build-fpm-dev PHP_VERSION=8.2.0
+make build-fpm-dev PHP_VERSION=8.2.1
 ```
 
-__Provide docker image__ : `docker.io/elasticms/base-php:8.2.0-fpm-dev`
+__Provide docker image__ : `docker.io/elasticms/base-php:8.2.1-fpm-dev`
 
 ## Example building __nginx__ variant __dev__ Docker image
 
 ```sh
-make build-nginx-dev PHP_VERSION=8.2.0
+make build-nginx-dev PHP_VERSION=8.2.1
 ```
 
-__Provide docker image__ : `docker.io/elasticms/base-php:8.2.0-nginx-dev`
+__Provide docker image__ : `docker.io/elasticms/base-php:8.2.1-nginx-dev`
 
 ## Example building __all__ variants Docker image
 
 ```sh
-make build-all PHP_VERSION=8.2.0
+make build-all PHP_VERSION=8.2.1
 ```
 
 __Provide docker images__ : 
 
-- `docker.io/elasticms/base-php:8.2.0-fpm-prd`
-- `docker.io/elasticms/base-php:8.2.0-fpm-dev`
-- `docker.io/elasticms/base-php:8.2.0-apache-prd`
-- `docker.io/elasticms/base-php:8.2.0-apache-dev`
-- `docker.io/elasticms/base-php:8.2.0-nginx-prd`
-- `docker.io/elasticms/base-php:8.2.0-nginx-dev`
-- `docker.io/elasticms/base-php:8.2.0-cli-prd`
-- `docker.io/elasticms/base-php:8.2.0-cli-dev`
+- `docker.io/elasticms/base-php:8.2.1-fpm-prd`
+- `docker.io/elasticms/base-php:8.2.1-fpm-dev`
+- `docker.io/elasticms/base-php:8.2.1-apache-prd`
+- `docker.io/elasticms/base-php:8.2.1-apache-dev`
+- `docker.io/elasticms/base-php:8.2.1-nginx-prd`
+- `docker.io/elasticms/base-php:8.2.1-nginx-dev`
+- `docker.io/elasticms/base-php:8.2.1-cli-prd`
+- `docker.io/elasticms/base-php:8.2.1-cli-dev`
 # Test
 
 Test Docker images builded locally :  
@@ -72,13 +72,13 @@ make test[-fpm|-apache|-nginx|-cli|-all][-dev] PHP_VERSION=<PHP Version you want
 ## Example testing of __prd__ builded docker image
 
 ```sh
-make test PHP_VERSION=8.2.0
+make test PHP_VERSION=8.2.1
 ```
 
 ## Example testing of __dev__ builded docker image
 
 ```sh
-make test-dev PHP_VERSION=8.2.0
+make test-dev PHP_VERSION=8.2.1
 ```
 
 # Releases
