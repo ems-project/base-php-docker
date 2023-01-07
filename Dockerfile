@@ -1,17 +1,18 @@
 ARG VERSION_ARG
-ARG RELEASE_ARG
-ARG BUILD_DATE_ARG
-ARG VCS_REF_ARG
 ARG NODE_VERSION_ARG
 ARG COMPOSER_VERSION_ARG
-ARG AWS_CLI_VERSION_ARG
-ARG PHP_EXT_REDIS_VERSION_ARG
-ARG PHP_EXT_APCU_VERSION_ARG
-ARG PHP_EXT_XDEBUG_VERSION_ARG
 
 FROM composer:${COMPOSER_VERSION_ARG:-2.5.1} AS composer
 FROM node:${NODE_VERSION_ARG:-18}-alpine3.16 AS node
 FROM php:${VERSION_ARG:-8.2.1}-fpm-alpine3.16 AS fpm-prd
+
+ARG VERSION_ARG
+ARG RELEASE_ARG
+ARG BUILD_DATE_ARG
+ARG VCS_REF_ARG
+ARG AWS_CLI_VERSION_ARG
+ARG PHP_EXT_REDIS_VERSION_ARG
+ARG PHP_EXT_APCU_VERSION_ARG
 
 LABEL be.fgov.elasticms.base.build-date=$BUILD_DATE_ARG \
       be.fgov.elasticms.base.name="Base PHP 8.2.x Docker Image" \
@@ -24,7 +25,7 @@ LABEL be.fgov.elasticms.base.build-date=$BUILD_DATE_ARG \
       be.fgov.elasticms.base.release="$RELEASE_ARG" \
       be.fgov.elasticms.base.environment="prd" \
       be.fgov.elasticms.base.variant="fpm" \
-      be.fgov.elasticms.base.schema-version="1.0" 
+      be.fgov.elasticms.base.schema-version="1.0"
 
 USER root
 
@@ -111,7 +112,7 @@ RUN mkdir -p /home/default /opt/etc /opt/bin/container-entrypoint.d /opt/src /va
                       /etc/varnish /var/lib/varnish \
     && find /opt -type d -exec chmod ug+x {} \; \
     && find /var/lock -type d -exec chmod ug+x {} \; \
-    && find /usr/local/etc -type d -exec chmod ug+x {} \; 
+    && find /usr/local/etc -type d -exec chmod ug+x {} \;
 
 USER 1001
 
@@ -126,10 +127,15 @@ CMD ["php-fpm", "-F", "-R"]
 
 FROM fpm-prd AS fpm-dev
 
+ARG COMPOSER_VERSION_ARG
+ARG NODE_VERSION_ARG
+ARG PHP_EXT_XDEBUG_VERSION_ARG
+
 ENV PHP_EXT_XDEBUG_VERSION=${PHP_EXT_XDEBUG_VERSION_ARG:-3.2.0}
 
 LABEL be.fgov.elasticms.base.environment="dev" \
-      be.fgov.elasticms.base.node-version="$NODE_VERSION_ARG"
+      be.fgov.elasticms.base.node-version="${NODE_VERSION_ARG:-18}" \
+      be.fgov.elasticms.base.composer-version="${COMPOSER_VERSION_ARG:-2.5.1}"
 
 USER root
 
@@ -166,7 +172,7 @@ RUN echo "Install and Configure required extra PHP packages ..." \
     && chown 1001:0 /home/default/.composer \
     && chmod -R ug+rw /home/default/.composer \
     && apk del .build-deps \
-    && rm -rf /var/cache/apk/* 
+    && rm -rf /var/cache/apk/*
 
 EXPOSE 9003
 
@@ -192,7 +198,7 @@ RUN apk add --update --no-cache --virtual .php-apache-rundeps apache2 apache2-ut
     && find /etc/apache2 -type d -exec chmod ug+x {} \; \
     && find /run/apache2 -type d -exec chmod ug+x {} \; \
     && find /var/run/apache2 -type d -exec chmod ug+x {} \; \
-    && find /var/log/apache2 -type d -exec chmod ug+x {} \; 
+    && find /var/log/apache2 -type d -exec chmod ug+x {} \;
 
 USER 1001
 
@@ -223,7 +229,7 @@ RUN apk add --update --no-cache --virtual .php-apache-rundeps apache2 apache2-ut
     && find /etc/apache2 -type d -exec chmod ug+x {} \; \
     && find /run/apache2 -type d -exec chmod ug+x {} \; \
     && find /var/run/apache2 -type d -exec chmod ug+x {} \; \
-    && find /var/log/apache2 -type d -exec chmod ug+x {} \; 
+    && find /var/log/apache2 -type d -exec chmod ug+x {} \;
 
 USER 1001
 
@@ -257,7 +263,7 @@ RUN apk add --update --no-cache --virtual .php-nginx-rundeps nginx \
     && find /var/run/nginx -type d -exec chmod ug+x {} \; \
     && find /var/lib/nginx -type d -exec chmod ug+x {} \; \
     && find /var/tmp/nginx -type d -exec chmod ug+x {} \; \
-    && find /usr/share/nginx -type d -exec chmod ug+x {} \; 
+    && find /usr/share/nginx -type d -exec chmod ug+x {} \;
 
 USER 1001
 
@@ -292,7 +298,7 @@ RUN apk add --update --no-cache --virtual .php-nginx-rundeps nginx \
     && find /var/run/nginx -type d -exec chmod ug+x {} \; \
     && find /var/lib/nginx -type d -exec chmod ug+x {} \; \
     && find /var/tmp/nginx -type d -exec chmod ug+x {} \; \
-    && find /usr/share/nginx -type d -exec chmod ug+x {} \; 
+    && find /usr/share/nginx -type d -exec chmod ug+x {} \;
 
 USER 1001
 
@@ -309,6 +315,10 @@ ARG VERSION_ARG
 ARG RELEASE_ARG
 ARG BUILD_DATE_ARG
 ARG VCS_REF_ARG
+ARG AWS_CLI_VERSION_ARG
+ARG PHP_EXT_REDIS_VERSION_ARG
+ARG PHP_EXT_APCU_VERSION_ARG
+ARG NODE_VERSION_ARG
 
 LABEL be.fgov.elasticms.base.build-date=$BUILD_DATE_ARG \
       be.fgov.elasticms.base.name="Base PHP 8.2.x Docker Image (CLI)" \
@@ -319,10 +329,10 @@ LABEL be.fgov.elasticms.base.build-date=$BUILD_DATE_ARG \
       be.fgov.elasticms.base.vendor="sebastian.molle@gmail.com" \
       be.fgov.elasticms.base.version="$VERSION_ARG" \
       be.fgov.elasticms.base.release="$RELEASE_ARG" \
-      be.fgov.elasticms.base.node-version="$NODE_VERSION_ARG" \
+      be.fgov.elasticms.base.node-version="${NODE_VERSION_ARG:-18}" \
       be.fgov.elasticms.base.environment="prd" \
       be.fgov.elasticms.base.variant="cli" \
-      be.fgov.elasticms.base.schema-version="1.0" 
+      be.fgov.elasticms.base.schema-version="1.0"
 
 USER root
 
@@ -402,7 +412,7 @@ RUN mkdir -p /home/default /opt/etc /opt/src /var/lock \
     && chown -Rf 1001:0 /home/default /opt /etc/ssmtp /var/lock \
     && chmod -R ug+rw /home/default /opt /etc/ssmtp \
     && find /opt -type d -exec chmod ug+x {} \; \
-    && find /var/lock -type d -exec chmod ug+x {} \; 
+    && find /var/lock -type d -exec chmod ug+x {} \;
 
 ENTRYPOINT ["container-entrypoint-cli"]
 
@@ -410,7 +420,11 @@ USER 1001
 
 FROM cli-prd AS cli-dev
 
-LABEL be.fgov.elasticms.base.environment="dev"
+ARG COMPOSER_VERSION_ARG
+ARG PHP_EXT_XDEBUG_VERSION_ARG
+
+LABEL be.fgov.elasticms.base.environment="dev" \
+      be.fgov.elasticms.base.composer-version="${COMPOSER_VERSION_ARG:-2.5.1}"
 
 ENV PHP_EXT_XDEBUG_VERSION=${PHP_EXT_XDEBUG_VERSION_ARG:-3.2.0}
 
@@ -447,7 +461,7 @@ RUN echo "Install and Configure required extra PHP packages ..." \
     && echo "Setup permissions on filesystem for non-privileged user ..." \
     && chown -Rf 1001:0 /home/default \
     && chmod -R ug+rw /home/default \
-    && find /home/default -type d -exec chmod ug+x {} \; 
+    && find /home/default -type d -exec chmod ug+x {} \;
 
 EXPOSE 9003
 
