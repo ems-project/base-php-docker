@@ -67,6 +67,12 @@ jobs:
             RELEASE_ARG=${{ env.CI_RUN_ID }}
             VCS_REF_ARG=${{ env.CI_SHA }}
             BUILD_DATE_ARG=${{ steps.prep.outputs.build-date }}
+            NODE_VERSION_ARG=${{ env.NODE_VERSION }}
+            COMPOSER_VERSION_ARG=${{ env.COMPOSER_VERSION }}
+            AWS_CLI_VERSION_ARG=${{ env.AWS_CLI_VERSION }}
+            PHP_EXT_REDIS_VERSION_ARG=${{ env.PHP_EXT_REDIS_VERSION }}
+            PHP_EXT_APCU_VERSION_ARG=${{ env.PHP_EXT_APCU_VERSION }}
+            PHP_EXT_XDEBUG_VERSION_ARG=${{ env.PHP_EXT_XDEBUG_VERSION }}
           push: false
           load: true
           tags: ${{ steps.meta.outputs.tags }}

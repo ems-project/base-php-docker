@@ -22,6 +22,12 @@ jobs:
       github-ci-run-id: ${{ steps.prep.outputs.github-ci-run-id }}
       github-ci-sha-short: ${{ steps.prep.outputs.github-ci-sha-short }}
       github-ci-sha: ${{ steps.prep.outputs.github-ci-sha }}
+      node-version: ${{ steps.prep.outputs.node-version }}
+      composer-version: ${{ steps.prep.outputs.composer-version }}
+      aws-cli-version: ${{ steps.prep.outputs.aws-cli-version }}
+      php-ext-redis-version: ${{ steps.prep.outputs.php-ext-redis-version }}
+      php-ext-apcu-version: ${{ steps.prep.outputs.php-ext-apcu-version }}
+      php-ext-xdebug-version: ${{ steps.prep.outputs.php-ext-xdebug-version }}
 
     steps:
       - uses: actions/checkout@v3
@@ -48,6 +54,12 @@ jobs:
           echo "github-ci-sha-short=${CI_SHA_SHORT}" >> $GITHUB_OUTPUT
           echo "github-ci-sha=${CI_SHA}" >> $GITHUB_OUTPUT
           echo "github-ci-run-id=${CI_RUN_ID}" >> $GITHUB_OUTPUT
+          echo "node-version=${NODE_VERSION}" >> $GITHUB_OUTPUT
+          echo "composer-version=${COMPOSER_VERSION}" >> $GITHUB_OUTPUT
+          echo "aws-cli-version=${AWS_CLI_VERSION}" >> $GITHUB_OUTPUT
+          echo "php-ext-redis-version=${PHP_EXT_REDIS_VERSION}" >> $GITHUB_OUTPUT
+          echo "php-ext-apcu-version=${PHP_EXT_APCU_VERSION}" >> $GITHUB_OUTPUT
+          echo "php-ext-xdebug-version=${PHP_EXT_XDEBUG_VERSION}" >> $GITHUB_OUTPUT
 
   build:
 
@@ -96,6 +108,12 @@ jobs:
             RELEASE_ARG=${{ needs.init.outputs.github-ci-run-id }}
             VCS_REF_ARG=${{ needs.init.outputs.github-ci-sha }}
             BUILD_DATE_ARG=${{ needs.init.outputs.build-date }}
+            NODE_VERSION_ARG=${{ needs.init.outputs.node-version }}
+            COMPOSER_VERSION_ARG=${{ needs.init.outputs.composer-version }}
+            AWS_CLI_VERSION_ARG=${{ needs.init.outputs.aws-cli-version }}
+            PHP_EXT_REDIS_VERSION_ARG=${{ needs.init.outputs.php-ext-redis-version }}
+            PHP_EXT_APCU_VERSION_ARG=${{ needs.init.outputs.php-ext-apcu-version }}
+            PHP_EXT_XDEBUG_VERSION_ARG=${{ needs.init.outputs.php-ext-xdebug-version }}
           tags: ${{ steps.meta.outputs.tags }}
           labels: ${{ steps.meta.outputs.labels }}
           outputs: type=docker,dest=/tmp/builded.tar

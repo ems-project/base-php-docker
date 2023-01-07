@@ -45,7 +45,12 @@ jobs:
       github-ci-run-id: ${{ steps.prep.outputs.github-ci-run-id }}
       github-ci-sha-short: ${{ steps.prep.outputs.github-ci-sha-short }}
       github-ci-sha: ${{ steps.prep.outputs.github-ci-sha }}
+      node-version: ${{ steps.prep.outputs.node-version }}
+      composer-version: ${{ steps.prep.outputs.composer-version }}
       aws-cli-version: ${{ steps.prep.outputs.aws-cli-version }}
+      php-ext-redis-version: ${{ steps.prep.outputs.php-ext-redis-version }}
+      php-ext-apcu-version: ${{ steps.prep.outputs.php-ext-apcu-version }}
+      php-ext-xdebug-version: ${{ steps.prep.outputs.php-ext-xdebug-version }}
 
     steps:
       - uses: actions/checkout@v3
@@ -79,7 +84,12 @@ jobs:
           echo "github-ci-sha-short=${CI_SHA_SHORT}" >> $GITHUB_OUTPUT
           echo "github-ci-sha=${CI_SHA}" >> $GITHUB_OUTPUT
           echo "github-ci-run-id=${CI_RUN_ID}" >> $GITHUB_OUTPUT
+          echo "node-version=${NODE_VERSION}" >> $GITHUB_OUTPUT
+          echo "composer-version=${COMPOSER_VERSION}" >> $GITHUB_OUTPUT
           echo "aws-cli-version=${AWS_CLI_VERSION}" >> $GITHUB_OUTPUT
+          echo "php-ext-redis-version=${PHP_EXT_REDIS_VERSION}" >> $GITHUB_OUTPUT
+          echo "php-ext-apcu-version=${PHP_EXT_APCU_VERSION}" >> $GITHUB_OUTPUT
+          echo "php-ext-xdebug-version=${PHP_EXT_XDEBUG_VERSION}" >> $GITHUB_OUTPUT
 
       - name: Fill "${{ steps.prep.outputs.phpfpm-prd-docker-image-name }}" Docker Image metadata
         id: meta-phpfpm-prd
@@ -201,6 +211,12 @@ jobs:
             RELEASE_ARG=${{ needs.init.outputs.github-ci-run-id }}
             VCS_REF_ARG=${{ needs.init.outputs.github-ci-sha }}
             BUILD_DATE_ARG=${{ needs.init.outputs.build-date }}
+            NODE_VERSION_ARG=${{ needs.init.outputs.node-version }}
+            COMPOSER_VERSION_ARG=${{ needs.init.outputs.composer-version }}
+            AWS_CLI_VERSION_ARG=${{ needs.init.outputs.aws-cli-version }}
+            PHP_EXT_REDIS_VERSION_ARG=${{ needs.init.outputs.php-ext-redis-version }}
+            PHP_EXT_APCU_VERSION_ARG=${{ needs.init.outputs.php-ext-apcu-version }}
+            PHP_EXT_XDEBUG_VERSION_ARG=${{ needs.init.outputs.php-ext-xdebug-version }}
           tags: ${{ needs.init.outputs.phpfpm-prd-docker-image-tags }}
           labels: ${{ needs.init.outputs.phpfpm-prd-docker-image-labels }}
           outputs: type=docker,dest=/tmp/phpfpm-prd-builded.tar
@@ -218,6 +234,12 @@ jobs:
             RELEASE_ARG=${{ needs.init.outputs.github-ci-run-id }}
             VCS_REF_ARG=${{ needs.init.outputs.github-ci-sha }}
             BUILD_DATE_ARG=${{ needs.init.outputs.build-date }}
+            NODE_VERSION_ARG=${{ needs.init.outputs.node-version }}
+            COMPOSER_VERSION_ARG=${{ needs.init.outputs.composer-version }}
+            AWS_CLI_VERSION_ARG=${{ needs.init.outputs.aws-cli-version }}
+            PHP_EXT_REDIS_VERSION_ARG=${{ needs.init.outputs.php-ext-redis-version }}
+            PHP_EXT_APCU_VERSION_ARG=${{ needs.init.outputs.php-ext-apcu-version }}
+            PHP_EXT_XDEBUG_VERSION_ARG=${{ needs.init.outputs.php-ext-xdebug-version }}
           tags: ${{ needs.init.outputs.phpfpm-dev-docker-image-tags }}
           labels: ${{ needs.init.outputs.phpfpm-dev-docker-image-labels }}
           outputs: type=docker,dest=/tmp/phpfpm-dev-builded.tar
@@ -235,6 +257,12 @@ jobs:
             RELEASE_ARG=${{ needs.init.outputs.github-ci-run-id }}
             VCS_REF_ARG=${{ needs.init.outputs.github-ci-sha }}
             BUILD_DATE_ARG=${{ needs.init.outputs.build-date }}
+            NODE_VERSION_ARG=${{ needs.init.outputs.node-version }}
+            COMPOSER_VERSION_ARG=${{ needs.init.outputs.composer-version }}
+            AWS_CLI_VERSION_ARG=${{ needs.init.outputs.aws-cli-version }}
+            PHP_EXT_REDIS_VERSION_ARG=${{ needs.init.outputs.php-ext-redis-version }}
+            PHP_EXT_APCU_VERSION_ARG=${{ needs.init.outputs.php-ext-apcu-version }}
+            PHP_EXT_XDEBUG_VERSION_ARG=${{ needs.init.outputs.php-ext-xdebug-version }}
           tags: ${{ needs.init.outputs.phpcli-prd-docker-image-tags }}
           labels: ${{ needs.init.outputs.phpcli-prd-docker-image-labels }}
           outputs: type=docker,dest=/tmp/phpcli-prd-builded.tar
@@ -252,6 +280,12 @@ jobs:
             RELEASE_ARG=${{ needs.init.outputs.github-ci-run-id }}
             VCS_REF_ARG=${{ needs.init.outputs.github-ci-sha }}
             BUILD_DATE_ARG=${{ needs.init.outputs.build-date }}
+            NODE_VERSION_ARG=${{ needs.init.outputs.node-version }}
+            COMPOSER_VERSION_ARG=${{ needs.init.outputs.composer-version }}
+            AWS_CLI_VERSION_ARG=${{ needs.init.outputs.aws-cli-version }}
+            PHP_EXT_REDIS_VERSION_ARG=${{ needs.init.outputs.php-ext-redis-version }}
+            PHP_EXT_APCU_VERSION_ARG=${{ needs.init.outputs.php-ext-apcu-version }}
+            PHP_EXT_XDEBUG_VERSION_ARG=${{ needs.init.outputs.php-ext-xdebug-version }}
           tags: ${{ needs.init.outputs.phpcli-dev-docker-image-tags }}
           labels: ${{ needs.init.outputs.phpcli-dev-docker-image-labels }}
           outputs: type=docker,dest=/tmp/phpcli-dev-builded.tar
@@ -269,6 +303,12 @@ jobs:
             RELEASE_ARG=${{ needs.init.outputs.github-ci-run-id }}
             VCS_REF_ARG=${{ needs.init.outputs.github-ci-sha }}
             BUILD_DATE_ARG=${{ needs.init.outputs.build-date }}
+            NODE_VERSION_ARG=${{ needs.init.outputs.node-version }}
+            COMPOSER_VERSION_ARG=${{ needs.init.outputs.composer-version }}
+            AWS_CLI_VERSION_ARG=${{ needs.init.outputs.aws-cli-version }}
+            PHP_EXT_REDIS_VERSION_ARG=${{ needs.init.outputs.php-ext-redis-version }}
+            PHP_EXT_APCU_VERSION_ARG=${{ needs.init.outputs.php-ext-apcu-version }}
+            PHP_EXT_XDEBUG_VERSION_ARG=${{ needs.init.outputs.php-ext-xdebug-version }}
           tags: ${{ needs.init.outputs.apache-prd-docker-image-tags }}
           labels: ${{ needs.init.outputs.apache-prd-docker-image-labels }}
           outputs: type=docker,dest=/tmp/apache-prd-builded.tar
@@ -286,6 +326,12 @@ jobs:
             RELEASE_ARG=${{ needs.init.outputs.github-ci-run-id }}
             VCS_REF_ARG=${{ needs.init.outputs.github-ci-sha }}
             BUILD_DATE_ARG=${{ needs.init.outputs.build-date }}
+            NODE_VERSION_ARG=${{ needs.init.outputs.node-version }}
+            COMPOSER_VERSION_ARG=${{ needs.init.outputs.composer-version }}
+            AWS_CLI_VERSION_ARG=${{ needs.init.outputs.aws-cli-version }}
+            PHP_EXT_REDIS_VERSION_ARG=${{ needs.init.outputs.php-ext-redis-version }}
+            PHP_EXT_APCU_VERSION_ARG=${{ needs.init.outputs.php-ext-apcu-version }}
+            PHP_EXT_XDEBUG_VERSION_ARG=${{ needs.init.outputs.php-ext-xdebug-version }}
           tags: ${{ needs.init.outputs.apache-dev-docker-image-tags }}
           labels: ${{ needs.init.outputs.apache-dev-docker-image-labels }}
           outputs: type=docker,dest=/tmp/apache-dev-builded.tar
@@ -303,6 +349,12 @@ jobs:
             RELEASE_ARG=${{ needs.init.outputs.github-ci-run-id }}
             VCS_REF_ARG=${{ needs.init.outputs.github-ci-sha }}
             BUILD_DATE_ARG=${{ needs.init.outputs.build-date }}
+            NODE_VERSION_ARG=${{ needs.init.outputs.node-version }}
+            COMPOSER_VERSION_ARG=${{ needs.init.outputs.composer-version }}
+            AWS_CLI_VERSION_ARG=${{ needs.init.outputs.aws-cli-version }}
+            PHP_EXT_REDIS_VERSION_ARG=${{ needs.init.outputs.php-ext-redis-version }}
+            PHP_EXT_APCU_VERSION_ARG=${{ needs.init.outputs.php-ext-apcu-version }}
+            PHP_EXT_XDEBUG_VERSION_ARG=${{ needs.init.outputs.php-ext-xdebug-version }}
           tags: ${{ needs.init.outputs.nginx-prd-docker-image-tags }}
           labels: ${{ needs.init.outputs.nginx-prd-docker-image-labels }}
           outputs: type=docker,dest=/tmp/nginx-prd-builded.tar
@@ -320,6 +372,12 @@ jobs:
             RELEASE_ARG=${{ needs.init.outputs.github-ci-run-id }}
             VCS_REF_ARG=${{ needs.init.outputs.github-ci-sha }}
             BUILD_DATE_ARG=${{ needs.init.outputs.build-date }}
+            NODE_VERSION_ARG=${{ needs.init.outputs.node-version }}
+            COMPOSER_VERSION_ARG=${{ needs.init.outputs.composer-version }}
+            AWS_CLI_VERSION_ARG=${{ needs.init.outputs.aws-cli-version }}
+            PHP_EXT_REDIS_VERSION_ARG=${{ needs.init.outputs.php-ext-redis-version }}
+            PHP_EXT_APCU_VERSION_ARG=${{ needs.init.outputs.php-ext-apcu-version }}
+            PHP_EXT_XDEBUG_VERSION_ARG=${{ needs.init.outputs.php-ext-xdebug-version }}
           tags: ${{ needs.init.outputs.nginx-dev-docker-image-tags }}
           labels: ${{ needs.init.outputs.nginx-dev-docker-image-labels }}
           outputs: type=docker,dest=/tmp/nginx-dev-builded.tar
