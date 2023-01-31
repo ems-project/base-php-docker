@@ -122,7 +122,7 @@ jobs:
 
       - name: Build "${{ steps.prep.outputs.phpfpm-prd-docker-image-name }}" Docker Image
         id: build-phpfpm-prd
-        uses: docker/build-push-action@v3
+        uses: docker/build-push-action@v4
         with:
           builder: ${{ steps.buildx.outputs.name }}
           context: .
@@ -147,7 +147,7 @@ jobs:
 
       - name: Build "${{ steps.prep.outputs.phpfpm-dev-docker-image-name }}" Docker Image
         id: build-phpfpm-dev
-        uses: docker/build-push-action@v3
+        uses: docker/build-push-action@v4
         with:
           builder: ${{ steps.buildx.outputs.name }}
           context: .
@@ -172,7 +172,7 @@ jobs:
 
       - name: Build "${{ steps.prep.outputs.phpcli-prd-docker-image-name }}" Docker Image
         id: build-phpcli-prd
-        uses: docker/build-push-action@v3
+        uses: docker/build-push-action@v4
         with:
           builder: ${{ steps.buildx.outputs.name }}
           context: .
@@ -197,7 +197,7 @@ jobs:
 
       - name: Build "${{ steps.prep.outputs.phpcli-dev-docker-image-name }}" Docker Image
         id: build-phpcli-dev
-        uses: docker/build-push-action@v3
+        uses: docker/build-push-action@v4
         with:
           builder: ${{ steps.buildx.outputs.name }}
           context: .
@@ -222,7 +222,7 @@ jobs:
 
       - name: Build "${{ steps.prep.outputs.apache-prd-docker-image-name }}" Docker Image
         id: build-apache-prd
-        uses: docker/build-push-action@v3
+        uses: docker/build-push-action@v4
         with:
           builder: ${{ steps.buildx.outputs.name }}
           context: .
@@ -247,7 +247,7 @@ jobs:
 
       - name: Build "${{ steps.prep.outputs.apache-dev-docker-image-name }}" Docker Image
         id: build-apache-dev
-        uses: docker/build-push-action@v3
+        uses: docker/build-push-action@v4
         with:
           builder: ${{ steps.buildx.outputs.name }}
           context: .
@@ -272,7 +272,7 @@ jobs:
 
       - name: Build "${{ steps.prep.outputs.nginx-prd-docker-image-name }}" Docker Image
         id: build-nginx-prd
-        uses: docker/build-push-action@v3
+        uses: docker/build-push-action@v4
         with:
           builder: ${{ steps.buildx.outputs.name }}
           context: .
@@ -297,7 +297,7 @@ jobs:
 
       - name: Build "${{ steps.prep.outputs.nginx-dev-docker-image-name }}" Docker Image
         id: build-nginx-dev
-        uses: docker/build-push-action@v3
+        uses: docker/build-push-action@v4
         with:
           builder: ${{ steps.buildx.outputs.name }}
           context: .
