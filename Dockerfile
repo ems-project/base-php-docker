@@ -1,3 +1,7 @@
+FROM composer:${COMPOSER_VERSION_ARG:-2.5.1} AS composer
+FROM node:${NODE_VERSION_ARG:-18}-alpine3.16 AS node
+FROM php:${VERSION_ARG:-7.4.33}-fpm-alpine3.16 AS fpm-prd
+
 ARG VERSION_ARG
 ARG RELEASE_ARG
 ARG BUILD_DATE_ARG
@@ -9,16 +13,12 @@ ARG PHP_EXT_REDIS_VERSION_ARG
 ARG PHP_EXT_APCU_VERSION_ARG
 ARG PHP_EXT_XDEBUG_VERSION_ARG
 
-FROM composer:${COMPOSER_VERSION_ARG:-2.5.1} AS composer
-FROM node:${NODE_VERSION_ARG:-18}-alpine3.16 AS node
-FROM php:${VERSION_ARG:-7.4.33}-fpm-alpine3.16 AS fpm-prd
-
 LABEL be.fgov.elasticms.base.build-date=$BUILD_DATE_ARG \
       be.fgov.elasticms.base.name="" \
       be.fgov.elasticms.base.description="" \
       be.fgov.elasticms.base.url="https://hub.docker.com/repository/docker/elasticms/base-php" \
       be.fgov.elasticms.base.vcs-ref=$VCS_REF_ARG \
-      be.fgov.elasticms.base.vcs-url="https://github.com/ems-project/docker-php-fpm" \
+      be.fgov.elasticms.base.vcs-url="https://github.com/ems-project/base-php-docker" \
       be.fgov.elasticms.base.vendor="sebastian.molle@gmail.com" \
       be.fgov.elasticms.base.version="$VERSION_ARG" \
       be.fgov.elasticms.base.release="$RELEASE_ARG" \
@@ -126,6 +126,17 @@ CMD ["php-fpm", "-F", "-R"]
 
 FROM fpm-prd AS fpm-dev
 
+ARG VERSION_ARG
+ARG RELEASE_ARG
+ARG BUILD_DATE_ARG
+ARG VCS_REF_ARG
+ARG NODE_VERSION_ARG
+ARG COMPOSER_VERSION_ARG
+ARG AWS_CLI_VERSION_ARG
+ARG PHP_EXT_REDIS_VERSION_ARG
+ARG PHP_EXT_APCU_VERSION_ARG
+ARG PHP_EXT_XDEBUG_VERSION_ARG
+
 ENV PHP_EXT_XDEBUG_VERSION=${PHP_EXT_XDEBUG_VERSION_ARG:-3.1.6}
 
 LABEL be.fgov.elasticms.base.environment="dev"
@@ -176,6 +187,17 @@ USER 1001
 
 FROM fpm-prd AS apache-prd
 
+ARG VERSION_ARG
+ARG RELEASE_ARG
+ARG BUILD_DATE_ARG
+ARG VCS_REF_ARG
+ARG NODE_VERSION_ARG
+ARG COMPOSER_VERSION_ARG
+ARG AWS_CLI_VERSION_ARG
+ARG PHP_EXT_REDIS_VERSION_ARG
+ARG PHP_EXT_APCU_VERSION_ARG
+ARG PHP_EXT_XDEBUG_VERSION_ARG
+
 LABEL be.fgov.elasticms.base.variant="apache"
 
 USER root
@@ -207,6 +229,17 @@ CMD ["/usr/bin/supervisord", "-c", "/etc/supervisord/supervisord.conf"]
 
 FROM fpm-dev AS apache-dev
 
+ARG VERSION_ARG
+ARG RELEASE_ARG
+ARG BUILD_DATE_ARG
+ARG VCS_REF_ARG
+ARG NODE_VERSION_ARG
+ARG COMPOSER_VERSION_ARG
+ARG AWS_CLI_VERSION_ARG
+ARG PHP_EXT_REDIS_VERSION_ARG
+ARG PHP_EXT_APCU_VERSION_ARG
+ARG PHP_EXT_XDEBUG_VERSION_ARG
+
 LABEL be.fgov.elasticms.base.variant="apache"
 
 USER root
@@ -237,6 +270,17 @@ HEALTHCHECK --start-period=10s --interval=1m --timeout=5s --retries=5 \
 CMD ["/usr/bin/supervisord", "-c", "/etc/supervisord/supervisord.conf"]
 
 FROM fpm-prd AS nginx-prd
+
+ARG VERSION_ARG
+ARG RELEASE_ARG
+ARG BUILD_DATE_ARG
+ARG VCS_REF_ARG
+ARG NODE_VERSION_ARG
+ARG COMPOSER_VERSION_ARG
+ARG AWS_CLI_VERSION_ARG
+ARG PHP_EXT_REDIS_VERSION_ARG
+ARG PHP_EXT_APCU_VERSION_ARG
+ARG PHP_EXT_XDEBUG_VERSION_ARG
 
 LABEL be.fgov.elasticms.base.variant="nginx"
 
@@ -272,6 +316,17 @@ HEALTHCHECK --start-period=10s --interval=1m --timeout=5s --retries=5 \
 CMD ["/usr/bin/supervisord", "-c", "/etc/supervisord/supervisord.conf"]
 
 FROM fpm-dev AS nginx-dev
+
+ARG VERSION_ARG
+ARG RELEASE_ARG
+ARG BUILD_DATE_ARG
+ARG VCS_REF_ARG
+ARG NODE_VERSION_ARG
+ARG COMPOSER_VERSION_ARG
+ARG AWS_CLI_VERSION_ARG
+ARG PHP_EXT_REDIS_VERSION_ARG
+ARG PHP_EXT_APCU_VERSION_ARG
+ARG PHP_EXT_XDEBUG_VERSION_ARG
 
 LABEL be.fgov.elasticms.base.variant="nginx"
 
@@ -312,7 +367,12 @@ ARG VERSION_ARG
 ARG RELEASE_ARG
 ARG BUILD_DATE_ARG
 ARG VCS_REF_ARG
+ARG NODE_VERSION_ARG
+ARG COMPOSER_VERSION_ARG
 ARG AWS_CLI_VERSION_ARG
+ARG PHP_EXT_REDIS_VERSION_ARG
+ARG PHP_EXT_APCU_VERSION_ARG
+ARG PHP_EXT_XDEBUG_VERSION_ARG
 
 LABEL be.fgov.elasticms.base.build-date=$BUILD_DATE_ARG \
       be.fgov.elasticms.base.name="" \
@@ -414,6 +474,17 @@ ENTRYPOINT ["container-entrypoint-cli"]
 USER 1001
 
 FROM cli-prd AS cli-dev
+
+ARG VERSION_ARG
+ARG RELEASE_ARG
+ARG BUILD_DATE_ARG
+ARG VCS_REF_ARG
+ARG NODE_VERSION_ARG
+ARG COMPOSER_VERSION_ARG
+ARG AWS_CLI_VERSION_ARG
+ARG PHP_EXT_REDIS_VERSION_ARG
+ARG PHP_EXT_APCU_VERSION_ARG
+ARG PHP_EXT_XDEBUG_VERSION_ARG
 
 LABEL be.fgov.elasticms.base.environment="dev"
 

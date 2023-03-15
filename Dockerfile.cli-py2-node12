@@ -1,3 +1,7 @@
+FROM composer:${COMPOSER_VERSION_ARG:-2.5.1} AS composer
+FROM node:${NODE_VERSION_ARG}-alpine3.15 AS node
+FROM php:${VERSION_ARG:-7.4.33}-cli-alpine3.15 AS cli-prd
+
 ARG VERSION_ARG
 ARG RELEASE_ARG
 ARG BUILD_DATE_ARG
@@ -9,16 +13,12 @@ ARG PHP_EXT_REDIS_VERSION_ARG
 ARG PHP_EXT_APCU_VERSION_ARG
 ARG PHP_EXT_XDEBUG_VERSION_ARG
 
-FROM composer:${COMPOSER_VERSION_ARG:-2.5.1} AS composer
-FROM node:${NODE_VERSION_ARG}-alpine3.15 AS node
-FROM php:${VERSION_ARG:-7.4.33}-cli-alpine3.15 AS cli-prd
-
 LABEL be.fgov.elasticms.base.build-date=$BUILD_DATE_ARG \
       be.fgov.elasticms.base.name="" \
       be.fgov.elasticms.base.description="" \
       be.fgov.elasticms.base.url="https://hub.docker.com/repository/docker/elasticms/base-php-cli" \
       be.fgov.elasticms.base.vcs-ref=$VCS_REF_ARG \
-      be.fgov.elasticms.base.vcs-url="https://github.com/ems-project/docker-php-cli" \
+      be.fgov.elasticms.base.vcs-url="https://github.com/ems-project/base-php-docker" \
       be.fgov.elasticms.base.vendor="sebastian.molle@gmail.com" \
       be.fgov.elasticms.base.version="$VERSION_ARG" \
       be.fgov.elasticms.base.release="$RELEASE_ARG" \
@@ -108,6 +108,17 @@ ENTRYPOINT ["container-entrypoint-cli"]
 USER 1001
 
 FROM cli-prd AS cli-dev
+
+ARG VERSION_ARG
+ARG RELEASE_ARG
+ARG BUILD_DATE_ARG
+ARG VCS_REF_ARG
+ARG NODE_VERSION_ARG
+ARG COMPOSER_VERSION_ARG
+ARG AWS_CLI_VERSION_ARG
+ARG PHP_EXT_REDIS_VERSION_ARG
+ARG PHP_EXT_APCU_VERSION_ARG
+ARG PHP_EXT_XDEBUG_VERSION_ARG
 
 LABEL be.fgov.elasticms.base.environment="dev"
 
