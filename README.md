@@ -17,7 +17,7 @@ Container Entrypoint hooks available.
 
 ## Prerequisite
 
-You must install `bats`, `make`, `m4`.
+You must install `make`, `m4`.
 
 ## Generate Dockerfile
 
@@ -86,9 +86,14 @@ __Provide docker images__ :
 - `docker.io/elasticms/base-php:8.0.27-nginx-dev`
 - `docker.io/elasticms/base-php:8.0.27-cli-prd`
 - `docker.io/elasticms/base-php:8.0.27-cli-dev`
+
 # Test
 
-Test Docker images builded locally :  
+## Prerequisite
+
+You must install `bats`, `docker`, `docker-compose` and create a local network called `docker_default`.  
+
+## Test Docker images builded locally
 
 ```sh
 make test[-fpm|-apache|-nginx|-cli|-all][-dev] PHP_VERSION=<PHP Version you want to test>
@@ -112,10 +117,10 @@ Releases are done via GitHub actions and uploaded on Docker Hub.
 
 # Supported tags and respective Dockerfile links
 
-- [`8.0.x-fpm`, `8.0-fpm`, `8.0.x-fpm-prd`, `8.0-fpm-prd`, `8.0.y-fpm-dev`, `8.0-fpm-dev`](Dockerfile)
-- [`8.0.x-apache`, `8.0-apache`, `8.0.x-apache-prd`, `8.0-apache-prd`, `8.0.y-apache-dev`, `8.0-apache-dev`](Dockerfile)
-- [`8.0.x-nginx`, `8.0-nginx`, `8.0.x-nginx-prd`, `8.0-nginx-prd`, `8.0.y-nginx-dev`, `8.0-nginx-dev`](Dockerfile)
-- [`8.0.x-cli`, `8.0-cli`, `8.0.x-cli-prd`, `8.0-cli-prd`, `8.0.y-cli-dev`, `8.0-cli-dev`](Dockerfile)
+- [`8.0.x-fpm`, `8.0-fpm`, `8.0.x-fpm-prd`, `8.0-fpm-prd`, `8.0.y-fpm-dev`, `8.0-fpm-dev`](Dockerfiles/Dockerfile.in)
+- [`8.0.x-apache`, `8.0-apache`, `8.0.x-apache-prd`, `8.0-apache-prd`, `8.0.y-apache-dev`, `8.0-apache-dev`](Dockerfiles/Dockerfile.in)
+- [`8.0.x-nginx`, `8.0-nginx`, `8.0.x-nginx-prd`, `8.0-nginx-prd`, `8.0.y-nginx-dev`, `8.0-nginx-dev`](Dockerfiles/Dockerfile.in)
+- [`8.0.x-cli`, `8.0-cli`, `8.0.x-cli-prd`, `8.0-cli-prd`, `8.0.y-cli-dev`, `8.0-cli-dev`](Dockerfiles/Dockerfile.in)
 
 # Image Variants
 

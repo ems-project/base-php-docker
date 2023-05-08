@@ -1,6 +1,6 @@
 #!/usr/bin/env bats
 load "helpers/tests"
-load "helpers/docker"
+load "helpers/podman"
 
 load "lib/batslib"
 load "lib/output"
@@ -27,7 +27,7 @@ export BATS_VARNISH_ENABLED=${BATS_VARNISH_ENABLED:-"false"}
 export BATS_UID=$(id -u)
 
 @test "[$TEST_FILE] Create Docker external volumes (local)" {
-  command docker volume create -d local ${BATS_PHP_SCRIPTS_VOLUME_NAME}
+  command podman volume create -d local ${BATS_PHP_SCRIPTS_VOLUME_NAME}
 }
 
 @test "[$TEST_FILE] Loading container-entrypoint.d scripts in Docker Volume" {
@@ -43,44 +43,42 @@ export BATS_UID=$(id -u)
 }
 
 @test "[$TEST_FILE] Starting LAMP stack services (nginx,mysql,php)" {
-  command docker-compose -f ${BATS_TEST_DIRNAME%/}/docker-compose.nginx.yml up -d php mysql
+  command podman-compose -f ${BATS_TEST_DIRNAME%/}/docker-compose.nginx.yml up -d php mysql
 }
 
 @test "[$TEST_FILE] Check for startup messages in containers logs" {
-  docker_wait_for_log php 60 "INFO success: nginx entered RUNNING state"
-  docker_wait_for_log php 60 "INFO success: php-fpm entered RUNNING state"
-  docker_wait_for_log php 60 "Running PHP script when Docker container start ..."
-  docker_wait_for_log php 60 "Running Shell script when Docker container start ..."
-  docker_wait_for_log mysql 60 "Starting MySQL"
-  docker_wait_for_healthy mysql 120
+  podman_wait_for_log php 60 "INFO success: nginx entered RUNNING state"
+  podman_wait_for_log php 60 "INFO success: php-fpm entered RUNNING state"
+  podman_wait_for_log php 60 "Running PHP script when Docker container start ..."
+  podman_wait_for_log php 60 "Running Shell script when Docker container start ..."
+  podman_wait_for_log mysql 60 "Starting MySQL"
+  podman_wait_for_healthy mysql 120
 }
 
 @test "[$TEST_FILE] Check for Index page response code 200" {
-  retry 12 5 curl_container php :9000/index.php -H "Host: default.localhost" -s -w %{http_code} -o /dev/null
+  retry 12 5 curl_podman_container php :9000/index.php -H "Host: default.localhost" -s -w %{http_code} -o /dev/null
   assert_output -l 0 $'200'
 }
 
 @test "[$TEST_FILE] Check for Index page response message" {
-  retry 12 5 curl_container php :9000/index.php -H "Host: default.localhost" -s 
+  retry 12 5 curl_podman_container php :9000/index.php -H "Host: default.localhost" -s 
   assert_output -l -r "Docker Base image - Default index.php page"
 }
 
 @test "[$TEST_FILE] Check for MySQL Connection CheckUp response code 200" {
-  retry 12 5 curl_container php :9000/check-mysql.php -H "Host: default.localhost" -s -w %{http_code} -o /dev/null
+  retry 12 5 curl_podman_container php :9000/check-mysql.php -H "Host: default.localhost" -s -w %{http_code} -o /dev/null
   assert_output -l 0 $'200'
 }
 
 @test "[$TEST_FILE] Check for MySQL Connection CheckUp response message" {
-  retry 12 5 curl_container php :9000/check-mysql.php -H "Host: default.localhost" -s 
+  retry 12 5 curl_podman_container php :9000/check-mysql.php -H "Host: default.localhost" -s 
   assert_output -l -r "Check MySQL Connection Done."
 }
 
 @test "[$TEST_FILE] Stop all and delete test containers" {
-  command docker-compose -f ${BATS_TEST_DIRNAME%/}/docker-compose.nginx.yml stop
-  command docker-compose -f ${BATS_TEST_DIRNAME%/}/docker-compose.nginx.yml rm -v -f  
+  command podman_clean $(podman ps -a -q)
 }
 
 @test "[$TEST_FILE] Cleanup Docker external volumes (local)" {
-  command docker volume rm ${BATS_PHP_SCRIPTS_VOLUME_NAME}
+  command podman volume rm ${BATS_PHP_SCRIPTS_VOLUME_NAME}
 }
-
