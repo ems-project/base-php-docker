@@ -15,7 +15,17 @@ Container Entrypoint hooks available.
 
 # Build
 
-Build locally Docker images :  
+## Prerequisite
+
+You must install `bats`, `make`, `m4`.
+
+## Generate Dockerfile
+
+```sh
+make Dockefile
+```
+
+## Build locally Docker images
 
 ```sh
 make build[-fpm|-apache|-nginx|-cli|-all][-dev] [ PHP_VERSION=<PHP Version you want to build> ] \
