@@ -1,6 +1,7 @@
 #!/usr/bin/env bats
 load "helpers/tests"
 load "helpers/podman"
+load "helpers/dataloaders"
 
 load "lib/batslib"
 load "lib/output"
@@ -39,38 +40,23 @@ export BATS_UID=$(id -u)
 
 @test "[$TEST_FILE] Loading Nginx config files in Docker Volume" {
 
-  for file in ${BATS_TEST_DIRNAME%/}/etc/nginx/conf.d/* ; do
-    _basename=$(basename $file)
-    _name=${_basename%.*}
+  run provision-docker-volume-with-podman "${BATS_TEST_DIRNAME%/}/etc/nginx/conf.d/." "${BATS_NGINX_CONFIG_VOLUME_NAME}" "/"
+  assert_output -l -r 'LOADING OK'
 
-    run init_volume $BATS_NGINX_CONFIG_VOLUME_NAME $file
-    assert_output -l -r 'FS-VOLUME COPY OK'
-
-  done
 }
 
 @test "[$TEST_FILE] Loading source files in Docker Volume" {
 
-  for file in ${BATS_TEST_DIRNAME%/}/src/* ; do
-    _basename=$(basename $file)
-    _name=${_basename%.*}
+  run provision-docker-volume-with-podman "${BATS_TEST_DIRNAME%/}/src/." "${BATS_SOURCES_VOLUME_NAME}" "/"
+  assert_output -l -r 'LOADING OK'
 
-    run init_volume $BATS_SOURCES_VOLUME_NAME $file
-    assert_output -l -r 'FS-VOLUME COPY OK'
-
-  done
 }
 
 @test "[$TEST_FILE] Loading container-entrypoint.d scripts in Docker Volume" {
 
-  for file in ${BATS_TEST_DIRNAME%/}/bin/container-entrypoint.d/* ; do
-    _basename=$(basename $file)
-    _name=${_basename%.*}
+  run provision-docker-volume-with-podman "${BATS_TEST_DIRNAME%/}/bin/container-entrypoint.d/." "${BATS_PHP_SCRIPTS_VOLUME_NAME}" "/"
+  assert_output -l -r 'LOADING OK'
 
-    run init_volume $BATS_PHP_SCRIPTS_VOLUME_NAME $file
-    assert_output -l -r 'FS-VOLUME COPY OK'
-
-  done
 }
 
 @test "[$TEST_FILE] Starting LAMP stack services (nginx,mysql,php)" {
@@ -81,7 +67,10 @@ export BATS_UID=$(id -u)
   podman_wait_for_log php-fpm 60 "NOTICE: fpm is running, pid 1"
   podman_wait_for_log php-fpm 60 "Running PHP script when Docker container start ..."
   podman_wait_for_log php-fpm 60 "Running Shell script when Docker container start ..."
-  podman_wait_for_log php-fpm 60 "> pm.max_children=3"
+  
+  # Cannot test autoresizing with podman while limits in compose is not recognized
+  # podman_wait_for_log php-fpm 60 "> pm.max_children=3"
+
   podman_wait_for_log php-fpm 60 "> php_value\[memory_limit\]=128M"
   podman_wait_for_log mysql 60 "Starting MySQL"
   podman_wait_for_healthy mysql 120
@@ -112,40 +101,42 @@ export BATS_UID=$(id -u)
   assert_output -l -r "Check MySQL Connection Done."
 }
 
-@test "[$TEST_FILE] Stop PHP-FPM test containers" {
-  command podman-compose -f ${BATS_TEST_DIRNAME%/}/docker-compose.php-fpm.yml stop php-fpm
-}
-
-@test "[$TEST_FILE] Re-Start PHP-FPM test containers without PHP-FPM Auto-Sizing" {
-  export BATS_PHP_FPM_MAX_CHILDREN_AUTO_RESIZING=false
-  export BATS_PHP_FPM_MAX_CHILDREN=40
-  export BATS_PHP_FPM_REQUEST_MAX_MEMORY_IN_MEGABYTES=16
-  command podman-compose -f ${BATS_TEST_DIRNAME%/}/docker-compose.php-fpm.yml up -d php-fpm
-}
-
-@test "[$TEST_FILE] Check for startup messages in containers logs 2" {
-  podman_wait_for_log php-fpm 60 "> pm.max_children=40"
-  podman_wait_for_log php-fpm 60 "> php_value\[memory_limit\]=16M"
-}
-
-@test "[$TEST_FILE] Stop PHP-FPM test containers without PHP-FPM Auto-Sizing" {
-  command podman-compose -f ${BATS_TEST_DIRNAME%/}/docker-compose.php-fpm.yml stop php-fpm
-}
-
-@test "[$TEST_FILE] Re-Start PHP-FPM test containers with PHP-FPM Auto-Sizing" {
-  export BATS_PHP_FPM_MAX_CHILDREN_AUTO_RESIZING=true
-  export BATS_PHP_FPM_MAX_CHILDREN=40
-  export BATS_PHP_FPM_REQUEST_MAX_MEMORY_IN_MEGABYTES=16
-  command podman-compose -f ${BATS_TEST_DIRNAME%/}/docker-compose.php-fpm.yml up -d php-fpm
-}
-
-@test "[$TEST_FILE] Check for startup messages in containers logs 3" {
-  podman_wait_for_log php-fpm 60 "> pm.max_children=26"
-  podman_wait_for_log php-fpm 60 "> php_value\[memory_limit\]=16M"
-}
+# Cannot test autoresizing with podman while limits and re-read environment variable in compose is not working
+# 
+# @test "[$TEST_FILE] Stop PHP-FPM test containers" {
+#   command podman-compose -f ${BATS_TEST_DIRNAME%/}/docker-compose.php-fpm.yml stop php-fpm
+# }
+# 
+# @test "[$TEST_FILE] Re-Start PHP-FPM test containers without PHP-FPM Auto-Sizing" {
+#   export BATS_PHP_FPM_MAX_CHILDREN_AUTO_RESIZING=false
+#   export BATS_PHP_FPM_MAX_CHILDREN=40
+#   export BATS_PHP_FPM_REQUEST_MAX_MEMORY_IN_MEGABYTES=16
+#   run podman-compose -f ${BATS_TEST_DIRNAME%/}/docker-compose.php-fpm.yml up -d --force-recreate php-fpm
+# }
+# 
+# @test "[$TEST_FILE] Check for startup messages in containers logs 2" {
+#   podman_wait_for_log php-fpm 60 "> pm.max_children=40"
+#   podman_wait_for_log php-fpm 60 "> php_value\[memory_limit\]=16M"
+# }
+#
+# @test "[$TEST_FILE] Stop PHP-FPM test containers without PHP-FPM Auto-Sizing" {
+#   command podman-compose -f ${BATS_TEST_DIRNAME%/}/docker-compose.php-fpm.yml stop php-fpm
+# }
+# 
+# @test "[$TEST_FILE] Re-Start PHP-FPM test containers with PHP-FPM Auto-Sizing" {
+#   export BATS_PHP_FPM_MAX_CHILDREN_AUTO_RESIZING=true
+#   export BATS_PHP_FPM_MAX_CHILDREN=40
+#   export BATS_PHP_FPM_REQUEST_MAX_MEMORY_IN_MEGABYTES=16
+#   command podman-compose -f ${BATS_TEST_DIRNAME%/}/docker-compose.php-fpm.yml up -d php-fpm
+# }
+# 
+# @test "[$TEST_FILE] Check for startup messages in containers logs 3" {
+#   podman_wait_for_log php-fpm 60 "> pm.max_children=26"
+#   podman_wait_for_log php-fpm 60 "> php_value\[memory_limit\]=16M"
+# }
 
 @test "[$TEST_FILE] Stop all and delete test containers" {
-  command podman_clean $(podman ps -a -q)
+  command podman-compose -f ${BATS_TEST_DIRNAME%/}/docker-compose.php-fpm.yml down -v
 }
 
 @test "[$TEST_FILE] Cleanup Docker external volumes (local)" {

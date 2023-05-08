@@ -1,6 +1,7 @@
 #!/usr/bin/env bats
 load "helpers/tests"
 load "helpers/docker"
+load "helpers/dataloaders"
 
 load "lib/batslib"
 load "lib/output"
@@ -33,14 +34,9 @@ export BATS_UID=$(id -u)
 
 @test "[$TEST_FILE] Loading container-entrypoint.d scripts in Docker Volume" {
 
-  for file in ${BATS_TEST_DIRNAME%/}/bin/container-entrypoint.d/* ; do
-    _basename=$(basename $file)
-    _name=${_basename%.*}
+  run provision-docker-volume "${BATS_TEST_DIRNAME%/}/bin/container-entrypoint.d/." "${BATS_PHP_SCRIPTS_VOLUME_NAME}" "/tmp"
+  assert_output -l -r 'LOADING OK'
 
-    run init_volume $BATS_PHP_SCRIPTS_VOLUME_NAME $file
-    assert_output -l -r 'FS-VOLUME COPY OK'
-
-  done
 }
 
 @test "[$TEST_FILE] Starting LAMP stack services (apache,mysql,php)" {

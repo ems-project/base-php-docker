@@ -1,6 +1,7 @@
 #!/usr/bin/env bats
 load "helpers/tests"
 load "helpers/podman"
+load "helpers/dataloaders"
 
 load "lib/batslib"
 load "lib/output"

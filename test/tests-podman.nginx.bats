@@ -1,6 +1,7 @@
 #!/usr/bin/env bats
 load "helpers/tests"
 load "helpers/podman"
+load "helpers/dataloaders"
 
 load "lib/batslib"
 load "lib/output"
@@ -32,14 +33,9 @@ export BATS_UID=$(id -u)
 
 @test "[$TEST_FILE] Loading container-entrypoint.d scripts in Docker Volume" {
 
-  for file in ${BATS_TEST_DIRNAME%/}/bin/container-entrypoint.d/* ; do
-    _basename=$(basename $file)
-    _name=${_basename%.*}
+  run provision-docker-volume-with-podman "${BATS_TEST_DIRNAME%/}/bin/container-entrypoint.d/." "${BATS_PHP_SCRIPTS_VOLUME_NAME}" "/tmp"
+  assert_output -l -r 'LOADING OK'
 
-    run init_volume $BATS_PHP_SCRIPTS_VOLUME_NAME $file
-    assert_output -l -r 'FS-VOLUME COPY OK'
-
-  done
 }
 
 @test "[$TEST_FILE] Starting LAMP stack services (nginx,mysql,php)" {
@@ -76,7 +72,7 @@ export BATS_UID=$(id -u)
 }
 
 @test "[$TEST_FILE] Stop all and delete test containers" {
-  command podman_clean $(podman ps -a -q)
+  command podman-compose -f ${BATS_TEST_DIRNAME%/}/docker-compose.nginx.yml down -v
 }
 
 @test "[$TEST_FILE] Cleanup Docker external volumes (local)" {
