@@ -198,6 +198,10 @@ jobs:
           restore-keys: |
             ${{ runner.os }}-buildx-
 
+      - name: Create Dockerfile
+        run: |
+          make Dockerfile
+
       - name: Build "${{ needs.init.outputs.phpfpm-prd-docker-image-name }}" Docker Image
         id: build-phpfpm-prd
         uses: docker/build-push-action@v3
