@@ -15,7 +15,17 @@ Container Entrypoint hooks available.
 
 # Build
 
-Build locally Docker images :  
+## Prerequisite
+
+You must install `make`, `m4`.
+
+## Generate Dockerfile
+
+```sh
+make Dockefile
+```
+
+## Build locally Docker images
 
 ```sh
 make build[-fpm|-apache|-nginx|-cli|-all][-dev] [ PHP_VERSION=<PHP Version you want to build> ] \
@@ -27,6 +37,8 @@ make build[-fpm|-apache|-nginx|-cli|-all][-dev] [ PHP_VERSION=<PHP Version you w
                                                 [ PHP_EXT_APCU_VERSION=<PHP Extension APCu Version> ] \
                                                 [ PHP_EXT_XDEBUG_VERSION=<PHP Extension XDebug Version> ]
 ```
+
+Default value of Docker build arguments is grabbed from the [.build.env](.build.env) file if it is present, otherwise Docker build will use the default values available in the Dockerfile.  Default values can be also overridden via the make command line.  
 
 ## Example building __fpm__ variant __prd__ Docker image
 
@@ -76,7 +88,11 @@ __Provide docker images__ :
 - `docker.io/elasticms/base-php:8.1.14-cli-dev`
 # Test
 
-Test Docker images builded locally :  
+## Prerequisite
+
+You must install `bats`, `docker`, `docker-compose` and create a local network called `docker_default`.  
+
+## Test Docker images builded locally
 
 ```sh
 make test[-fpm|-apache|-nginx|-cli|-all][-dev] PHP_VERSION=<PHP Version you want to test>
@@ -100,10 +116,10 @@ Releases are done via GitHub actions and uploaded on Docker Hub.
 
 # Supported tags and respective Dockerfile links
 
-- [`8.1.x-fpm`, `8.1-fpm`, `8.1.x-fpm-prd`, `8.1-fpm-prd`, `8.1.y-fpm-dev`, `8.1-fpm-dev`](Dockerfile)
-- [`8.1.x-apache`, `8.1-apache`, `8.1.x-apache-prd`, `8.1-apache-prd`, `8.1.y-apache-dev`, `8.1-apache-dev`](Dockerfile)
-- [`8.1.x-nginx`, `8.1-nginx`, `8.1.x-nginx-prd`, `8.1-nginx-prd`, `8.1.y-nginx-dev`, `8.1-nginx-dev`](Dockerfile)
-- [`8.1.x-cli`, `8.1-cli`, `8.1.x-cli-prd`, `8.1-cli-prd`, `8.1.y-cli-dev`, `8.1-cli-dev`](Dockerfile)
+- [`8.1.x-fpm`, `8.1-fpm`, `8.1.x-fpm-prd`, `8.1-fpm-prd`, `8.1.y-fpm-dev`, `8.1-fpm-dev`](Dockerfiles/Dockerfile.in)
+- [`8.1.x-apache`, `8.1-apache`, `8.1.x-apache-prd`, `8.1-apache-prd`, `8.1.y-apache-dev`, `8.1-apache-dev`](Dockerfiles/Dockerfile.in)
+- [`8.1.x-nginx`, `8.1-nginx`, `8.1.x-nginx-prd`, `8.1-nginx-prd`, `8.1.y-nginx-dev`, `8.1-nginx-dev`](Dockerfiles/Dockerfile.in)
+- [`8.1.x-cli`, `8.1-cli`, `8.1.x-cli-prd`, `8.1-cli-prd`, `8.1.y-cli-dev`, `8.1-cli-dev`](Dockerfiles/Dockerfile.in)
 
 # Image Variants
 
