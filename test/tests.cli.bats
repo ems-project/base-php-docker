@@ -22,6 +22,6 @@ export BATS_PHP_DOCKER_IMAGE_NAME="${DOCKER_IMAGE_NAME:-docker.io/elasticms/base
 }
 
 @test "[$TEST_FILE] Test aws cli version" {
-  run podman run --rm ${BATS_PHP_DOCKER_IMAGE_NAME} aws --version
+  run docker run --rm ${BATS_PHP_DOCKER_IMAGE_NAME} aws --version
   assert_output -l -r "^aws-cli/${BATS_AWS_CLI_VERSION} Python/.* .* botocore/.*$"
 }

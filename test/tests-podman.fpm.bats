@@ -40,21 +40,21 @@ export BATS_UID=$(id -u)
 
 @test "[$TEST_FILE] Loading Nginx config files in Docker Volume" {
 
-  run provision-docker-volume-with-podman "${BATS_TEST_DIRNAME%/}/etc/nginx/conf.d/." "${BATS_NGINX_CONFIG_VOLUME_NAME}" "/"
+  run provision-docker-volume-with-podman "${BATS_TEST_DIRNAME%/}/etc/nginx/conf.d/." "${BATS_NGINX_CONFIG_VOLUME_NAME}" "/tmp"
   assert_output -l -r 'LOADING OK'
 
 }
 
 @test "[$TEST_FILE] Loading source files in Docker Volume" {
 
-  run provision-docker-volume-with-podman "${BATS_TEST_DIRNAME%/}/src/." "${BATS_SOURCES_VOLUME_NAME}" "/"
+  run provision-docker-volume-with-podman "${BATS_TEST_DIRNAME%/}/src/." "${BATS_SOURCES_VOLUME_NAME}" "/tmp"
   assert_output -l -r 'LOADING OK'
 
 }
 
 @test "[$TEST_FILE] Loading container-entrypoint.d scripts in Docker Volume" {
 
-  run provision-docker-volume-with-podman "${BATS_TEST_DIRNAME%/}/bin/container-entrypoint.d/." "${BATS_PHP_SCRIPTS_VOLUME_NAME}" "/"
+  run provision-docker-volume-with-podman "${BATS_TEST_DIRNAME%/}/bin/container-entrypoint.d/." "${BATS_PHP_SCRIPTS_VOLUME_NAME}" "/tmp"
   assert_output -l -r 'LOADING OK'
 
 }
