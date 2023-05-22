@@ -95,9 +95,13 @@ jobs:
             type=raw,value=${{ needs.init.outputs.version-patch }}-${{ matrix.image-variant }}
             type=raw,value=${{ needs.init.outputs.version-minor }}-${{ matrix.image-variant }}
 
+      - name: Create Dockerfile
+        run: |
+          make Dockerfile
+
       - name: Build "${{ needs.init.outputs.docker-image-name }}:${{ needs.init.outputs.github-ci-sha-short }}-${{ matrix.image-variant }}" Docker Image
         id: build
-        uses: docker/build-push-action@v3
+        uses: docker/build-push-action@v4
         with:
           builder: ${{ steps.buildx.outputs.name }}
           context: .

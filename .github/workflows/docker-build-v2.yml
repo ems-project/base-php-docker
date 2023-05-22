@@ -54,9 +54,13 @@ jobs:
           restore-keys: |
             ${{ runner.os }}-buildx-
 
+      - name: Create Dockerfile
+        run: |
+          make Dockerfile
+
       - name: Build "${{ steps.prep.outputs.docker-image-name }}" Docker Image
         id: build
-        uses: docker/build-push-action@v3
+        uses: docker/build-push-action@v4
         with:
           builder: ${{ steps.buildx.outputs.name }}
           context: .

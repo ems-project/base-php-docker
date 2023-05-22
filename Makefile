@@ -5,6 +5,9 @@ ifneq (,$(wildcard ./.build.env))
     export
 endif
 
+LIB = ./Dockerfiles
+DOCKERFILE=Dockerfile.in
+
 GIT_HASH ?= $(shell git log --format="%h" -n 1)
 BUILD_DATE ?= $(shell date -u +'%Y-%m-%dT%H:%M:%SZ')
 
@@ -54,7 +57,7 @@ build-apache-dev: # Build [apache] dev Docker image
 build-nginx-dev: # Build [nginx] dev Docker image
 	@$(MAKE) -s _build-nginx-dev
 
-build-all: # Build [fpm,apache,nginx] [prd,dev] variants Docker images
+build-all: # Build [fpm,apache,nginx,cli] [prd,dev] variants Docker images
 	@$(MAKE) -s _build-fpm-prd
 	@$(MAKE) -s _build-fpm-dev
 	@$(MAKE) -s _build-cli-prd
@@ -69,9 +72,9 @@ _build-%:
 		-e _BUILD_ARGS_TAG="${PHP_VERSION}-$*" \
 		-e _BUILD_ARGS_TARGET="$*"
 
-_builder:
+_builder: _dockerfile
 	@echo "Build [${DOCKER_IMAGE_NAME}:${_BUILD_ARGS_TAG}] Docker image ..."
-	@docker build \
+	@docker build --progress=plain --no-cache \
 		--build-arg VERSION_ARG="${PHP_VERSION}" \
 		--build-arg RELEASE_ARG="${_BUILD_ARGS_TAG}" \
 		--build-arg BUILD_DATE_ARG="${BUILD_DATE}" \
@@ -83,7 +86,7 @@ _builder:
 		--build-arg PHP_EXT_APCU_VERSION_ARG=${PHP_EXT_APCU_VERSION} \
 		--build-arg PHP_EXT_XDEBUG_VERSION_ARG=${PHP_EXT_XDEBUG_VERSION} \
 		--target ${_BUILD_ARGS_TARGET} \
-		--tag ${DOCKER_IMAGE_NAME}:${_BUILD_ARGS_TAG} .
+		--tag ${DOCKER_IMAGE_NAME}:${_BUILD_ARGS_TAG} -f $(DOCKERFILE:.in=) .
 
 test: # Test [fpm,apache,nginx,cli] prd variant Docker images
 	@$(MAKE) -s _test-fpm-prd
@@ -233,3 +236,9 @@ _squash:
 cmd-exists-%:
 	@hash $(*) > /dev/null 2>&1 || \
 		(echo "ERROR: '$(*)' must be installed and available on your PATH."; exit 1)
+
+Dockerfile: # generate Dockerfile
+	@$(MAKE) -s _dockerfile
+
+_dockerfile: $(LIB)/*.m4
+	m4 -I $(LIB) $(LIB)/$(DOCKERFILE) > $(DOCKERFILE:.in=)
