@@ -1,76 +1,82 @@
-function init_clair_local_scanner_config_volume {
+function provision-docker-volume {
 
-  local -r _volume_name=$1
-  local -r _filename=$2
+  local -r CONTENT_PATH=${1}
+  local -r VOLUME_NAME=${2}
+  local -r VOLUME_PATH=${3}
 
-  local -r _copy_status=0
+  local STATUS=0
 
-  if [ -f ${_filename} ]; then
+  docker container create --name dummy -v ${VOLUME_NAME}:${VOLUME_PATH} alpine:latest
 
-    docker container create --name dummy -v $_volume_name:/configs alpine:latest
-
-    if [ ! "$?" -eq 0 ]; then
-      _copy_status=1
-    fi
-
-    run docker cp -a ${_filename} dummy:/configs/
-
-    if [ ! "$?" -eq 0 ]; then
-      _copy_status=1
-    fi
-
-    docker rm dummy
-
-    if [ ! "$?" -eq 0 ]; then
-      _copy_status=1
-    fi
-
+  if [ $? -eq 0 ]; then
+    STATUS=0
+  else
+    STATUS=1
   fi
 
-  if [ "$_copy_status" -eq 0 ]; then
-    echo "FS-VOLUME CLAIR-LOCAL-SCANNER CONFIG COPY OK"
+  docker cp ${CONTENT_PATH} dummy:${VOLUME_PATH}
+
+  if [ $? -eq 0 ]; then
+    STATUS=0
+  else
+    STATUS=1
+  fi
+
+  docker rm dummy
+    
+  if [ $? -eq 0 ]; then
+    STATUS=0
+  else
+    STATUS=1
+  fi
+
+  if [ $STATUS -eq 0 ]; then
+    echo "LOADING OK"
     return 0
   else
-    echo "FS-VOLUME CLAIR-LOCAL-SCANNER CONFIG COPY KO"
+    echo "LOADING KO"
     false
   fi
 
 }
 
-function init_volume {
+function provision-docker-volume-with-podman {
 
-  local -r _volume_name=$1
-  local -r _filename=$2
+  local -r CONTENT_PATH=${1}
+  local -r VOLUME_NAME=${2}
+  local -r VOLUME_PATH=${3}
 
-  local -r _copy_status=0
+  local STATUS=0
 
-  if [ -f ${_filename} ]; then
+  podman container create --name dummy -v ${VOLUME_NAME}:${VOLUME_PATH} alpine:latest
 
-    docker container create --name dummy -v $_volume_name:/tmp alpine:latest
-
-    if [ ! "$?" -eq 0 ]; then
-      _copy_status=1
-    fi
-
-    run docker cp -a ${_filename} dummy:/tmp
-
-    if [ ! "$?" -eq 0 ]; then
-      _copy_status=1
-    fi
-
-    docker rm dummy
-
-    if [ ! "$?" -eq 0 ]; then
-      _copy_status=1
-    fi
-
+  if [ $? -eq 0 ]; then
+    STATUS=0
+  else
+    STATUS=1
   fi
 
-  if [ "$_copy_status" -eq 0 ]; then
-    echo "FS-VOLUME COPY OK"
+  podman cp ${CONTENT_PATH} dummy:${VOLUME_PATH}
+
+  if [ $? -eq 0 ]; then
+    STATUS=0
+  else
+    STATUS=1
+  fi
+
+  podman rm dummy
+    
+  if [ $? -eq 0 ]; then
+    STATUS=0
+  else
+    STATUS=1
+  fi
+
+  if [ $STATUS -eq 0 ]; then
+    echo "LOADING OK"
     return 0
   else
-    echo "FS-VOLUME COPY KO"
+    echo "LOADING KO"
     false
   fi
 
