@@ -211,6 +211,7 @@ jobs:
         env:
           DOCKER_IMAGE_NAME: ${{ needs.init.outputs.docker-image-name }}:${{ needs.init.outputs.github-ci-sha-short }}-${{ matrix.image-variant }}
           PHP_VERSION: ${{ needs.init.outputs.version-patch }}
+          AWS_CLI_VERSION: ${{ needs.init.outputs.aws-cli-version }}
         run: |
           docker network create docker_default
           docker pull appropriate/curl:latest
