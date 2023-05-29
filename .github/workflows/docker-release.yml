@@ -679,6 +679,7 @@ jobs:
       - name: Test "${{ needs.init.outputs.phpfpm-prd-docker-image-name }}" Docker Image
         env:
           DOCKER_IMAGE_NAME: ${{ needs.init.outputs.phpfpm-prd-docker-image-name }}:${{ needs.init.outputs.github-ci-sha-short }}
+          CONTAINER_ENGINE: docker
         run: |
           docker network create docker_default
           docker pull appropriate/curl:latest
@@ -689,18 +690,21 @@ jobs:
           DOCKER_IMAGE_NAME: ${{ needs.init.outputs.phpcli-prd-docker-image-name }}:${{ needs.init.outputs.github-ci-sha-short }}
           PHP_VERSION: ${{ needs.init.outputs.version-patch }}
           AWS_CLI_VERSION: ${{ needs.init.outputs.aws-cli-version }}
+          CONTAINER_ENGINE: docker
         run: |
           bats -r test/tests.cli.bats
 
       - name: Test "${{ needs.init.outputs.apache-prd-docker-image-name }}" Docker Image
         env:
           DOCKER_IMAGE_NAME: ${{ needs.init.outputs.apache-prd-docker-image-name }}:${{ needs.init.outputs.github-ci-sha-short }}
+          CONTAINER_ENGINE: docker
         run: |
           bats -r test/tests.apache.bats
 
       - name: Test "${{ needs.init.outputs.nginx-prd-docker-image-name }}" Docker Image
         env:
           DOCKER_IMAGE_NAME: ${{ needs.init.outputs.nginx-prd-docker-image-name }}:${{ needs.init.outputs.github-ci-sha-short }}
+          CONTAINER_ENGINE: docker
         run: |
           bats -r test/tests.nginx.bats
 
