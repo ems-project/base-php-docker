@@ -24,7 +24,7 @@ services:
       - 9000:9000
     command: [nginx, '-g', 'daemon off;']
     depends_on:
-      - php-fpm
+      - php
     volumes:
       - php_sock:/var/run/php-fpm
       - php_src:/usr/share/nginx/html
