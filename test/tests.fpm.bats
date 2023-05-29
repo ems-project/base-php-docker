@@ -63,19 +63,26 @@ export BATS_CONTAINER_NETWORK_NAME="${CONTAINER_NETWORK_NAME:-docker_default}"
 
 }
 
-@test "[$TEST_FILE] Starting LAMP stack services (nginx,mysql,php)" {
-  command ${BATS_CONTAINER_COMPOSE_ENGINE} -f ${BATS_TEST_DIRNAME%/}/docker-compose.php-fpm.yml up -d php-fpm mysql nginx
+@test "[$TEST_FILE] Starting MySQL service" {
+  command ${BATS_CONTAINER_COMPOSE_ENGINE} -f ${BATS_TEST_DIRNAME%/}/docker-compose.apache.yml up -d mysql
+}
+
+@test "[$TEST_FILE] Check for MySQL startup messages in containers logs" {
+  container_wait_for_log mysql 60 "Starting MySQL"
+}
+
+@test "[$TEST_FILE] Starting LAMP stack services (nginx,php)" {
+  command ${BATS_CONTAINER_COMPOSE_ENGINE} -f ${BATS_TEST_DIRNAME%/}/docker-compose.php-fpm.yml up -d php nginx
 }
 
 @test "[$TEST_FILE] Check for startup messages in containers logs" {
-  container_wait_for_log php-fpm 60 "NOTICE: fpm is running, pid 1"
-  container_wait_for_log php-fpm 60 "Running PHP script when Docker container start ..."
-  container_wait_for_log php-fpm 60 "Running Shell script when Docker container start ..."
-  container_wait_for_log php-fpm 60 "> php_value\[memory_limit\]=128M"
-  container_wait_for_log mysql 60 "Starting MySQL"
+  container_wait_for_log php 60 "NOTICE: fpm is running, pid 1"
+  container_wait_for_log php 60 "Running PHP script when Docker container start ..."
+  container_wait_for_log php 60 "Running Shell script when Docker container start ..."
+  container_wait_for_log php 60 "> php_value\[memory_limit\]=128M"
 
   if [ "${BATS_CONTAINER_ENGINE}" = "docker" ]; then
-    container_wait_for_log php-fpm 60 "> pm.max_children=3"
+    container_wait_for_log php 60 "> pm.max_children=3"
   else
     # Autoresizing cannot be tested with Podman until the limits specified in the Compose file are recognized.
     true
@@ -109,21 +116,21 @@ export BATS_CONTAINER_NETWORK_NAME="${CONTAINER_NETWORK_NAME:-docker_default}"
 }
 
 @test "[$TEST_FILE] Stop PHP-FPM test containers" {
-  command ${BATS_CONTAINER_COMPOSE_ENGINE} -f ${BATS_TEST_DIRNAME%/}/docker-compose.php-fpm.yml stop php-fpm
+  command ${BATS_CONTAINER_COMPOSE_ENGINE} -f ${BATS_TEST_DIRNAME%/}/docker-compose.php-fpm.yml stop php
 }
 
 @test "[$TEST_FILE] Re-Start PHP-FPM test containers without PHP-FPM Auto-Sizing" {
   export BATS_PHP_FPM_MAX_CHILDREN_AUTO_RESIZING=false
   export BATS_PHP_FPM_MAX_CHILDREN=40
   export BATS_PHP_FPM_REQUEST_MAX_MEMORY_IN_MEGABYTES=16
-  command ${BATS_CONTAINER_COMPOSE_ENGINE} -f ${BATS_TEST_DIRNAME%/}/docker-compose.php-fpm.yml up -d php-fpm
+  command ${BATS_CONTAINER_COMPOSE_ENGINE} -f ${BATS_TEST_DIRNAME%/}/docker-compose.php-fpm.yml up -d php
 }
 
 @test "[$TEST_FILE] Check for startup messages in containers logs 2" {
 
   if [ "${BATS_CONTAINER_ENGINE}" = "docker" ]; then
-    container_wait_for_log php-fpm 60 "> pm.max_children=40"
-    container_wait_for_log php-fpm 60 "> php_value\[memory_limit\]=16M"
+    container_wait_for_log php 60 "> pm.max_children=40"
+    container_wait_for_log php 60 "> php_value\[memory_limit\]=16M"
   else
     # Autoresizing cannot be tested with Podman until the limits specified in the Compose file are recognized.
     true
@@ -132,14 +139,14 @@ export BATS_CONTAINER_NETWORK_NAME="${CONTAINER_NETWORK_NAME:-docker_default}"
 }
 
 @test "[$TEST_FILE] Stop PHP-FPM test containers without PHP-FPM Auto-Sizing" {
-  command ${BATS_CONTAINER_COMPOSE_ENGINE} -f ${BATS_TEST_DIRNAME%/}/docker-compose.php-fpm.yml stop php-fpm
+  command ${BATS_CONTAINER_COMPOSE_ENGINE} -f ${BATS_TEST_DIRNAME%/}/docker-compose.php-fpm.yml stop php
 }
 
 @test "[$TEST_FILE] Re-Start PHP-FPM test containers with PHP-FPM Auto-Sizing" {
   export BATS_PHP_FPM_MAX_CHILDREN_AUTO_RESIZING=true
   export BATS_PHP_FPM_MAX_CHILDREN=40
   export BATS_PHP_FPM_REQUEST_MAX_MEMORY_IN_MEGABYTES=16
-  command ${BATS_CONTAINER_COMPOSE_ENGINE} -f ${BATS_TEST_DIRNAME%/}/docker-compose.php-fpm.yml up -d php-fpm
+  command ${BATS_CONTAINER_COMPOSE_ENGINE} -f ${BATS_TEST_DIRNAME%/}/docker-compose.php-fpm.yml up -d php
 }
 
 @test "[$TEST_FILE] Check for startup messages in containers logs 3" {

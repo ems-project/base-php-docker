@@ -42,16 +42,23 @@ export BATS_CONTAINER_NETWORK_NAME="${CONTAINER_NETWORK_NAME:-docker_default}"
 
 }
 
-@test "[$TEST_FILE] Starting LAMP stack services (nginx,mysql,php)" {
-  command ${BATS_CONTAINER_COMPOSE_ENGINE} -f ${BATS_TEST_DIRNAME%/}/docker-compose.nginx.yml up -d php mysql
+@test "[$TEST_FILE] Starting MySQL service" {
+  command ${BATS_CONTAINER_COMPOSE_ENGINE} -f ${BATS_TEST_DIRNAME%/}/docker-compose.apache.yml up -d mysql
 }
 
-@test "[$TEST_FILE] Check for startup messages in containers logs" {
+@test "[$TEST_FILE] Check for MySQL startup messages in containers logs" {
+  container_wait_for_log mysql 60 "Starting MySQL"
+}
+
+@test "[$TEST_FILE] Starting Nginx/PHP stack services (nginx,php)" {
+  command ${BATS_CONTAINER_COMPOSE_ENGINE} -f ${BATS_TEST_DIRNAME%/}/docker-compose.nginx.yml up -d php
+}
+
+@test "[$TEST_FILE] Check for Nginx/PHP startup messages in containers logs" {
   container_wait_for_log php 60 "INFO success: nginx entered RUNNING state"
   container_wait_for_log php 60 "INFO success: php-fpm entered RUNNING state"
   container_wait_for_log php 60 "Running PHP script when Docker container start ..."
   container_wait_for_log php 60 "Running Shell script when Docker container start ..."
-  container_wait_for_log mysql 60 "Starting MySQL"
 }
 
 @test "[$TEST_FILE] Check for Index page response code 200" {
