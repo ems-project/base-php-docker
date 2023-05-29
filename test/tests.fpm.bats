@@ -1,6 +1,6 @@
 #!/usr/bin/env bats
 load "helpers/tests"
-load "helpers/docker"
+load "helpers/containers"
 load "helpers/dataloaders"
 
 load "lib/batslib"
@@ -31,11 +31,15 @@ export BATS_VARNISH_ENABLED=${BATS_VARNISH_ENABLED:-"false"}
 
 export BATS_UID=$(id -u)
 
+export BATS_CONTAINER_ENGINE="${CONTAINER_ENGINE:-podman}"
+export BATS_CONTAINER_COMPOSE_ENGINE="${BATS_CONTAINER_ENGINE}-compose"
+export BATS_CONTAINER_NETWORK_NAME="${CONTAINER_NETWORK_NAME:-docker_default}"
+
 @test "[$TEST_FILE] Create Docker external volumes (local)" {
-  command docker volume create -d local ${BATS_PHP_SCRIPTS_VOLUME_NAME}
-  command docker volume create -d local ${BATS_PHP_SOCKET_VOLUME_NAME}
-  command docker volume create -d local ${BATS_SOURCES_VOLUME_NAME}
-  command docker volume create -d local ${BATS_NGINX_CONFIG_VOLUME_NAME}
+  command ${BATS_CONTAINER_ENGINE} volume create -d local ${BATS_PHP_SCRIPTS_VOLUME_NAME}
+  command ${BATS_CONTAINER_ENGINE} volume create -d local ${BATS_PHP_SOCKET_VOLUME_NAME}
+  command ${BATS_CONTAINER_ENGINE} volume create -d local ${BATS_SOURCES_VOLUME_NAME}
+  command ${BATS_CONTAINER_ENGINE} volume create -d local ${BATS_NGINX_CONFIG_VOLUME_NAME}
 }
 
 @test "[$TEST_FILE] Loading Nginx config files in Docker Volume" {
@@ -60,16 +64,23 @@ export BATS_UID=$(id -u)
 }
 
 @test "[$TEST_FILE] Starting LAMP stack services (nginx,mysql,php)" {
-  command docker-compose -f ${BATS_TEST_DIRNAME%/}/docker-compose.php-fpm.yml up -d php-fpm mysql nginx
+  command ${BATS_CONTAINER_COMPOSE_ENGINE} -f ${BATS_TEST_DIRNAME%/}/docker-compose.php-fpm.yml up -d php-fpm mysql nginx
 }
 
 @test "[$TEST_FILE] Check for startup messages in containers logs" {
-  docker_wait_for_log php-fpm 60 "NOTICE: fpm is running, pid 1"
-  docker_wait_for_log php-fpm 60 "Running PHP script when Docker container start ..."
-  docker_wait_for_log php-fpm 60 "Running Shell script when Docker container start ..."
-  docker_wait_for_log php-fpm 60 "> pm.max_children=3"
-  docker_wait_for_log php-fpm 60 "> php_value\[memory_limit\]=128M"
-  docker_wait_for_log mysql 60 "Starting MySQL"
+  container_wait_for_log php-fpm 60 "NOTICE: fpm is running, pid 1"
+  container_wait_for_log php-fpm 60 "Running PHP script when Docker container start ..."
+  container_wait_for_log php-fpm 60 "Running Shell script when Docker container start ..."
+  container_wait_for_log php-fpm 60 "> php_value\[memory_limit\]=128M"
+  container_wait_for_log mysql 60 "Starting MySQL"
+
+  if [ "${BATS_CONTAINER_ENGINE}" = "docker" ]; then
+    container_wait_for_log php-fpm 60 "> pm.max_children=3"
+  else
+    # Autoresizing cannot be tested with Podman until the limits specified in the Compose file are recognized.
+    true
+  fi
+
 }
 
 @test "[$TEST_FILE] Check for PHP Info page response code 200" {
@@ -98,46 +109,59 @@ export BATS_UID=$(id -u)
 }
 
 @test "[$TEST_FILE] Stop PHP-FPM test containers" {
-  command docker-compose -f ${BATS_TEST_DIRNAME%/}/docker-compose.php-fpm.yml stop php-fpm
+  command ${BATS_CONTAINER_COMPOSE_ENGINE} -f ${BATS_TEST_DIRNAME%/}/docker-compose.php-fpm.yml stop php-fpm
 }
 
 @test "[$TEST_FILE] Re-Start PHP-FPM test containers without PHP-FPM Auto-Sizing" {
   export BATS_PHP_FPM_MAX_CHILDREN_AUTO_RESIZING=false
   export BATS_PHP_FPM_MAX_CHILDREN=40
   export BATS_PHP_FPM_REQUEST_MAX_MEMORY_IN_MEGABYTES=16
-  command docker-compose -f ${BATS_TEST_DIRNAME%/}/docker-compose.php-fpm.yml up -d php-fpm
+  command ${BATS_CONTAINER_COMPOSE_ENGINE} -f ${BATS_TEST_DIRNAME%/}/docker-compose.php-fpm.yml up -d php-fpm
 }
 
 @test "[$TEST_FILE] Check for startup messages in containers logs 2" {
-  docker_wait_for_log php-fpm 60 "> pm.max_children=40"
-  docker_wait_for_log php-fpm 60 "> php_value\[memory_limit\]=16M"
+
+  if [ "${BATS_CONTAINER_ENGINE}" = "docker" ]; then
+    container_wait_for_log php-fpm 60 "> pm.max_children=40"
+    container_wait_for_log php-fpm 60 "> php_value\[memory_limit\]=16M"
+  else
+    # Autoresizing cannot be tested with Podman until the limits specified in the Compose file are recognized.
+    true
+  fi
+
 }
 
 @test "[$TEST_FILE] Stop PHP-FPM test containers without PHP-FPM Auto-Sizing" {
-  command docker-compose -f ${BATS_TEST_DIRNAME%/}/docker-compose.php-fpm.yml stop php-fpm
+  command ${BATS_CONTAINER_COMPOSE_ENGINE} -f ${BATS_TEST_DIRNAME%/}/docker-compose.php-fpm.yml stop php-fpm
 }
 
 @test "[$TEST_FILE] Re-Start PHP-FPM test containers with PHP-FPM Auto-Sizing" {
   export BATS_PHP_FPM_MAX_CHILDREN_AUTO_RESIZING=true
   export BATS_PHP_FPM_MAX_CHILDREN=40
   export BATS_PHP_FPM_REQUEST_MAX_MEMORY_IN_MEGABYTES=16
-  command docker-compose -f ${BATS_TEST_DIRNAME%/}/docker-compose.php-fpm.yml up -d php-fpm
+  command ${BATS_CONTAINER_COMPOSE_ENGINE} -f ${BATS_TEST_DIRNAME%/}/docker-compose.php-fpm.yml up -d php-fpm
 }
 
 @test "[$TEST_FILE] Check for startup messages in containers logs 3" {
-  docker_wait_for_log php-fpm 60 "> pm.max_children=26"
-  docker_wait_for_log php-fpm 60 "> php_value\[memory_limit\]=16M"
+
+  if [ "${BATS_CONTAINER_ENGINE}" = "docker" ]; then
+    container_wait_for_log php-fpm 60 "> pm.max_children=26"
+    container_wait_for_log php-fpm 60 "> php_value\[memory_limit\]=16M"
+  else
+    # Autoresizing cannot be tested with Podman until the limits specified in the Compose file are recognized.
+    true
+  fi
+
 }
 
 @test "[$TEST_FILE] Stop all and delete test containers" {
-  command docker-compose -f ${BATS_TEST_DIRNAME%/}/docker-compose.php-fpm.yml stop
-  command docker-compose -f ${BATS_TEST_DIRNAME%/}/docker-compose.php-fpm.yml rm -v -f  
+  command ${BATS_CONTAINER_COMPOSE_ENGINE} -f ${BATS_TEST_DIRNAME%/}/docker-compose.php-fpm.yml down -v
 }
 
 @test "[$TEST_FILE] Cleanup Docker external volumes (local)" {
-  command docker volume rm ${BATS_PHP_SCRIPTS_VOLUME_NAME}
-  command docker volume rm ${BATS_PHP_SOCKET_VOLUME_NAME}
-  command docker volume rm ${BATS_SOURCES_VOLUME_NAME}
-  command docker volume rm ${BATS_NGINX_CONFIG_VOLUME_NAME}
+  command ${BATS_CONTAINER_ENGINE} volume rm ${BATS_PHP_SCRIPTS_VOLUME_NAME}
+  command ${BATS_CONTAINER_ENGINE} volume rm ${BATS_PHP_SOCKET_VOLUME_NAME}
+  command ${BATS_CONTAINER_ENGINE} volume rm ${BATS_SOURCES_VOLUME_NAME}
+  command ${BATS_CONTAINER_ENGINE} volume rm ${BATS_NGINX_CONFIG_VOLUME_NAME}
 }
 

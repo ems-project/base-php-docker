@@ -1,6 +1,7 @@
 # Test if requirements are met
 (
-  type docker &>/dev/null || ( echo "docker is not available"; exit 1 )
+	type ${BATS_CONTAINER_ENGINE} &>/dev/null || ( echo "${BATS_CONTAINER_ENGINE} is not available"; exit 1 )
+    type ${BATS_CONTAINER_COMPOSE_ENGINE} &>/dev/null || ( echo "${BATS_CONTAINER_COMPOSE_ENGINE} is not available"; exit 1 )
 )>&2
 
 TEST_FILE=$(basename $BATS_TEST_FILENAME .bats)
@@ -9,12 +10,12 @@ TEST_FILE=$(basename $BATS_TEST_FILENAME .bats)
 #
 # $1 optional label value
 function stop_bats_containers {
-  docker-compose stop $1
+	run ${BATS_CONTAINER_COMPOSE_ENGINE} stop $1
 }
 
 # delete all containers
 docker_cleanup() {
-  docker-compose down -v
+	run ${BATS_CONTAINER_COMPOSE_ENGINE} down -v
 }
 
 # Send a HTTP request to container $1 for path $2 and
@@ -27,43 +28,31 @@ function curl_container {
   local -r container=$1
   local -r path=$2
   shift 2
-  docker run --rm --net=docker_default --label bats-type="curl" appropriate/curl --silent \
+  ${BATS_CONTAINER_ENGINE} run --rm --net=${BATS_CONTAINER_NETWORK_NAME} --label bats-type="curl" appropriate/curl --silent \
     --connect-timeout 5 \
     --max-time 20 \
     --retry 4 --retry-delay 5 \
     "$@" \
-    http://$(docker_ip $container)${path}
-}
-
-function curl_podman_container {
-  local -r container=$1
-  local -r path=$2
-  shift 2
-  podman run --rm --net=docker_default --label bats-type="curl" docker.io/appropriate/curl --silent \
-    --connect-timeout 5 \
-    --max-time 20 \
-    --retry 4 --retry-delay 5 \
-    "$@" \
-    http://$(podman_ip $container)${path}
+    http://$(container_ip $container)${path}
 }
 
 # Retry a command $1 times until it succeeds. Wait $2 seconds between retries.
 function retry {
-  local attempts=$1
-  shift
-  local delay=$1
-  shift
-  local i
+    local attempts=$1
+    shift
+    local delay=$1
+    shift
+    local i
 
-  for ((i=0; i < attempts; i++)); do
-      run "$@"
-      if [ "$status" -eq 0 ]; then
-          echo "$output"
-          return 0
-      fi
-      sleep $delay
-  done
+    for ((i=0; i < attempts; i++)); do
+        run "$@"
+        if [ "$status" -eq 0 ]; then
+            echo "$output"
+            return 0
+        fi
+        sleep $delay
+    done
 
-  echo "Command \"$@\" failed $attempts times. Status: $status. Output: $output" >&2
-  false
+    echo "Command \"$@\" failed $attempts times. Status: $status. Output: $output" >&2
+    false
 }

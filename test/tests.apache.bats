@@ -1,6 +1,6 @@
 #!/usr/bin/env bats
 load "helpers/tests"
-load "helpers/docker"
+load "helpers/containers"
 load "helpers/dataloaders"
 
 load "lib/batslib"
@@ -28,8 +28,12 @@ export BATS_VARNISH_VCL_CONF_CUSTOM=${BATS_VARNISH_VCL_CONF_CUSTOM:-"/etc/varnis
 
 export BATS_UID=$(id -u)
 
+export BATS_CONTAINER_ENGINE="${CONTAINER_ENGINE:-podman}"
+export BATS_CONTAINER_COMPOSE_ENGINE="${BATS_CONTAINER_ENGINE}-compose"
+export BATS_CONTAINER_NETWORK_NAME="${CONTAINER_NETWORK_NAME:-docker_default}"
+
 @test "[$TEST_FILE] Create Docker external volumes (local)" {
-  command docker volume create -d local ${BATS_PHP_SCRIPTS_VOLUME_NAME}
+  command ${BATS_CONTAINER_ENGINE} volume create -d local ${BATS_PHP_SCRIPTS_VOLUME_NAME}
 }
 
 @test "[$TEST_FILE] Loading container-entrypoint.d scripts in Docker Volume" {
@@ -40,15 +44,15 @@ export BATS_UID=$(id -u)
 }
 
 @test "[$TEST_FILE] Starting LAMP stack services (apache,mysql,php)" {
-  command docker-compose -f ${BATS_TEST_DIRNAME%/}/docker-compose.apache.yml up -d php mysql
+  command ${BATS_CONTAINER_COMPOSE_ENGINE} -f ${BATS_TEST_DIRNAME%/}/docker-compose.apache.yml up -d php mysql
 }
 
 @test "[$TEST_FILE] Check for startup messages in containers logs" {
-  docker_wait_for_log php 60 "INFO success: apache entered RUNNING state"
-  docker_wait_for_log php 60 "INFO success: php-fpm entered RUNNING state"
-  docker_wait_for_log php 60 "Running PHP script when Docker container start ..."
-  docker_wait_for_log php 60 "Running Shell script when Docker container start ..."
-  docker_wait_for_log mysql 60 "Starting MySQL"
+  container_wait_for_log php 60 "INFO success: apache entered RUNNING state"
+  container_wait_for_log php 60 "INFO success: php-fpm entered RUNNING state"
+  container_wait_for_log php 60 "Running PHP script when Docker container start ..."
+  container_wait_for_log php 60 "Running Shell script when Docker container start ..."
+  container_wait_for_log mysql 60 "Starting MySQL"
 }
 
 @test "[$TEST_FILE] Check for Index page response code 200" {
@@ -87,20 +91,20 @@ export BATS_UID=$(id -u)
 }
 
 @test "[$TEST_FILE] Stop PHP test containers" {
-  command docker-compose -f ${BATS_TEST_DIRNAME%/}/docker-compose.apache.yml stop php
+  command ${BATS_CONTAINER_COMPOSE_ENGINE} -f ${BATS_TEST_DIRNAME%/}/docker-compose.apache.yml stop php
 }
 
 @test "[$TEST_FILE] Re-Start PHP test containers with Varnish enabled" {
   export BATS_VARNISH_ENABLED=true
-  command docker-compose -f ${BATS_TEST_DIRNAME%/}/docker-compose.apache.yml up -d php
+  command ${BATS_CONTAINER_COMPOSE_ENGINE} -f ${BATS_TEST_DIRNAME%/}/docker-compose.apache.yml up -d php
 }
 
 @test "[$TEST_FILE] Re-Check for startup messages in containers logs" {
-  docker_wait_for_log php 60 "INFO success: apache entered RUNNING state"
-  docker_wait_for_log php 60 "INFO success: php-fpm entered RUNNING state"
-  docker_wait_for_log php 60 "Running PHP script when Docker container start ..."
-  docker_wait_for_log php 60 "Running Shell script when Docker container start ..."
-  docker_wait_for_log mysql 60 "Starting MySQL"
+  container_wait_for_log php 60 "INFO success: apache entered RUNNING state"
+  container_wait_for_log php 60 "INFO success: php-fpm entered RUNNING state"
+  container_wait_for_log php 60 "Running PHP script when Docker container start ..."
+  container_wait_for_log php 60 "Running Shell script when Docker container start ..."
+  container_wait_for_log mysql 60 "Starting MySQL"
 }
 
 @test "[$TEST_FILE] Re-Check for Index page response code 200 via Varnish" {
@@ -139,8 +143,7 @@ export BATS_UID=$(id -u)
 }
 
 @test "[$TEST_FILE] Stop all and delete test containers" {
-  command docker-compose -f ${BATS_TEST_DIRNAME%/}/docker-compose.apache.yml stop
-  command docker-compose -f ${BATS_TEST_DIRNAME%/}/docker-compose.apache.yml rm -v -f  
+  command ${BATS_CONTAINER_COMPOSE_ENGINE} -f ${BATS_TEST_DIRNAME%/}/docker-compose.apache.yml down -v
 }
 
 @test "[$TEST_FILE] Cleanup Docker external volumes (local)" {
