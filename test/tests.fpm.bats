@@ -152,8 +152,8 @@ export BATS_CONTAINER_NETWORK_NAME="${CONTAINER_NETWORK_NAME:-docker_default}"
 @test "[$TEST_FILE] Check for startup messages in containers logs 3" {
 
   if [ "${BATS_CONTAINER_ENGINE}" = "docker" ]; then
-    container_wait_for_log php-fpm 60 "> pm.max_children=26"
-    container_wait_for_log php-fpm 60 "> php_value\[memory_limit\]=16M"
+    container_wait_for_log php 60 "> pm.max_children=26"
+    container_wait_for_log php 60 "> php_value\[memory_limit\]=16M"
   else
     # Autoresizing cannot be tested with Podman until the limits specified in the Compose file are recognized.
     true
