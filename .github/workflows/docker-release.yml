@@ -1,6 +1,6 @@
-name: Docker Release
+name: Docker Release V2
 
-run-name: Docker Release ${{ github.ref_name }} by @${{ github.actor }}
+run-name: Docker Release V2 ${{ github.ref_name }} by @${{ github.actor }}
 
 on:
   push:
@@ -18,30 +18,7 @@ jobs:
       version-minor: ${{ steps.prep.outputs.version-minor }}
       version-major: ${{ steps.prep.outputs.version-major }}
       build-date: ${{ steps.prep.outputs.build-date }}
-      phpfpm-prd-docker-image-name: ${{ steps.prep.outputs.phpfpm-prd-docker-image-name }}
-      phpfpm-prd-docker-image-tags: ${{ steps.meta-phpfpm-prd.outputs.tags }}
-      phpfpm-prd-docker-image-labels: ${{ steps.meta-phpfpm-prd.outputs.labels }}
-      phpfpm-dev-docker-image-name: ${{ steps.prep.outputs.phpfpm-dev-docker-image-name }}
-      phpfpm-dev-docker-image-tags: ${{ steps.meta-phpfpm-dev.outputs.tags }}
-      phpfpm-dev-docker-image-labels: ${{ steps.meta-phpfpm-dev.outputs.labels }}
-      phpcli-prd-docker-image-name: ${{ steps.prep.outputs.phpcli-prd-docker-image-name }}
-      phpcli-prd-docker-image-tags: ${{ steps.meta-phpcli-prd.outputs.tags }}
-      phpcli-prd-docker-image-labels: ${{ steps.meta-phpcli-prd.outputs.labels }}
-      phpcli-dev-docker-image-name: ${{ steps.prep.outputs.phpcli-dev-docker-image-name }}
-      phpcli-dev-docker-image-tags: ${{ steps.meta-phpcli-dev.outputs.tags }}
-      phpcli-dev-docker-image-labels: ${{ steps.meta-phpcli-dev.outputs.labels }}
-      apache-prd-docker-image-name: ${{ steps.prep.outputs.apache-prd-docker-image-name }}
-      apache-prd-docker-image-tags: ${{ steps.meta-apache-prd.outputs.tags }}
-      apache-prd-docker-image-labels: ${{ steps.meta-apache-prd.outputs.labels }}
-      apache-dev-docker-image-name: ${{ steps.prep.outputs.apache-dev-docker-image-name }}
-      apache-dev-docker-image-tags: ${{ steps.meta-apache-dev.outputs.tags }}
-      apache-dev-docker-image-labels: ${{ steps.meta-apache-dev.outputs.labels }}
-      nginx-prd-docker-image-name: ${{ steps.prep.outputs.nginx-prd-docker-image-name }}
-      nginx-prd-docker-image-tags: ${{ steps.meta-nginx-prd.outputs.tags }}
-      nginx-prd-docker-image-labels: ${{ steps.meta-nginx-prd.outputs.labels }}
-      nginx-dev-docker-image-name: ${{ steps.prep.outputs.nginx-dev-docker-image-name }}
-      nginx-dev-docker-image-tags: ${{ steps.meta-nginx-dev.outputs.tags }}
-      nginx-dev-docker-image-labels: ${{ steps.meta-nginx-dev.outputs.labels }}
+      docker-image-name: ${{ steps.prep.outputs.docker-image-name }}
       github-ci-run-id: ${{ steps.prep.outputs.github-ci-run-id }}
       github-ci-sha-short: ${{ steps.prep.outputs.github-ci-sha-short }}
       github-ci-sha: ${{ steps.prep.outputs.github-ci-sha }}
@@ -69,14 +46,7 @@ jobs:
           VERSION_MAJOR_MINOR_PATCH=${GITHUB_REF_NAME}
           VERSION_MAJOR_MINOR=${VERSION_MAJOR_MINOR_PATCH%.*}
           VERSION_MAJOR=${VERSION_MAJOR_MINOR%.*}
-          echo "phpfpm-prd-docker-image-name=${PHPFPM_PRD_DOCKER_IMAGE_NAME}" >> $GITHUB_OUTPUT
-          echo "phpfpm-dev-docker-image-name=${PHPFPM_DEV_DOCKER_IMAGE_NAME}" >> $GITHUB_OUTPUT
-          echo "phpcli-prd-docker-image-name=${PHPCLI_PRD_DOCKER_IMAGE_NAME}" >> $GITHUB_OUTPUT
-          echo "phpcli-dev-docker-image-name=${PHPCLI_DEV_DOCKER_IMAGE_NAME}" >> $GITHUB_OUTPUT
-          echo "apache-prd-docker-image-name=${APACHE_PRD_DOCKER_IMAGE_NAME}" >> $GITHUB_OUTPUT
-          echo "apache-dev-docker-image-name=${APACHE_DEV_DOCKER_IMAGE_NAME}" >> $GITHUB_OUTPUT
-          echo "nginx-prd-docker-image-name=${NGINX_PRD_DOCKER_IMAGE_NAME}" >> $GITHUB_OUTPUT
-          echo "nginx-dev-docker-image-name=${NGINX_DEV_DOCKER_IMAGE_NAME}" >> $GITHUB_OUTPUT
+          echo "docker-image-name=${DOCKER_IMAGE_NAME}" >> $GITHUB_OUTPUT
           echo "version-patch=${VERSION_MAJOR_MINOR_PATCH}" >> $GITHUB_OUTPUT
           echo "version-minor=${VERSION_MAJOR_MINOR}" >> $GITHUB_OUTPUT
           echo "version-major=${VERSION_MAJOR}" >> $GITHUB_OUTPUT
@@ -91,95 +61,11 @@ jobs:
           echo "php-ext-apcu-version=${PHP_EXT_APCU_VERSION}" >> $GITHUB_OUTPUT
           echo "php-ext-xdebug-version=${PHP_EXT_XDEBUG_VERSION}" >> $GITHUB_OUTPUT
 
-      - name: Fill "${{ steps.prep.outputs.phpfpm-prd-docker-image-name }}" Docker Image metadata
-        id: meta-phpfpm-prd
-        uses: docker/metadata-action@v4
-        with:
-          github-token: ${{ secrets.GITHUB_TOKEN }}
-          images: "${{ steps.prep.outputs.phpfpm-prd-docker-image-name }}"
-          tags: |
-            type=raw,value=${{ steps.prep.outputs.github-ci-sha-short }}
-            type=raw,value=${{ steps.prep.outputs.version-patch }}
-            type=raw,value=${{ steps.prep.outputs.version-minor }}
-
-      - name: Fill "${{ steps.prep.outputs.phpfpm-dev-docker-image-name }}" Docker Image metadata
-        id: meta-phpfpm-dev
-        uses: docker/metadata-action@v4
-        with:
-          github-token: ${{ secrets.GITHUB_TOKEN }}
-          images: "${{ steps.prep.outputs.phpfpm-dev-docker-image-name }}"
-          tags: |
-            type=raw,value=${{ steps.prep.outputs.github-ci-sha-short }}
-            type=raw,value=${{ steps.prep.outputs.version-patch }}
-            type=raw,value=${{ steps.prep.outputs.version-minor }}
-
-      - name: Fill "${{ steps.prep.outputs.phpcli-prd-docker-image-name }}" Docker Image metadata
-        id: meta-phpcli-prd
-        uses: docker/metadata-action@v4
-        with:
-          github-token: ${{ secrets.GITHUB_TOKEN }}
-          images: "${{ steps.prep.outputs.phpcli-prd-docker-image-name }}"
-          tags: |
-            type=raw,value=${{ steps.prep.outputs.github-ci-sha-short }}
-            type=raw,value=${{ steps.prep.outputs.version-patch }}
-            type=raw,value=${{ steps.prep.outputs.version-minor }}
-
-      - name: Fill "${{ steps.prep.outputs.phpcli-dev-docker-image-name }}" Docker Image metadata
-        id: meta-phpcli-dev
-        uses: docker/metadata-action@v4
-        with:
-          github-token: ${{ secrets.GITHUB_TOKEN }}
-          images: "${{ steps.prep.outputs.phpcli-dev-docker-image-name }}"
-          tags: |
-            type=raw,value=${{ steps.prep.outputs.github-ci-sha-short }}
-            type=raw,value=${{ steps.prep.outputs.version-patch }}
-            type=raw,value=${{ steps.prep.outputs.version-minor }}
-
-      - name: Fill "${{ steps.prep.outputs.apache-prd-docker-image-name }}" Docker Image metadata
-        id: meta-apache-prd
-        uses: docker/metadata-action@v4
-        with:
-          github-token: ${{ secrets.GITHUB_TOKEN }}
-          images: "${{ steps.prep.outputs.apache-prd-docker-image-name }}"
-          tags: |
-            type=raw,value=${{ steps.prep.outputs.github-ci-sha-short }}
-            type=raw,value=${{ steps.prep.outputs.version-patch }}
-            type=raw,value=${{ steps.prep.outputs.version-minor }}
-
-      - name: Fill "${{ steps.prep.outputs.apache-dev-docker-image-name }}" Docker Image metadata
-        id: meta-apache-dev
-        uses: docker/metadata-action@v4
-        with:
-          github-token: ${{ secrets.GITHUB_TOKEN }}
-          images: "${{ steps.prep.outputs.apache-dev-docker-image-name }}"
-          tags: |
-            type=raw,value=${{ steps.prep.outputs.github-ci-sha-short }}
-            type=raw,value=${{ steps.prep.outputs.version-patch }}
-            type=raw,value=${{ steps.prep.outputs.version-minor }}
-
-      - name: Fill "${{ steps.prep.outputs.nginx-prd-docker-image-name }}" Docker Image metadata
-        id: meta-nginx-prd
-        uses: docker/metadata-action@v4
-        with:
-          github-token: ${{ secrets.GITHUB_TOKEN }}
-          images: "${{ steps.prep.outputs.nginx-prd-docker-image-name }}"
-          tags: |
-            type=raw,value=${{ steps.prep.outputs.github-ci-sha-short }}
-            type=raw,value=${{ steps.prep.outputs.version-patch }}
-            type=raw,value=${{ steps.prep.outputs.version-minor }}
-
-      - name: Fill "${{ steps.prep.outputs.nginx-dev-docker-image-name }}" Docker Image metadata
-        id: meta-nginx-dev
-        uses: docker/metadata-action@v4
-        with:
-          github-token: ${{ secrets.GITHUB_TOKEN }}
-          images: "${{ steps.prep.outputs.nginx-dev-docker-image-name }}"
-          tags: |
-            type=raw,value=${{ steps.prep.outputs.github-ci-sha-short }}
-            type=raw,value=${{ steps.prep.outputs.version-patch }}
-            type=raw,value=${{ steps.prep.outputs.version-minor }}
-
   build:
+
+    strategy:
+      matrix:
+        image-variant: [fpm-prd,apache-prd,nginx-prd,cli-prd,fpm-dev,apache-dev,nginx-dev,cli-dev]
 
     runs-on: ubuntu-20.04
     needs: init
@@ -198,18 +84,29 @@ jobs:
           restore-keys: |
             ${{ runner.os }}-buildx-
 
+      - name: Fill "${{ needs.init.outputs.docker-image-name }}" Docker Image metadata
+        id: meta
+        uses: docker/metadata-action@v4
+        with:
+          github-token: ${{ secrets.GITHUB_TOKEN }}
+          images: "${{ needs.init.outputs.docker-image-name }}"
+          tags: |
+            type=raw,value=${{ needs.init.outputs.github-ci-sha-short }}-${{ matrix.image-variant }}
+            type=raw,value=${{ needs.init.outputs.version-patch }}-${{ matrix.image-variant }}
+            type=raw,value=${{ needs.init.outputs.version-minor }}-${{ matrix.image-variant }}
+
       - name: Create Dockerfile
         run: |
           make Dockerfile
 
-      - name: Build "${{ needs.init.outputs.phpfpm-prd-docker-image-name }}" Docker Image
-        id: build-phpfpm-prd
+      - name: Build "${{ needs.init.outputs.docker-image-name }}:${{ needs.init.outputs.github-ci-sha-short }}-${{ matrix.image-variant }}" Docker Image
+        id: build
         uses: docker/build-push-action@v4
         with:
           builder: ${{ steps.buildx.outputs.name }}
           context: .
           file: Dockerfile
-          target: fpm-prd
+          target: ${{ matrix.image-variant }}
           build-args: |
             VERSION_ARG=${{ needs.init.outputs.version-patch }}
             RELEASE_ARG=${{ needs.init.outputs.github-ci-run-id }}
@@ -221,372 +118,47 @@ jobs:
             PHP_EXT_REDIS_VERSION_ARG=${{ needs.init.outputs.php-ext-redis-version }}
             PHP_EXT_APCU_VERSION_ARG=${{ needs.init.outputs.php-ext-apcu-version }}
             PHP_EXT_XDEBUG_VERSION_ARG=${{ needs.init.outputs.php-ext-xdebug-version }}
-          tags: ${{ needs.init.outputs.phpfpm-prd-docker-image-tags }}
-          labels: ${{ needs.init.outputs.phpfpm-prd-docker-image-labels }}
-          outputs: type=docker,dest=/tmp/phpfpm-prd-builded.tar
-
-      - name: Build "${{ needs.init.outputs.phpfpm-dev-docker-image-name }}" Docker Image
-        id: build-phpfpm-dev
-        uses: docker/build-push-action@v4
-        with:
-          builder: ${{ steps.buildx.outputs.name }}
-          context: .
-          file: Dockerfile
-          target: fpm-dev
-          build-args: |
-            VERSION_ARG=${{ needs.init.outputs.version-patch }}
-            RELEASE_ARG=${{ needs.init.outputs.github-ci-run-id }}
-            VCS_REF_ARG=${{ needs.init.outputs.github-ci-sha }}
-            BUILD_DATE_ARG=${{ needs.init.outputs.build-date }}
-            NODE_VERSION_ARG=${{ needs.init.outputs.node-version }}
-            COMPOSER_VERSION_ARG=${{ needs.init.outputs.composer-version }}
-            AWS_CLI_VERSION_ARG=${{ needs.init.outputs.aws-cli-version }}
-            PHP_EXT_REDIS_VERSION_ARG=${{ needs.init.outputs.php-ext-redis-version }}
-            PHP_EXT_APCU_VERSION_ARG=${{ needs.init.outputs.php-ext-apcu-version }}
-            PHP_EXT_XDEBUG_VERSION_ARG=${{ needs.init.outputs.php-ext-xdebug-version }}
-          tags: ${{ needs.init.outputs.phpfpm-dev-docker-image-tags }}
-          labels: ${{ needs.init.outputs.phpfpm-dev-docker-image-labels }}
-          outputs: type=docker,dest=/tmp/phpfpm-dev-builded.tar
-
-      - name: Build "${{ needs.init.outputs.phpcli-prd-docker-image-name }}" Docker Image
-        id: build-phpcli-prd
-        uses: docker/build-push-action@v4
-        with:
-          builder: ${{ steps.buildx.outputs.name }}
-          context: .
-          file: Dockerfile
-          target: cli-prd
-          build-args: |
-            VERSION_ARG=${{ needs.init.outputs.version-patch }}
-            RELEASE_ARG=${{ needs.init.outputs.github-ci-run-id }}
-            VCS_REF_ARG=${{ needs.init.outputs.github-ci-sha }}
-            BUILD_DATE_ARG=${{ needs.init.outputs.build-date }}
-            NODE_VERSION_ARG=${{ needs.init.outputs.node-version }}
-            COMPOSER_VERSION_ARG=${{ needs.init.outputs.composer-version }}
-            AWS_CLI_VERSION_ARG=${{ needs.init.outputs.aws-cli-version }}
-            PHP_EXT_REDIS_VERSION_ARG=${{ needs.init.outputs.php-ext-redis-version }}
-            PHP_EXT_APCU_VERSION_ARG=${{ needs.init.outputs.php-ext-apcu-version }}
-            PHP_EXT_XDEBUG_VERSION_ARG=${{ needs.init.outputs.php-ext-xdebug-version }}
-          tags: ${{ needs.init.outputs.phpcli-prd-docker-image-tags }}
-          labels: ${{ needs.init.outputs.phpcli-prd-docker-image-labels }}
-          outputs: type=docker,dest=/tmp/phpcli-prd-builded.tar
-
-      - name: Build "${{ needs.init.outputs.phpcli-dev-docker-image-name }}" Docker Image
-        id: build-phpcli-dev
-        uses: docker/build-push-action@v4
-        with:
-          builder: ${{ steps.buildx.outputs.name }}
-          context: .
-          file: Dockerfile
-          target: cli-dev
-          build-args: |
-            VERSION_ARG=${{ needs.init.outputs.version-patch }}
-            RELEASE_ARG=${{ needs.init.outputs.github-ci-run-id }}
-            VCS_REF_ARG=${{ needs.init.outputs.github-ci-sha }}
-            BUILD_DATE_ARG=${{ needs.init.outputs.build-date }}
-            NODE_VERSION_ARG=${{ needs.init.outputs.node-version }}
-            COMPOSER_VERSION_ARG=${{ needs.init.outputs.composer-version }}
-            AWS_CLI_VERSION_ARG=${{ needs.init.outputs.aws-cli-version }}
-            PHP_EXT_REDIS_VERSION_ARG=${{ needs.init.outputs.php-ext-redis-version }}
-            PHP_EXT_APCU_VERSION_ARG=${{ needs.init.outputs.php-ext-apcu-version }}
-            PHP_EXT_XDEBUG_VERSION_ARG=${{ needs.init.outputs.php-ext-xdebug-version }}
-          tags: ${{ needs.init.outputs.phpcli-dev-docker-image-tags }}
-          labels: ${{ needs.init.outputs.phpcli-dev-docker-image-labels }}
-          outputs: type=docker,dest=/tmp/phpcli-dev-builded.tar
-
-      - name: Build "${{ needs.init.outputs.apache-prd-docker-image-name }}" Docker Image
-        id: build-apache-prd
-        uses: docker/build-push-action@v4
-        with:
-          builder: ${{ steps.buildx.outputs.name }}
-          context: .
-          file: Dockerfile
-          target: apache-prd
-          build-args: |
-            VERSION_ARG=${{ needs.init.outputs.version-patch }}
-            RELEASE_ARG=${{ needs.init.outputs.github-ci-run-id }}
-            VCS_REF_ARG=${{ needs.init.outputs.github-ci-sha }}
-            BUILD_DATE_ARG=${{ needs.init.outputs.build-date }}
-            NODE_VERSION_ARG=${{ needs.init.outputs.node-version }}
-            COMPOSER_VERSION_ARG=${{ needs.init.outputs.composer-version }}
-            AWS_CLI_VERSION_ARG=${{ needs.init.outputs.aws-cli-version }}
-            PHP_EXT_REDIS_VERSION_ARG=${{ needs.init.outputs.php-ext-redis-version }}
-            PHP_EXT_APCU_VERSION_ARG=${{ needs.init.outputs.php-ext-apcu-version }}
-            PHP_EXT_XDEBUG_VERSION_ARG=${{ needs.init.outputs.php-ext-xdebug-version }}
-          tags: ${{ needs.init.outputs.apache-prd-docker-image-tags }}
-          labels: ${{ needs.init.outputs.apache-prd-docker-image-labels }}
-          outputs: type=docker,dest=/tmp/apache-prd-builded.tar
-
-      - name: Build "${{ needs.init.outputs.apache-dev-docker-image-name }}" Docker Image
-        id: build-apache-dev
-        uses: docker/build-push-action@v4
-        with:
-          builder: ${{ steps.buildx.outputs.name }}
-          context: .
-          file: Dockerfile
-          target: apache-dev
-          build-args: |
-            VERSION_ARG=${{ needs.init.outputs.version-patch }}
-            RELEASE_ARG=${{ needs.init.outputs.github-ci-run-id }}
-            VCS_REF_ARG=${{ needs.init.outputs.github-ci-sha }}
-            BUILD_DATE_ARG=${{ needs.init.outputs.build-date }}
-            NODE_VERSION_ARG=${{ needs.init.outputs.node-version }}
-            COMPOSER_VERSION_ARG=${{ needs.init.outputs.composer-version }}
-            AWS_CLI_VERSION_ARG=${{ needs.init.outputs.aws-cli-version }}
-            PHP_EXT_REDIS_VERSION_ARG=${{ needs.init.outputs.php-ext-redis-version }}
-            PHP_EXT_APCU_VERSION_ARG=${{ needs.init.outputs.php-ext-apcu-version }}
-            PHP_EXT_XDEBUG_VERSION_ARG=${{ needs.init.outputs.php-ext-xdebug-version }}
-          tags: ${{ needs.init.outputs.apache-dev-docker-image-tags }}
-          labels: ${{ needs.init.outputs.apache-dev-docker-image-labels }}
-          outputs: type=docker,dest=/tmp/apache-dev-builded.tar
-
-      - name: Build "${{ needs.init.outputs.nginx-prd-docker-image-name }}" Docker Image
-        id: build-nginx-prd
-        uses: docker/build-push-action@v4
-        with:
-          builder: ${{ steps.buildx.outputs.name }}
-          context: .
-          file: Dockerfile
-          target: nginx-prd
-          build-args: |
-            VERSION_ARG=${{ needs.init.outputs.version-patch }}
-            RELEASE_ARG=${{ needs.init.outputs.github-ci-run-id }}
-            VCS_REF_ARG=${{ needs.init.outputs.github-ci-sha }}
-            BUILD_DATE_ARG=${{ needs.init.outputs.build-date }}
-            NODE_VERSION_ARG=${{ needs.init.outputs.node-version }}
-            COMPOSER_VERSION_ARG=${{ needs.init.outputs.composer-version }}
-            AWS_CLI_VERSION_ARG=${{ needs.init.outputs.aws-cli-version }}
-            PHP_EXT_REDIS_VERSION_ARG=${{ needs.init.outputs.php-ext-redis-version }}
-            PHP_EXT_APCU_VERSION_ARG=${{ needs.init.outputs.php-ext-apcu-version }}
-            PHP_EXT_XDEBUG_VERSION_ARG=${{ needs.init.outputs.php-ext-xdebug-version }}
-          tags: ${{ needs.init.outputs.nginx-prd-docker-image-tags }}
-          labels: ${{ needs.init.outputs.nginx-prd-docker-image-labels }}
-          outputs: type=docker,dest=/tmp/nginx-prd-builded.tar
-
-      - name: Build "${{ needs.init.outputs.nginx-dev-docker-image-name }}" Docker Image
-        id: build-nginx-dev
-        uses: docker/build-push-action@v4
-        with:
-          builder: ${{ steps.buildx.outputs.name }}
-          context: .
-          file: Dockerfile
-          target: nginx-dev
-          build-args: |
-            VERSION_ARG=${{ needs.init.outputs.version-patch }}
-            RELEASE_ARG=${{ needs.init.outputs.github-ci-run-id }}
-            VCS_REF_ARG=${{ needs.init.outputs.github-ci-sha }}
-            BUILD_DATE_ARG=${{ needs.init.outputs.build-date }}
-            NODE_VERSION_ARG=${{ needs.init.outputs.node-version }}
-            COMPOSER_VERSION_ARG=${{ needs.init.outputs.composer-version }}
-            AWS_CLI_VERSION_ARG=${{ needs.init.outputs.aws-cli-version }}
-            PHP_EXT_REDIS_VERSION_ARG=${{ needs.init.outputs.php-ext-redis-version }}
-            PHP_EXT_APCU_VERSION_ARG=${{ needs.init.outputs.php-ext-apcu-version }}
-            PHP_EXT_XDEBUG_VERSION_ARG=${{ needs.init.outputs.php-ext-xdebug-version }}
-          tags: ${{ needs.init.outputs.nginx-dev-docker-image-tags }}
-          labels: ${{ needs.init.outputs.nginx-dev-docker-image-labels }}
-          outputs: type=docker,dest=/tmp/nginx-dev-builded.tar
+          tags: ${{ steps.meta.outputs.tags }}
+          labels: ${{ steps.meta.outputs.labels }}
+          outputs: type=docker,dest=/tmp/builded.tar
 
       - name: Install Docker Squash
         id: install-squash
         run: |
           pip install docker-squash
 
-      - name: Squash "${{ needs.init.outputs.phpfpm-prd-docker-image-name }}" Docker Image
-        id: squash-phpfpm-prd
+      - name: Squash "${{ needs.init.outputs.docker-image-name }}:${{ needs.init.outputs.github-ci-sha-short }}-${{ matrix.image-variant }}" Docker Image
+        id: squash
         run: |
-          cat /tmp/phpfpm-prd-builded.tar | docker load
-          docker-squash --verbose --message "Build and Squashed in GitHub Action" \
-            --tag ${{ needs.init.outputs.phpfpm-prd-docker-image-name }}:${{ needs.init.outputs.github-ci-sha-short }} \
-            --output-path /tmp/phpfpm-prd-squashed.tar \
+          cat /tmp/builded.tar | docker load
+          docker-squash --message "Build and Squashed in GitHub Action" \
+            --tag ${{ needs.init.outputs.docker-image-name }}:${{ needs.init.outputs.github-ci-sha-short }}-${{ matrix.image-variant }} \
+            --output-path /tmp/squashed.tar \
             --cleanup \
-            ${{ needs.init.outputs.phpfpm-prd-docker-image-name }}:${{ needs.init.outputs.github-ci-sha-short }}
-          cat /tmp/phpfpm-prd-squashed.tar | docker load         
-          tags=$(echo "${{ needs.init.outputs.phpfpm-prd-docker-image-tags }}" | tr "\n" " ")
+            ${{ needs.init.outputs.docker-image-name }}:${{ needs.init.outputs.github-ci-sha-short }}-${{ matrix.image-variant }}
+          cat /tmp/squashed.tar | docker load
+          tags=$(echo "${{ steps.meta.outputs.tags }}" | tr "\n" " ")
           for tag in $tags; do
-            docker tag ${{ needs.init.outputs.phpfpm-prd-docker-image-name }}:${{ needs.init.outputs.github-ci-sha-short }} $tag
+            docker tag ${{ needs.init.outputs.docker-image-name }}:${{ needs.init.outputs.github-ci-sha-short }}-${{ matrix.image-variant }} $tag
           done
-          docker save --output /tmp/phpfpm-prd-final.tar $tags
+          docker save --output /tmp/final.tar $tags
 
-      - name: Squash "${{ needs.init.outputs.phpfpm-dev-docker-image-name }}" Docker Image
-        id: squash-phpfpm-dev
+      - name: Check "${{ needs.init.outputs.docker-image-name }}:${{ needs.init.outputs.github-ci-sha-short }}-${{ matrix.image-variant }}" Docker Images
         run: |
-          cat /tmp/phpfpm-dev-builded.tar | docker load
-          docker-squash --verbose --message "Build and Squashed in GitHub Action" \
-            --tag ${{ needs.init.outputs.phpfpm-dev-docker-image-name }}:${{ needs.init.outputs.github-ci-sha-short }} \
-            --output-path /tmp/phpfpm-dev-squashed.tar \
-            --cleanup \
-            ${{ needs.init.outputs.phpfpm-dev-docker-image-name }}:${{ needs.init.outputs.github-ci-sha-short }}
-          cat /tmp/phpfpm-dev-squashed.tar | docker load         
-          tags=$(echo "${{ needs.init.outputs.phpfpm-dev-docker-image-tags }}" | tr "\n" " ")
-          for tag in $tags; do
-            docker tag ${{ needs.init.outputs.phpfpm-dev-docker-image-name }}:${{ needs.init.outputs.github-ci-sha-short }} $tag
-          done
-          docker save --output /tmp/phpfpm-dev-final.tar $tags
+          docker image inspect ${{ needs.init.outputs.docker-image-name }}:${{ needs.init.outputs.github-ci-sha-short }}-${{ matrix.image-variant }}
+          docker history ${{ needs.init.outputs.docker-image-name }}:${{ needs.init.outputs.github-ci-sha-short }}-${{ matrix.image-variant }}
 
-      - name: Squash "${{ needs.init.outputs.phpcli-prd-docker-image-name }}" Docker Image
-        id: squash-phpcli-prd
-        run: |
-          cat /tmp/phpcli-prd-builded.tar | docker load
-          docker-squash --verbose --message "Build and Squashed in GitHub Action" \
-            --tag ${{ needs.init.outputs.phpcli-prd-docker-image-name }}:${{ needs.init.outputs.github-ci-sha-short }} \
-            --output-path /tmp/phpcli-prd-squashed.tar \
-            --cleanup \
-            ${{ needs.init.outputs.phpcli-prd-docker-image-name }}:${{ needs.init.outputs.github-ci-sha-short }}
-          cat /tmp/phpcli-prd-squashed.tar | docker load         
-          tags=$(echo "${{ needs.init.outputs.phpcli-prd-docker-image-tags }}" | tr "\n" " ")
-          for tag in $tags; do
-            docker tag ${{ needs.init.outputs.phpcli-prd-docker-image-name }}:${{ needs.init.outputs.github-ci-sha-short }} $tag
-          done
-          docker save --output /tmp/phpcli-prd-final.tar $tags
-
-      - name: Squash "${{ needs.init.outputs.phpcli-dev-docker-image-name }}" Docker Image
-        id: squash-phpcli-dev
-        run: |
-          cat /tmp/phpcli-dev-builded.tar | docker load
-          docker-squash --verbose --message "Build and Squashed in GitHub Action" \
-            --tag ${{ needs.init.outputs.phpcli-dev-docker-image-name }}:${{ needs.init.outputs.github-ci-sha-short }} \
-            --output-path /tmp/phpcli-dev-squashed.tar \
-            --cleanup \
-            ${{ needs.init.outputs.phpcli-dev-docker-image-name }}:${{ needs.init.outputs.github-ci-sha-short }}
-          cat /tmp/phpcli-dev-squashed.tar | docker load         
-          tags=$(echo "${{ needs.init.outputs.phpcli-dev-docker-image-tags }}" | tr "\n" " ")
-          for tag in $tags; do
-            docker tag ${{ needs.init.outputs.phpcli-dev-docker-image-name }}:${{ needs.init.outputs.github-ci-sha-short }} $tag
-          done
-          docker save --output /tmp/phpcli-dev-final.tar $tags
-
-      - name: Squash "${{ needs.init.outputs.apache-prd-docker-image-name }}" Docker Image
-        id: squash-apache-prd
-        run: |
-          cat /tmp/apache-prd-builded.tar | docker load
-          docker-squash --verbose --message "Build and Squashed in GitHub Action" \
-            --tag ${{ needs.init.outputs.apache-prd-docker-image-name }}:${{ needs.init.outputs.github-ci-sha-short }} \
-            --output-path /tmp/apache-prd-squashed.tar \
-            --cleanup \
-            ${{ needs.init.outputs.apache-prd-docker-image-name }}:${{ needs.init.outputs.github-ci-sha-short }}
-          cat /tmp/apache-prd-squashed.tar | docker load         
-          tags=$(echo "${{ needs.init.outputs.apache-prd-docker-image-tags }}" | tr "\n" " ")
-          for tag in $tags; do
-            docker tag ${{ needs.init.outputs.apache-prd-docker-image-name }}:${{ needs.init.outputs.github-ci-sha-short }} $tag
-          done
-          docker save --output /tmp/apache-prd-final.tar $tags
-
-      - name: Squash "${{ needs.init.outputs.apache-dev-docker-image-name }}" Docker Image
-        id: squash-apache-dev
-        run: |
-          cat /tmp/apache-dev-builded.tar | docker load
-          docker-squash --verbose --message "Build and Squashed in GitHub Action" \
-            --tag ${{ needs.init.outputs.apache-dev-docker-image-name }}:${{ needs.init.outputs.github-ci-sha-short }} \
-            --output-path /tmp/apache-dev-squashed.tar \
-            --cleanup \
-            ${{ needs.init.outputs.apache-dev-docker-image-name }}:${{ needs.init.outputs.github-ci-sha-short }}
-          cat /tmp/apache-dev-squashed.tar | docker load         
-          tags=$(echo "${{ needs.init.outputs.apache-dev-docker-image-tags }}" | tr "\n" " ")
-          for tag in $tags; do
-            docker tag ${{ needs.init.outputs.apache-dev-docker-image-name }}:${{ needs.init.outputs.github-ci-sha-short }} $tag
-          done
-          docker save --output /tmp/apache-dev-final.tar $tags
-
-      - name: Squash "${{ needs.init.outputs.nginx-prd-docker-image-name }}" Docker Image
-        id: squash-nginx-prd
-        run: |
-          cat /tmp/nginx-prd-builded.tar | docker load
-          docker-squash --verbose --message "Build and Squashed in GitHub Action" \
-            --tag ${{ needs.init.outputs.nginx-prd-docker-image-name }}:${{ needs.init.outputs.github-ci-sha-short }} \
-            --output-path /tmp/nginx-prd-squashed.tar \
-            --cleanup \
-            ${{ needs.init.outputs.nginx-prd-docker-image-name }}:${{ needs.init.outputs.github-ci-sha-short }}
-          cat /tmp/nginx-prd-squashed.tar | docker load         
-          tags=$(echo "${{ needs.init.outputs.nginx-prd-docker-image-tags }}" | tr "\n" " ")
-          for tag in $tags; do
-            docker tag ${{ needs.init.outputs.nginx-prd-docker-image-name }}:${{ needs.init.outputs.github-ci-sha-short }} $tag
-          done
-          docker save --output /tmp/nginx-prd-final.tar $tags
-
-      - name: Squash "${{ needs.init.outputs.nginx-dev-docker-image-tags }}" Docker Image
-        id: squash-nginx-dev
-        run: |
-          cat /tmp/nginx-dev-builded.tar | docker load
-          docker-squash --verbose --message "Build and Squashed in GitHub Action" \
-            --tag ${{ needs.init.outputs.nginx-dev-docker-image-name }}:${{ needs.init.outputs.github-ci-sha-short }} \
-            --output-path /tmp/nginx-dev-squashed.tar \
-            --cleanup \
-            ${{ needs.init.outputs.nginx-dev-docker-image-name }}:${{ needs.init.outputs.github-ci-sha-short }}
-          cat /tmp/nginx-dev-squashed.tar | docker load         
-          tags=$(echo "${{ needs.init.outputs.nginx-dev-docker-image-tags }}" | tr "\n" " ")
-          for tag in $tags; do
-            docker tag ${{ needs.init.outputs.nginx-dev-docker-image-name }}:${{ needs.init.outputs.github-ci-sha-short }} $tag
-          done
-          docker save --output /tmp/nginx-dev-final.tar $tags
-
-      - name: Check Docker Images
-        run: |
-          docker image inspect ${{ needs.init.outputs.phpfpm-prd-docker-image-name }}:${{ needs.init.outputs.github-ci-sha-short }}
-          docker image inspect ${{ needs.init.outputs.phpfpm-dev-docker-image-name }}:${{ needs.init.outputs.github-ci-sha-short }}
-          docker image inspect ${{ needs.init.outputs.phpcli-prd-docker-image-name }}:${{ needs.init.outputs.github-ci-sha-short }}
-          docker image inspect ${{ needs.init.outputs.phpcli-dev-docker-image-name }}:${{ needs.init.outputs.github-ci-sha-short }}
-          docker image inspect ${{ needs.init.outputs.apache-prd-docker-image-name }}:${{ needs.init.outputs.github-ci-sha-short }}
-          docker image inspect ${{ needs.init.outputs.apache-dev-docker-image-name }}:${{ needs.init.outputs.github-ci-sha-short }}
-          docker image inspect ${{ needs.init.outputs.nginx-prd-docker-image-name }}:${{ needs.init.outputs.github-ci-sha-short }}
-          docker image inspect ${{ needs.init.outputs.nginx-dev-docker-image-name }}:${{ needs.init.outputs.github-ci-sha-short }}
-          docker history ${{ needs.init.outputs.phpfpm-prd-docker-image-name }}:${{ needs.init.outputs.github-ci-sha-short }}
-          docker history ${{ needs.init.outputs.phpfpm-dev-docker-image-name }}:${{ needs.init.outputs.github-ci-sha-short }}
-          docker history ${{ needs.init.outputs.phpcli-prd-docker-image-name }}:${{ needs.init.outputs.github-ci-sha-short }}
-          docker history ${{ needs.init.outputs.phpcli-dev-docker-image-name }}:${{ needs.init.outputs.github-ci-sha-short }}
-          docker history ${{ needs.init.outputs.apache-prd-docker-image-name }}:${{ needs.init.outputs.github-ci-sha-short }}
-          docker history ${{ needs.init.outputs.apache-dev-docker-image-name }}:${{ needs.init.outputs.github-ci-sha-short }}
-          docker history ${{ needs.init.outputs.nginx-prd-docker-image-name }}:${{ needs.init.outputs.github-ci-sha-short }}
-          docker history ${{ needs.init.outputs.nginx-dev-docker-image-name }}:${{ needs.init.outputs.github-ci-sha-short }}
-
-      - name: Upload "${{ needs.init.outputs.phpfpm-prd-docker-image-name }}" Docker image artifact
+      - name: Upload "${{ needs.init.outputs.docker-image-name }}:${{ needs.init.outputs.github-ci-sha-short }}-${{ matrix.image-variant }}" Docker image artifact
         uses: actions/upload-artifact@v3
         with:
-          name: phpfpm-prd
-          path: /tmp/phpfpm-prd-final.tar
-
-      - name: Upload "${{ needs.init.outputs.phpfpm-dev-docker-image-name }}" Docker image artifact
-        uses: actions/upload-artifact@v3
-        with:
-          name: phpfpm-dev
-          path: /tmp/phpfpm-dev-final.tar
-
-      - name: Upload "${{ needs.init.outputs.phpcli-prd-docker-image-name }}" Docker image artifact
-        uses: actions/upload-artifact@v3
-        with:
-          name: phpcli-prd
-          path: /tmp/phpcli-prd-final.tar
-
-      - name: Upload "${{ needs.init.outputs.phpcli-dev-docker-image-name }}" Docker image artifact
-        uses: actions/upload-artifact@v3
-        with:
-          name: phpcli-dev
-          path: /tmp/phpcli-dev-final.tar
-
-      - name: Upload "${{ needs.init.outputs.apache-prd-docker-image-name }}" Docker image artifact
-        uses: actions/upload-artifact@v3
-        with:
-          name: apache-prd
-          path: /tmp/apache-prd-final.tar
-
-      - name: Upload "${{ needs.init.outputs.apache-dev-docker-image-name }}" Docker image artifact
-        uses: actions/upload-artifact@v3
-        with:
-          name: apache-dev
-          path: /tmp/apache-dev-final.tar
-
-      - name: Upload "${{ needs.init.outputs.nginx-prd-docker-image-name }}" Docker image artifact
-        uses: actions/upload-artifact@v3
-        with:
-          name: nginx-prd
-          path: /tmp/nginx-prd-final.tar
-
-      - name: Upload "${{ needs.init.outputs.nginx-dev-docker-image-name }}" Docker image artifact
-        uses: actions/upload-artifact@v3
-        with:
-          name: nginx-dev
-          path: /tmp/nginx-dev-final.tar
+          name: ${{ matrix.image-variant }}
+          path: /tmp/final.tar
 
   tests:
+
+    strategy:
+      matrix:
+        image-variant: [fpm-prd,apache-prd,nginx-prd,cli-prd,fpm-dev,apache-dev,nginx-dev,cli-dev]
 
     runs-on: ubuntu-20.04
     needs: [init,build]
@@ -601,70 +173,22 @@ jobs:
       - name: Set up Docker Buildx
         uses: docker/setup-buildx-action@v2
 
-      - name: Download "${{ needs.init.outputs.phpfpm-prd-docker-image-name }}" Docker image artifact
+      - name: Download "${{ needs.init.outputs.docker-image-name }}:${{ needs.init.outputs.github-ci-sha-short }}-${{ matrix.image-variant }}" Docker image artifact
         uses: actions/download-artifact@v3
         with:
-          name: phpfpm-prd
-          path: /tmp
-
-      - name: Download "${{ needs.init.outputs.phpcli-prd-docker-image-name }}" Docker image artifact
-        uses: actions/download-artifact@v3
-        with:
-          name: phpcli-prd
-          path: /tmp
-
-      - name: Download "${{ needs.init.outputs.apache-prd-docker-image-name }}" Docker image artifact
-        uses: actions/download-artifact@v3
-        with:
-          name: apache-prd
-          path: /tmp
-
-      - name: Download "${{ needs.init.outputs.nginx-prd-docker-image-name }}" Docker image artifact
-        uses: actions/download-artifact@v3
-        with:
-          name: nginx-prd
+          name: ${{ matrix.image-variant }}
           path: /tmp
 
       - name: Load Docker image
         run: |
-          docker load --input /tmp/phpfpm-prd-final.tar
-          docker load --input /tmp/phpcli-prd-final.tar
-          docker load --input /tmp/apache-prd-final.tar
-          docker load --input /tmp/nginx-prd-final.tar
+          docker load --input /tmp/final.tar
           docker image ls -a
 
-      - name: Scan "${{ needs.init.outputs.phpfpm-prd-docker-image-name }}" Docker image
+      - name: Scan "${{ needs.init.outputs.docker-image-name }}:${{ needs.init.outputs.github-ci-sha-short }}-${{ matrix.image-variant }}" Docker image
         uses: anchore/scan-action@v3
-        id: scan-phpfpm
+        id: scan
         with:
-          image: ${{ needs.init.outputs.phpfpm-prd-docker-image-name }}:${{ needs.init.outputs.github-ci-sha-short }}
-          fail-build: false
-          severity-cutoff: critical
-          output-format: table
-
-      - name: Scan "${{ needs.init.outputs.phpcli-prd-docker-image-name }}" Docker image
-        uses: anchore/scan-action@v3
-        id: scan-phpcli
-        with:
-          image: ${{ needs.init.outputs.phpcli-prd-docker-image-name }}:${{ needs.init.outputs.github-ci-sha-short }}
-          fail-build: false
-          severity-cutoff: critical
-          output-format: table
-
-      - name: Scan "${{ needs.init.outputs.apache-prd-docker-image-name }}" Docker image
-        uses: anchore/scan-action@v3
-        id: scan-apache
-        with:
-          image: ${{ needs.init.outputs.apache-prd-docker-image-name }}:${{ needs.init.outputs.github-ci-sha-short }}
-          fail-build: false
-          severity-cutoff: critical
-          output-format: table
-
-      - name: Scan "${{ needs.init.outputs.nginx-prd-docker-image-name }}" Docker image
-        uses: anchore/scan-action@v3
-        id: scan-nginx
-        with:
-          image: ${{ needs.init.outputs.nginx-prd-docker-image-name }}:${{ needs.init.outputs.github-ci-sha-short }}
+          image: ${{ needs.init.outputs.docker-image-name }}:${{ needs.init.outputs.github-ci-sha-short }}-${{ matrix.image-variant }}
           fail-build: false
           severity-cutoff: critical
           output-format: table
@@ -676,39 +200,30 @@ jobs:
           username: ${{ secrets.DOCKERHUB_USERNAME }}
           password: ${{ secrets.DOCKERHUB_PASSWORD }}
 
-      - name: Test "${{ needs.init.outputs.phpfpm-prd-docker-image-name }}" Docker Image
-        env:
-          DOCKER_IMAGE_NAME: ${{ needs.init.outputs.phpfpm-prd-docker-image-name }}:${{ needs.init.outputs.github-ci-sha-short }}
-          CONTAINER_ENGINE: docker
+      - name: Prepare Test Environment
+        id: prep-test
         run: |
-          docker network create docker_default
-          docker pull appropriate/curl:latest
-          bats -r test/tests.fpm.bats
-
-      - name: Test "${{ needs.init.outputs.phpcli-prd-docker-image-name }}" Docker Image
+          echo "image-flavor=${IMAGE_VARIANT%-*}" >> $GITHUB_OUTPUT
         env:
-          DOCKER_IMAGE_NAME: ${{ needs.init.outputs.phpcli-prd-docker-image-name }}:${{ needs.init.outputs.github-ci-sha-short }}
+          IMAGE_VARIANT: ${{ matrix.image-variant }}
+
+      - name: Test "${{ needs.init.outputs.docker-image-name }}:${{ needs.init.outputs.github-ci-sha-short }}-${{ matrix.image-variant }}" Docker Image
+        env:
+          DOCKER_IMAGE_NAME: ${{ needs.init.outputs.docker-image-name }}:${{ needs.init.outputs.github-ci-sha-short }}-${{ matrix.image-variant }}
           PHP_VERSION: ${{ needs.init.outputs.version-patch }}
           AWS_CLI_VERSION: ${{ needs.init.outputs.aws-cli-version }}
           CONTAINER_ENGINE: docker
         run: |
-          bats -r test/tests.cli.bats
+          docker network create docker_default
+          docker pull appropriate/curl:latest
+          bats -r test/tests.${{ steps.prep-test.outputs.image-flavor }}.bats
 
-      - name: Test "${{ needs.init.outputs.apache-prd-docker-image-name }}" Docker Image
-        env:
-          DOCKER_IMAGE_NAME: ${{ needs.init.outputs.apache-prd-docker-image-name }}:${{ needs.init.outputs.github-ci-sha-short }}
-          CONTAINER_ENGINE: docker
-        run: |
-          bats -r test/tests.apache.bats
+  sign-dev:
 
-      - name: Test "${{ needs.init.outputs.nginx-prd-docker-image-name }}" Docker Image
-        env:
-          DOCKER_IMAGE_NAME: ${{ needs.init.outputs.nginx-prd-docker-image-name }}:${{ needs.init.outputs.github-ci-sha-short }}
-          CONTAINER_ENGINE: docker
-        run: |
-          bats -r test/tests.nginx.bats
-
-  sign:
+    strategy:
+      max-parallel: 1
+      matrix:
+        image-variant: [fpm-dev,apache-dev,nginx-dev,cli-dev]
 
     runs-on: ubuntu-20.04
     needs:  [init,tests]
@@ -718,64 +233,15 @@ jobs:
       - name: Set up Docker Buildx
         uses: docker/setup-buildx-action@v2
 
-      - name: Download "${{ needs.init.outputs.phpfpm-prd-docker-image-name }}" Docker image artifact
+      - name: Download "${{ needs.init.outputs.docker-image-name }}:${{ needs.init.outputs.github-ci-sha-short }}-${{ matrix.image-variant }}" Docker image artifact
         uses: actions/download-artifact@v3
         with:
-          name: phpfpm-prd
+          name: ${{ matrix.image-variant }}
           path: /tmp
 
-      - name: Download "${{ needs.init.outputs.phpcli-prd-docker-image-name }}" Docker image artifact
-        uses: actions/download-artifact@v3
-        with:
-          name: phpcli-prd
-          path: /tmp
-
-      - name: Download "${{ needs.init.outputs.apache-prd-docker-image-name }}" Docker image artifact
-        uses: actions/download-artifact@v3
-        with:
-          name: apache-prd
-          path: /tmp
-
-      - name: Download "${{ needs.init.outputs.nginx-prd-docker-image-name }}" Docker image artifact
-        uses: actions/download-artifact@v3
-        with:
-          name: nginx-prd
-          path: /tmp
-
-      - name: Download "${{ needs.init.outputs.phpfpm-dev-docker-image-name }}" Docker image artifact
-        uses: actions/download-artifact@v3
-        with:
-          name: phpfpm-dev
-          path: /tmp
-
-      - name: Download "${{ needs.init.outputs.phpcli-dev-docker-image-name }}" Docker image artifact
-        uses: actions/download-artifact@v3
-        with:
-          name: phpcli-dev
-          path: /tmp
-
-      - name: Download "${{ needs.init.outputs.apache-dev-docker-image-name }}" Docker image artifact
-        uses: actions/download-artifact@v3
-        with:
-          name: apache-dev
-          path: /tmp
-
-      - name: Download "${{ needs.init.outputs.nginx-dev-docker-image-name }}" Docker image artifact
-        uses: actions/download-artifact@v3
-        with:
-          name: nginx-dev
-          path: /tmp
-
-      - name: Load Docker images
+      - name: Load Docker image
         run: |
-          docker load --input /tmp/phpfpm-prd-final.tar
-          docker load --input /tmp/apache-prd-final.tar
-          docker load --input /tmp/nginx-prd-final.tar
-          docker load --input /tmp/phpcli-prd-final.tar
-          docker load --input /tmp/phpfpm-dev-final.tar
-          docker load --input /tmp/apache-dev-final.tar
-          docker load --input /tmp/nginx-dev-final.tar
-          docker load --input /tmp/phpcli-dev-final.tar
+          docker load --input /tmp/final.tar
           docker image ls -a
 
       - name: Login to DockerHub
@@ -785,238 +251,153 @@ jobs:
           username: ${{ secrets.DOCKERHUB_USERNAME }}
           password: ${{ secrets.DOCKERHUB_PASSWORD }}
 
-      - name: Sign and push docker image "${{ needs.init.outputs.phpfpm-prd-docker-image-name }}:${{ needs.init.outputs.github-ci-sha-short }}"
+      - name: Sign and push docker image "${{ needs.init.outputs.docker-image-name }}:${{ needs.init.outputs.github-ci-sha-short }}-${{ matrix.image-variant }}"
         uses: sudo-bot/action-docker-sign@latest
         with:
-          image-ref: "${{ needs.init.outputs.phpfpm-prd-docker-image-name }}:${{ needs.init.outputs.github-ci-sha-short }}"
+          image-ref: "${{ needs.init.outputs.docker-image-name }}:${{ needs.init.outputs.github-ci-sha-short }}-${{ matrix.image-variant }}"
           private-key-id: "${{ secrets.DOCKER_PRIVATE_KEY_ID }}"
           private-key: ${{ secrets.DOCKER_PRIVATE_KEY }}
           private-key-passphrase: ${{ secrets.DOCKER_PRIVATE_KEY_PASSPHRASE }}
 
-      - name: Sign and push docker image "${{ needs.init.outputs.phpfpm-prd-docker-image-name }}:${{ needs.init.outputs.version-patch }}"
+      - name: Sign and push docker image "${{ needs.init.outputs.docker-image-name }}:${{ needs.init.outputs.version-patch }}-${{ matrix.image-variant }}"
         uses: sudo-bot/action-docker-sign@latest
         with:
-          image-ref: "${{ needs.init.outputs.phpfpm-prd-docker-image-name }}:${{ needs.init.outputs.version-patch }}"
+          image-ref: "${{ needs.init.outputs.docker-image-name }}:${{ needs.init.outputs.version-patch }}-${{ matrix.image-variant }}"
           private-key-id: "${{ secrets.DOCKER_PRIVATE_KEY_ID }}"
           private-key: ${{ secrets.DOCKER_PRIVATE_KEY }}
           private-key-passphrase: ${{ secrets.DOCKER_PRIVATE_KEY_PASSPHRASE }}
 
-      - name: Sign and push docker image "${{ needs.init.outputs.phpfpm-prd-docker-image-name }}:${{ needs.init.outputs.version-minor }}"
+      - name: Sign and push docker image "${{ needs.init.outputs.docker-image-name }}:${{ needs.init.outputs.version-minor }}-${{ matrix.image-variant }}"
         uses: sudo-bot/action-docker-sign@latest
         with:
-          image-ref: "${{ needs.init.outputs.phpfpm-prd-docker-image-name }}:${{ needs.init.outputs.version-minor }}"
-          private-key-id: "${{ secrets.DOCKER_PRIVATE_KEY_ID }}"
-          private-key: ${{ secrets.DOCKER_PRIVATE_KEY }}
-          private-key-passphrase: ${{ secrets.DOCKER_PRIVATE_KEY_PASSPHRASE }}
-
-      - name: Sign and push docker image "${{ needs.init.outputs.phpcli-prd-docker-image-name }}:${{ needs.init.outputs.github-ci-sha-short }}"
-        uses: sudo-bot/action-docker-sign@latest
-        with:
-          image-ref: "${{ needs.init.outputs.phpcli-prd-docker-image-name }}:${{ needs.init.outputs.github-ci-sha-short }}"
-          private-key-id: "${{ secrets.DOCKER_PRIVATE_KEY_ID }}"
-          private-key: ${{ secrets.DOCKER_PRIVATE_KEY }}
-          private-key-passphrase: ${{ secrets.DOCKER_PRIVATE_KEY_PASSPHRASE }}
-
-      - name: Sign and push docker image "${{ needs.init.outputs.phpcli-prd-docker-image-name }}:${{ needs.init.outputs.version-patch }}"
-        uses: sudo-bot/action-docker-sign@latest
-        with:
-          image-ref: "${{ needs.init.outputs.phpcli-prd-docker-image-name }}:${{ needs.init.outputs.version-patch }}"
-          private-key-id: "${{ secrets.DOCKER_PRIVATE_KEY_ID }}"
-          private-key: ${{ secrets.DOCKER_PRIVATE_KEY }}
-          private-key-passphrase: ${{ secrets.DOCKER_PRIVATE_KEY_PASSPHRASE }}
-
-      - name: Sign and push docker image "${{ needs.init.outputs.phpcli-prd-docker-image-name }}:${{ needs.init.outputs.version-minor }}"
-        uses: sudo-bot/action-docker-sign@latest
-        with:
-          image-ref: "${{ needs.init.outputs.phpcli-prd-docker-image-name }}:${{ needs.init.outputs.version-minor }}"
-          private-key-id: "${{ secrets.DOCKER_PRIVATE_KEY_ID }}"
-          private-key: ${{ secrets.DOCKER_PRIVATE_KEY }}
-          private-key-passphrase: ${{ secrets.DOCKER_PRIVATE_KEY_PASSPHRASE }}
-
-      - name: Sign and push docker image "${{ needs.init.outputs.phpfpm-dev-docker-image-name }}:${{ needs.init.outputs.github-ci-sha-short }}"
-        uses: sudo-bot/action-docker-sign@latest
-        with:
-          image-ref: "${{ needs.init.outputs.phpfpm-dev-docker-image-name }}:${{ needs.init.outputs.github-ci-sha-short }}"
-          private-key-id: "${{ secrets.DOCKER_PRIVATE_KEY_ID }}"
-          private-key: ${{ secrets.DOCKER_PRIVATE_KEY }}
-          private-key-passphrase: ${{ secrets.DOCKER_PRIVATE_KEY_PASSPHRASE }}
-
-      - name: Sign and push docker image "${{ needs.init.outputs.phpfpm-dev-docker-image-name }}:${{ needs.init.outputs.version-patch }}"
-        uses: sudo-bot/action-docker-sign@latest
-        with:
-          image-ref: "${{ needs.init.outputs.phpfpm-dev-docker-image-name }}:${{ needs.init.outputs.version-patch }}"
-          private-key-id: "${{ secrets.DOCKER_PRIVATE_KEY_ID }}"
-          private-key: ${{ secrets.DOCKER_PRIVATE_KEY }}
-          private-key-passphrase: ${{ secrets.DOCKER_PRIVATE_KEY_PASSPHRASE }}
-
-      - name: Sign and push docker image "${{ needs.init.outputs.phpfpm-dev-docker-image-name }}:${{ needs.init.outputs.version-minor }}"
-        uses: sudo-bot/action-docker-sign@latest
-        with:
-          image-ref: "${{ needs.init.outputs.phpfpm-dev-docker-image-name }}:${{ needs.init.outputs.version-minor }}"
-          private-key-id: "${{ secrets.DOCKER_PRIVATE_KEY_ID }}"
-          private-key: ${{ secrets.DOCKER_PRIVATE_KEY }}
-          private-key-passphrase: ${{ secrets.DOCKER_PRIVATE_KEY_PASSPHRASE }}
-
-      - name: Sign and push docker image "${{ needs.init.outputs.phpcli-dev-docker-image-name }}:${{ needs.init.outputs.github-ci-sha-short }}"
-        uses: sudo-bot/action-docker-sign@latest
-        with:
-          image-ref: "${{ needs.init.outputs.phpcli-dev-docker-image-name }}:${{ needs.init.outputs.github-ci-sha-short }}"
-          private-key-id: "${{ secrets.DOCKER_PRIVATE_KEY_ID }}"
-          private-key: ${{ secrets.DOCKER_PRIVATE_KEY }}
-          private-key-passphrase: ${{ secrets.DOCKER_PRIVATE_KEY_PASSPHRASE }}
-
-      - name: Sign and push docker image "${{ needs.init.outputs.phpcli-dev-docker-image-name }}:${{ needs.init.outputs.version-patch }}"
-        uses: sudo-bot/action-docker-sign@latest
-        with:
-          image-ref: "${{ needs.init.outputs.phpcli-dev-docker-image-name }}:${{ needs.init.outputs.version-patch }}"
-          private-key-id: "${{ secrets.DOCKER_PRIVATE_KEY_ID }}"
-          private-key: ${{ secrets.DOCKER_PRIVATE_KEY }}
-          private-key-passphrase: ${{ secrets.DOCKER_PRIVATE_KEY_PASSPHRASE }}
-
-      - name: Sign and push docker image "${{ needs.init.outputs.phpcli-dev-docker-image-name }}:${{ needs.init.outputs.version-minor }}"
-        uses: sudo-bot/action-docker-sign@latest
-        with:
-          image-ref: "${{ needs.init.outputs.phpcli-dev-docker-image-name }}:${{ needs.init.outputs.version-minor }}"
-          private-key-id: "${{ secrets.DOCKER_PRIVATE_KEY_ID }}"
-          private-key: ${{ secrets.DOCKER_PRIVATE_KEY }}
-          private-key-passphrase: ${{ secrets.DOCKER_PRIVATE_KEY_PASSPHRASE }}
-
-      - name: Sign and push docker image "${{ needs.init.outputs.apache-prd-docker-image-name }}:${{ needs.init.outputs.github-ci-sha-short }}"
-        uses: sudo-bot/action-docker-sign@latest
-        with:
-          image-ref: "${{ needs.init.outputs.apache-prd-docker-image-name }}:${{ needs.init.outputs.github-ci-sha-short }}"
-          private-key-id: "${{ secrets.DOCKER_PRIVATE_KEY_ID }}"
-          private-key: ${{ secrets.DOCKER_PRIVATE_KEY }}
-          private-key-passphrase: ${{ secrets.DOCKER_PRIVATE_KEY_PASSPHRASE }}
-
-      - name: Sign and push docker image "${{ needs.init.outputs.apache-prd-docker-image-name }}:${{ needs.init.outputs.version-patch }}"
-        uses: sudo-bot/action-docker-sign@latest
-        with:
-          image-ref: "${{ needs.init.outputs.apache-prd-docker-image-name }}:${{ needs.init.outputs.version-patch }}"
-          private-key-id: "${{ secrets.DOCKER_PRIVATE_KEY_ID }}"
-          private-key: ${{ secrets.DOCKER_PRIVATE_KEY }}
-          private-key-passphrase: ${{ secrets.DOCKER_PRIVATE_KEY_PASSPHRASE }}
-
-      - name: Sign and push docker image "${{ needs.init.outputs.apache-prd-docker-image-name }}:${{ needs.init.outputs.version-minor }}"
-        uses: sudo-bot/action-docker-sign@latest
-        with:
-          image-ref: "${{ needs.init.outputs.apache-prd-docker-image-name }}:${{ needs.init.outputs.version-minor }}"
-          private-key-id: "${{ secrets.DOCKER_PRIVATE_KEY_ID }}"
-          private-key: ${{ secrets.DOCKER_PRIVATE_KEY }}
-          private-key-passphrase: ${{ secrets.DOCKER_PRIVATE_KEY_PASSPHRASE }}
-
-      - name: Sign and push docker image "${{ needs.init.outputs.apache-dev-docker-image-name }}:${{ needs.init.outputs.github-ci-sha-short }}"
-        uses: sudo-bot/action-docker-sign@latest
-        with:
-          image-ref: "${{ needs.init.outputs.apache-dev-docker-image-name }}:${{ needs.init.outputs.github-ci-sha-short }}"
-          private-key-id: "${{ secrets.DOCKER_PRIVATE_KEY_ID }}"
-          private-key: ${{ secrets.DOCKER_PRIVATE_KEY }}
-          private-key-passphrase: ${{ secrets.DOCKER_PRIVATE_KEY_PASSPHRASE }}
-
-      - name: Sign and push docker image "${{ needs.init.outputs.apache-dev-docker-image-name }}:${{ needs.init.outputs.version-patch }}"
-        uses: sudo-bot/action-docker-sign@latest
-        with:
-          image-ref: "${{ needs.init.outputs.apache-dev-docker-image-name }}:${{ needs.init.outputs.version-patch }}"
-          private-key-id: "${{ secrets.DOCKER_PRIVATE_KEY_ID }}"
-          private-key: ${{ secrets.DOCKER_PRIVATE_KEY }}
-          private-key-passphrase: ${{ secrets.DOCKER_PRIVATE_KEY_PASSPHRASE }}
-
-      - name: Sign and push docker image "${{ needs.init.outputs.apache-dev-docker-image-name }}:${{ needs.init.outputs.version-minor }}"
-        uses: sudo-bot/action-docker-sign@latest
-        with:
-          image-ref: "${{ needs.init.outputs.apache-dev-docker-image-name }}:${{ needs.init.outputs.version-minor }}"
-          private-key-id: "${{ secrets.DOCKER_PRIVATE_KEY_ID }}"
-          private-key: ${{ secrets.DOCKER_PRIVATE_KEY }}
-          private-key-passphrase: ${{ secrets.DOCKER_PRIVATE_KEY_PASSPHRASE }}
-
-      - name: Sign and push docker image "${{ needs.init.outputs.nginx-prd-docker-image-name }}:${{ needs.init.outputs.github-ci-sha-short }}"
-        uses: sudo-bot/action-docker-sign@latest
-        with:
-          image-ref: "${{ needs.init.outputs.nginx-prd-docker-image-name }}:${{ needs.init.outputs.github-ci-sha-short }}"
-          private-key-id: "${{ secrets.DOCKER_PRIVATE_KEY_ID }}"
-          private-key: ${{ secrets.DOCKER_PRIVATE_KEY }}
-          private-key-passphrase: ${{ secrets.DOCKER_PRIVATE_KEY_PASSPHRASE }}
-
-      - name: Sign and push docker image "${{ needs.init.outputs.nginx-prd-docker-image-name }}:${{ needs.init.outputs.version-patch }}"
-        uses: sudo-bot/action-docker-sign@latest
-        with:
-          image-ref: "${{ needs.init.outputs.nginx-prd-docker-image-name }}:${{ needs.init.outputs.version-patch }}"
-          private-key-id: "${{ secrets.DOCKER_PRIVATE_KEY_ID }}"
-          private-key: ${{ secrets.DOCKER_PRIVATE_KEY }}
-          private-key-passphrase: ${{ secrets.DOCKER_PRIVATE_KEY_PASSPHRASE }}
-
-      - name: Sign and push docker image "${{ needs.init.outputs.nginx-prd-docker-image-name }}:${{ needs.init.outputs.version-minor }}"
-        uses: sudo-bot/action-docker-sign@latest
-        with:
-          image-ref: "${{ needs.init.outputs.nginx-prd-docker-image-name }}:${{ needs.init.outputs.version-minor }}"
-          private-key-id: "${{ secrets.DOCKER_PRIVATE_KEY_ID }}"
-          private-key: ${{ secrets.DOCKER_PRIVATE_KEY }}
-          private-key-passphrase: ${{ secrets.DOCKER_PRIVATE_KEY_PASSPHRASE }}
-
-      - name: Sign and push docker image "${{ needs.init.outputs.nginx-dev-docker-image-name }}:${{ needs.init.outputs.github-ci-sha-short }}"
-        uses: sudo-bot/action-docker-sign@latest
-        with:
-          image-ref: "${{ needs.init.outputs.nginx-dev-docker-image-name }}:${{ needs.init.outputs.github-ci-sha-short }}"
-          private-key-id: "${{ secrets.DOCKER_PRIVATE_KEY_ID }}"
-          private-key: ${{ secrets.DOCKER_PRIVATE_KEY }}
-          private-key-passphrase: ${{ secrets.DOCKER_PRIVATE_KEY_PASSPHRASE }}
-
-      - name: Sign and push docker image "${{ needs.init.outputs.nginx-dev-docker-image-name }}:${{ needs.init.outputs.version-patch }}"
-        uses: sudo-bot/action-docker-sign@latest
-        with:
-          image-ref: "${{ needs.init.outputs.nginx-dev-docker-image-name }}:${{ needs.init.outputs.version-patch }}"
-          private-key-id: "${{ secrets.DOCKER_PRIVATE_KEY_ID }}"
-          private-key: ${{ secrets.DOCKER_PRIVATE_KEY }}
-          private-key-passphrase: ${{ secrets.DOCKER_PRIVATE_KEY_PASSPHRASE }}
-
-      - name: Sign and push docker image "${{ needs.init.outputs.nginx-dev-docker-image-name }}:${{ needs.init.outputs.version-minor }}"
-        uses: sudo-bot/action-docker-sign@latest
-        with:
-          image-ref: "${{ needs.init.outputs.nginx-dev-docker-image-name }}:${{ needs.init.outputs.version-minor }}"
+          image-ref: "${{ needs.init.outputs.docker-image-name }}:${{ needs.init.outputs.version-minor }}-${{ matrix.image-variant }}"
           private-key-id: "${{ secrets.DOCKER_PRIVATE_KEY_ID }}"
           private-key: ${{ secrets.DOCKER_PRIVATE_KEY }}
           private-key-passphrase: ${{ secrets.DOCKER_PRIVATE_KEY_PASSPHRASE }}
 
       - name: Check Docker Images pull's
         run: |
-          docker pull ${{ needs.init.outputs.phpfpm-prd-docker-image-name }}:${{ needs.init.outputs.github-ci-sha-short }}
-          docker pull ${{ needs.init.outputs.phpfpm-prd-docker-image-name }}:${{ needs.init.outputs.version-patch }}
-          docker pull ${{ needs.init.outputs.phpfpm-prd-docker-image-name }}:${{ needs.init.outputs.version-minor }}
-          docker pull ${{ needs.init.outputs.phpfpm-dev-docker-image-name }}:${{ needs.init.outputs.github-ci-sha-short }}
-          docker pull ${{ needs.init.outputs.phpfpm-dev-docker-image-name }}:${{ needs.init.outputs.version-patch }}
-          docker pull ${{ needs.init.outputs.phpfpm-dev-docker-image-name }}:${{ needs.init.outputs.version-minor }}
-          docker pull ${{ needs.init.outputs.phpcli-prd-docker-image-name }}:${{ needs.init.outputs.github-ci-sha-short }}
-          docker pull ${{ needs.init.outputs.phpcli-prd-docker-image-name }}:${{ needs.init.outputs.version-patch }}
-          docker pull ${{ needs.init.outputs.phpcli-prd-docker-image-name }}:${{ needs.init.outputs.version-minor }}
-          docker pull ${{ needs.init.outputs.phpcli-dev-docker-image-name }}:${{ needs.init.outputs.github-ci-sha-short }}
-          docker pull ${{ needs.init.outputs.phpcli-dev-docker-image-name }}:${{ needs.init.outputs.version-patch }}
-          docker pull ${{ needs.init.outputs.phpcli-dev-docker-image-name }}:${{ needs.init.outputs.version-minor }}
-          docker pull ${{ needs.init.outputs.apache-prd-docker-image-name }}:${{ needs.init.outputs.github-ci-sha-short }}
-          docker pull ${{ needs.init.outputs.apache-prd-docker-image-name }}:${{ needs.init.outputs.version-patch }}
-          docker pull ${{ needs.init.outputs.apache-prd-docker-image-name }}:${{ needs.init.outputs.version-minor }}
-          docker pull ${{ needs.init.outputs.apache-dev-docker-image-name }}:${{ needs.init.outputs.github-ci-sha-short }}
-          docker pull ${{ needs.init.outputs.apache-dev-docker-image-name }}:${{ needs.init.outputs.version-patch }}
-          docker pull ${{ needs.init.outputs.apache-dev-docker-image-name }}:${{ needs.init.outputs.version-minor }}
-          docker pull ${{ needs.init.outputs.nginx-prd-docker-image-name }}:${{ needs.init.outputs.github-ci-sha-short }}
-          docker pull ${{ needs.init.outputs.nginx-prd-docker-image-name }}:${{ needs.init.outputs.version-patch }}
-          docker pull ${{ needs.init.outputs.nginx-prd-docker-image-name }}:${{ needs.init.outputs.version-minor }}
-          docker pull ${{ needs.init.outputs.nginx-dev-docker-image-name }}:${{ needs.init.outputs.github-ci-sha-short }}
-          docker pull ${{ needs.init.outputs.nginx-dev-docker-image-name }}:${{ needs.init.outputs.version-patch }}
-          docker pull ${{ needs.init.outputs.nginx-dev-docker-image-name }}:${{ needs.init.outputs.version-minor }}
+          docker pull ${{ needs.init.outputs.docker-image-name }}:${{ needs.init.outputs.github-ci-sha-short }}-${{ matrix.image-variant }}
+          docker pull ${{ needs.init.outputs.docker-image-name }}:${{ needs.init.outputs.version-patch }}-${{ matrix.image-variant }}
+          docker pull ${{ needs.init.outputs.docker-image-name }}:${{ needs.init.outputs.version-minor }}-${{ matrix.image-variant }}
+
+  sign-prd:
+
+    strategy:
+      max-parallel: 1
+      matrix:
+        image-variant: [fpm-prd,apache-prd,nginx-prd,cli-prd]
+
+    runs-on: ubuntu-20.04
+    needs:  [init,tests]
+
+    steps:
+
+      - name: Set up Docker Buildx
+        uses: docker/setup-buildx-action@v2
+
+      - name: Download "${{ needs.init.outputs.docker-image-name }}:${{ needs.init.outputs.github-ci-sha-short }}-${{ matrix.image-variant }}" Docker image artifact
+        uses: actions/download-artifact@v3
+        with:
+          name: ${{ matrix.image-variant }}
+          path: /tmp
+
+      - name: Load Docker image
+        run: |
+          docker load --input /tmp/final.tar
+          docker image ls -a
+
+      - name: Login to DockerHub
+        uses: docker/login-action@v2
+        with:
+          registry: docker.io
+          username: ${{ secrets.DOCKERHUB_USERNAME }}
+          password: ${{ secrets.DOCKERHUB_PASSWORD }}
+
+      - name: Prepare Sign Workflow Step
+        id: prep-sign
+        run: |
+          echo "image-flavor=${IMAGE_VARIANT%-*}" >> $GITHUB_OUTPUT
+        env:
+          IMAGE_VARIANT: ${{ matrix.image-variant }}
+
+      - name: Tag docker image "${{ needs.init.outputs.docker-image-name }}:${{ needs.init.outputs.github-ci-sha-short }}-${{ matrix.image-variant }} for release"
+        id: prep-sign-tagging
+        run: |
+          docker tag ${{ needs.init.outputs.docker-image-name }}:${{ needs.init.outputs.github-ci-sha-short }}-${{ matrix.image-variant }} \
+                     ${{ needs.init.outputs.docker-image-name }}:${{ needs.init.outputs.github-ci-sha-short }}-${{ steps.prep-sign.outputs.image-flavor }}
+          docker tag ${{ needs.init.outputs.docker-image-name }}:${{ needs.init.outputs.version-patch }}-${{ matrix.image-variant }} \
+                     ${{ needs.init.outputs.docker-image-name }}:${{ needs.init.outputs.version-patch }}-${{ steps.prep-sign.outputs.image-flavor }}
+          docker tag ${{ needs.init.outputs.docker-image-name }}:${{ needs.init.outputs.version-minor }}-${{ matrix.image-variant }} \
+                     ${{ needs.init.outputs.docker-image-name }}:${{ needs.init.outputs.version-minor }}-${{ steps.prep-sign.outputs.image-flavor }}
+
+      - name: Sign and push docker image "${{ needs.init.outputs.docker-image-name }}:${{ needs.init.outputs.github-ci-sha-short }}-${{ matrix.image-variant }}"
+        uses: sudo-bot/action-docker-sign@latest
+        with:
+          image-ref: "${{ needs.init.outputs.docker-image-name }}:${{ needs.init.outputs.github-ci-sha-short }}-${{ matrix.image-variant }}"
+          private-key-id: "${{ secrets.DOCKER_PRIVATE_KEY_ID }}"
+          private-key: ${{ secrets.DOCKER_PRIVATE_KEY }}
+          private-key-passphrase: ${{ secrets.DOCKER_PRIVATE_KEY_PASSPHRASE }}
+
+      - name: Sign and push docker image "${{ needs.init.outputs.docker-image-name }}:${{ needs.init.outputs.github-ci-sha-short }}-${{ steps.prep-sign.outputs.image-flavor }}"
+        uses: sudo-bot/action-docker-sign@latest
+        with:
+          image-ref: "${{ needs.init.outputs.docker-image-name }}:${{ needs.init.outputs.github-ci-sha-short }}-${{ steps.prep-sign.outputs.image-flavor }}"
+          private-key-id: "${{ secrets.DOCKER_PRIVATE_KEY_ID }}"
+          private-key: ${{ secrets.DOCKER_PRIVATE_KEY }}
+          private-key-passphrase: ${{ secrets.DOCKER_PRIVATE_KEY_PASSPHRASE }}
+
+      - name: Sign and push docker image "${{ needs.init.outputs.docker-image-name }}:${{ needs.init.outputs.version-patch }}-${{ matrix.image-variant }}"
+        uses: sudo-bot/action-docker-sign@latest
+        with:
+          image-ref: "${{ needs.init.outputs.docker-image-name }}:${{ needs.init.outputs.version-patch }}-${{ matrix.image-variant }}"
+          private-key-id: "${{ secrets.DOCKER_PRIVATE_KEY_ID }}"
+          private-key: ${{ secrets.DOCKER_PRIVATE_KEY }}
+          private-key-passphrase: ${{ secrets.DOCKER_PRIVATE_KEY_PASSPHRASE }}
+
+      - name: Sign and push docker image "${{ needs.init.outputs.docker-image-name }}:${{ needs.init.outputs.version-patch }}-${{ steps.prep-sign.outputs.image-flavor }}"
+        uses: sudo-bot/action-docker-sign@latest
+        with:
+          image-ref: "${{ needs.init.outputs.docker-image-name }}:${{ needs.init.outputs.version-patch }}-${{ steps.prep-sign.outputs.image-flavor }}"
+          private-key-id: "${{ secrets.DOCKER_PRIVATE_KEY_ID }}"
+          private-key: ${{ secrets.DOCKER_PRIVATE_KEY }}
+          private-key-passphrase: ${{ secrets.DOCKER_PRIVATE_KEY_PASSPHRASE }}
+
+      - name: Sign and push docker image "${{ needs.init.outputs.docker-image-name }}:${{ needs.init.outputs.version-minor }}-${{ matrix.image-variant }}"
+        uses: sudo-bot/action-docker-sign@latest
+        with:
+          image-ref: "${{ needs.init.outputs.docker-image-name }}:${{ needs.init.outputs.version-minor }}-${{ matrix.image-variant }}"
+          private-key-id: "${{ secrets.DOCKER_PRIVATE_KEY_ID }}"
+          private-key: ${{ secrets.DOCKER_PRIVATE_KEY }}
+          private-key-passphrase: ${{ secrets.DOCKER_PRIVATE_KEY_PASSPHRASE }}
+
+      - name: Sign and push docker image "${{ needs.init.outputs.docker-image-name }}:${{ needs.init.outputs.version-minor }}-${{ steps.prep-sign.outputs.image-flavor }}"
+        uses: sudo-bot/action-docker-sign@latest
+        with:
+          image-ref: "${{ needs.init.outputs.docker-image-name }}:${{ needs.init.outputs.version-minor }}-${{ steps.prep-sign.outputs.image-flavor }}"
+          private-key-id: "${{ secrets.DOCKER_PRIVATE_KEY_ID }}"
+          private-key: ${{ secrets.DOCKER_PRIVATE_KEY }}
+          private-key-passphrase: ${{ secrets.DOCKER_PRIVATE_KEY_PASSPHRASE }}
+
+      - name: Check Docker Images pull's
+        run: |
+          docker pull ${{ needs.init.outputs.docker-image-name }}:${{ needs.init.outputs.github-ci-sha-short }}-${{ matrix.image-variant }}
+          docker pull ${{ needs.init.outputs.docker-image-name }}:${{ needs.init.outputs.github-ci-sha-short }}-${{ steps.prep-sign.outputs.image-flavor }}
+          docker pull ${{ needs.init.outputs.docker-image-name }}:${{ needs.init.outputs.version-patch }}-${{ matrix.image-variant }}
+          docker pull ${{ needs.init.outputs.docker-image-name }}:${{ needs.init.outputs.version-patch }}-${{ steps.prep-sign.outputs.image-flavor }}
+          docker pull ${{ needs.init.outputs.docker-image-name }}:${{ needs.init.outputs.version-minor }}-${{ matrix.image-variant }}
+          docker pull ${{ needs.init.outputs.docker-image-name }}:${{ needs.init.outputs.version-minor }}-${{ steps.prep-sign.outputs.image-flavor }}
 
   cleanup:
 
+    strategy:
+      matrix:
+        image-variant: [fpm-prd,apache-prd,nginx-prd,cli-prd,fpm-dev,apache-dev,nginx-dev,cli-dev]
+
     runs-on: ubuntu-20.04
-    needs: [sign]
+    needs: [sign-prd,sign-dev]
     steps:
       - uses: joutvhu/delete-artifact@v1
         with:
           name: |
-            phpfpm-prd
-            phpfpm-dev
-            phpcli-prd
-            phpcli-dev
-            apache-prd
-            apache-dev
-            nginx-prd
-            nginx-dev
+            ${{ matrix.image-variant }}
