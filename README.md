@@ -9,9 +9,9 @@ Use [Supervisor](http://supervisord.org/) as manager for Webserver **and** PHP-F
 Run container as non-privileged.  
 Container Entrypoint hooks available.  
 
-- Installation of [Nginx](https://pkgs.alpinelinux.org/package/v3.17/main/x86_64/nginx).  
-- Installation of [Apache 2.4](https://pkgs.alpinelinux.org/package/v3.17/main/x86_64/apache2).  
-- Installation of [Varnish](https://pkgs.alpinelinux.org/package/v3.17/main/x86_64/varnish).  
+- Installation of [Nginx](https://pkgs.alpinelinux.org/package/v3.18/main/x86_64/nginx).  
+- Installation of [Apache 2.4](https://pkgs.alpinelinux.org/package/v3.18/main/x86_64/apache2).  
+- Installation of [Varnish](https://pkgs.alpinelinux.org/package/v3.18/main/x86_64/varnish).  
 
 # Build
 
@@ -43,49 +43,49 @@ Default value of Docker build arguments is grabbed from the [.build.env](.build.
 ## Example building __fpm__ variant __prd__ Docker image
 
 ```sh
-make build-fpm PHP_VERSION=8.1.14
+make build-fpm PHP_VERSION=8.1.20
 ```
 
-__Provide docker image__ : `docker.io/elasticms/base-php:8.1.14-fpm-prd`
+__Provide docker image__ : `docker.io/elasticms/base-php:8.1.20-fpm-prd`
 
 ```sh
-make build-fpm PHP_VERSION=8.1.14 DOCKER_IMAGE_NAME=docker.io/lambdauser/mybasephpimage
+make build-fpm PHP_VERSION=8.1.20 DOCKER_IMAGE_NAME=docker.io/lambdauser/mybasephpimage
 ```
 
-__Provide docker image__ : `docker.io/lambdauser/mybasephpimage:8.1.14-fpm-prd`
+__Provide docker image__ : `docker.io/lambdauser/mybasephpimage:8.1.20-fpm-prd`
 
 ## Example building __fpm__ variant __dev__ Docker image
 
 ```sh
-make build-fpm-dev PHP_VERSION=8.1.14
+make build-fpm-dev PHP_VERSION=8.1.20
 ```
 
-__Provide docker image__ : `docker.io/elasticms/base-php:8.1.14-fpm-dev`
+__Provide docker image__ : `docker.io/elasticms/base-php:8.1.20-fpm-dev`
 
 ## Example building __nginx__ variant __dev__ Docker image
 
 ```sh
-make build-nginx-dev PHP_VERSION=8.1.14
+make build-nginx-dev PHP_VERSION=8.1.20
 ```
 
-__Provide docker image__ : `docker.io/elasticms/base-php:8.1.14-nginx-dev`
+__Provide docker image__ : `docker.io/elasticms/base-php:8.1.20-nginx-dev`
 
 ## Example building __all__ variants Docker image
 
 ```sh
-make build-all PHP_VERSION=8.1.14
+make build-all PHP_VERSION=8.1.20
 ```
 
 __Provide docker images__ : 
 
-- `docker.io/elasticms/base-php:8.1.14-fpm-prd`
-- `docker.io/elasticms/base-php:8.1.14-fpm-dev`
-- `docker.io/elasticms/base-php:8.1.14-apache-prd`
-- `docker.io/elasticms/base-php:8.1.14-apache-dev`
-- `docker.io/elasticms/base-php:8.1.14-nginx-prd`
-- `docker.io/elasticms/base-php:8.1.14-nginx-dev`
-- `docker.io/elasticms/base-php:8.1.14-cli-prd`
-- `docker.io/elasticms/base-php:8.1.14-cli-dev`
+- `docker.io/elasticms/base-php:8.1.20-fpm-prd`
+- `docker.io/elasticms/base-php:8.1.20-fpm-dev`
+- `docker.io/elasticms/base-php:8.1.20-apache-prd`
+- `docker.io/elasticms/base-php:8.1.20-apache-dev`
+- `docker.io/elasticms/base-php:8.1.20-nginx-prd`
+- `docker.io/elasticms/base-php:8.1.20-nginx-dev`
+- `docker.io/elasticms/base-php:8.1.20-cli-prd`
+- `docker.io/elasticms/base-php:8.1.20-cli-dev`
 # Test
 
 ## Prerequisite
@@ -101,13 +101,13 @@ make test[-fpm|-apache|-nginx|-cli|-all][-dev] PHP_VERSION=<PHP Version you want
 ## Example testing of __prd__ builded docker image
 
 ```sh
-make test PHP_VERSION=8.1.14
+make test PHP_VERSION=8.1.20
 ```
 
 ## Example testing of __dev__ builded docker image
 
 ```sh
-make test-dev PHP_VERSION=8.1.14
+make test-dev PHP_VERSION=8.1.20
 ```
 
 # Releases
