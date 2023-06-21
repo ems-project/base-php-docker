@@ -205,6 +205,8 @@ In addition to the parent layer, this variant include install :
 | `docker.io/elasticms/base-php-cli:<version>` | `docker.io/elasticms/base-php:<version>-cli[-prd]` |
 | `docker.io/elasticms/base-php-cli-dev:<version>` | `docker.io/elasticms/base-php:<version>-cli-dev` |
 
+**Update (21/06/2023)** - Starting from version v8.1.20, the images mentioned above are no longer being updated or supported.
+
 ## PHP-FPM Configuration
 
 You can change the amount of memory that PHP-FPM can use by changing / passing the environment variables ```PHP_FPM_MAX_CHILDREN``` and ```PHP_FPM_REQUEST_MAX_MEMORY_IN_MEGABYTES```.  
