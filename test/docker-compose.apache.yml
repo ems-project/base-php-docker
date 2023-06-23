@@ -36,10 +36,6 @@ services:
       - DB_NAME=${BATS_DB_NAME}
       - VARNISH_ENABLED=${BATS_VARNISH_ENABLED}
       - VARNISH_VCL_CONF_CUSTOM=${BATS_VARNISH_VCL_CONF_CUSTOM}
-    links:
-      - ${BATS_STORAGE_SERVICE_NAME}:${BATS_STORAGE_SERVICE_NAME}
-    depends_on:
-      - ${BATS_STORAGE_SERVICE_NAME}
     command: ["/usr/bin/supervisord","-c","/etc/supervisord/supervisord.conf"]
     volumes:
       - php_scripts:/opt/bin/container-entrypoint.d

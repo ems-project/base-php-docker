@@ -138,7 +138,7 @@ It use the default php.ini-production configuration files and Supervisor to help
   - [APCu](https://pecl.php.net/package/apcu)
 - [AWS CLI](https://github.com/aws/aws-cli)
 
-## `docker.io/elasticms/base-php:<version>-dev`
+## `docker.io/elasticms/base-php:<version>-fpm-dev`
 
 This image use `base-php:<version>-fpm-prd` (see above) as parent layer.  
 It use the default php.ini-development configuration files.  
