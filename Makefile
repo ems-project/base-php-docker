@@ -17,6 +17,9 @@ _BUILD_ARGS_TAG ?= latest
 _TEST_ARGS_VARIANT ?= fpm
 _TEST_ARGS_TAG ?= latest
 
+CONTAINER_ENGINE ?= docker
+CONTAINER_TARGET_IMAGE_FORMAT ?= docker
+
 .DEFAULT_GOAL := help
 .PHONY: help build build-cli build-apache build-nginx build-dev build-cli-dev build-apache-dev build-nginx-dev build-all test test-dev test-fpm test-fpm-dev test-apache test-apache-dev test-nginx test-nginx-dev test-all Dockerfile
 
@@ -74,83 +77,38 @@ _build-%:
 
 _builder: _dockerfile
 	@echo "Build [${DOCKER_IMAGE_NAME}:${_BUILD_ARGS_TAG}] Docker image ..."
-	@docker build --progress=plain --no-cache \
-		--build-arg VERSION_ARG="${PHP_VERSION}" \
-		--build-arg RELEASE_ARG="${_BUILD_ARGS_TAG}" \
-		--build-arg BUILD_DATE_ARG="${BUILD_DATE}" \
-		--build-arg VCS_REF_ARG="${GIT_HASH}" \
-		--build-arg NODE_VERSION_ARG=${NODE_VERSION} \
-		--build-arg COMPOSER_VERSION_ARG=${COMPOSER_VERSION} \
-		--build-arg AWS_CLI_VERSION_ARG=${AWS_CLI_VERSION} \
-		--build-arg PHP_EXT_REDIS_VERSION_ARG=${PHP_EXT_REDIS_VERSION} \
-		--build-arg PHP_EXT_APCU_VERSION_ARG=${PHP_EXT_APCU_VERSION} \
-		--build-arg PHP_EXT_XDEBUG_VERSION_ARG=${PHP_EXT_XDEBUG_VERSION} \
-		--target ${_BUILD_ARGS_TARGET} \
-		--tag ${DOCKER_IMAGE_NAME}:${_BUILD_ARGS_TAG} -f $(DOCKERFILE:.in=) .
-
-buildah: # Build [fpm,apache,nginx] prd variant Docker image (buildah)
-	@$(MAKE) -s _buildah-fpm-prd
-	@$(MAKE) -s _buildah-apache-prd
-	@$(MAKE) -s _buildah-nginx-prd
-
-buildah-dev: # Build [fpm,apache,nginx] dev variant Docker image (buildah)
-	@$(MAKE) -s _buildah-fpm-prd
-	@$(MAKE) -s _buildah-apache-prd
-	@$(MAKE) -s _buildah-nginx-prd
-
-buildah-fpm: # Build [fpm] prd variant Docker image (buildah)
-	@$(MAKE) -s _buildah-fpm-prd
-
-buildah-cli: # Build [cli] prd variant Docker image (buildah)
-	@$(MAKE) -s _buildah-cli-prd
-
-buildah-apache: # Build [apache] prd variant Docker image (buildah)
-	@$(MAKE) -s _buildah-apache-prd
-
-buildah-nginx: # Build [nginx] prd Docker image (buildah)
-	@$(MAKE) -s _buildah-nginx-prd
-
-buildah-fpm-dev: # Build [fpm] dev Docker image (buildah)
-	@$(MAKE) -s _buildah-fpm-dev
-
-buildah-cli-dev: # Build [cli] dev Docker image (buildah)
-	@$(MAKE) -s _buildah-cli-dev
-
-buildah-apache-dev: # Build [apache] dev Docker image (buildah)
-	@$(MAKE) -s _buildah-apache-dev
-
-buildah-nginx-dev: # Build [nginx] dev Docker image (buildah)
-	@$(MAKE) -s _buildah-nginx-dev
-
-buildah-all: # Build [fpm,apache,nginx] [prd,dev] variants Docker images (buildah)
-	@$(MAKE) -s _buildah-fpm-prd
-	@$(MAKE) -s _buildah-fpm-dev
-	@$(MAKE) -s _buildah-cli-prd
-	@$(MAKE) -s _buildah-cli-dev
-	@$(MAKE) -s _buildah-apache-prd
-	@$(MAKE) -s _buildah-apache-dev
-	@$(MAKE) -s _buildah-nginx-prd
-	@$(MAKE) -s _buildah-nginx-dev
-
-_buildah-%: 
-	@$(MAKE) -s _buildaher \
-		-e _BUILD_ARGS_TAG="${PHP_VERSION}-$*" \
-		-e _BUILD_ARGS_TARGET="$*"
-
-_buildaher: _dockerfile
-	@buildah bud --no-cache --pull-always --force-rm --squash \
-		--build-arg VERSION_ARG="${PHP_VERSION}" \
-		--build-arg RELEASE_ARG="${_BUILD_ARGS_TAG}" \
-		--build-arg BUILD_DATE_ARG="${BUILD_DATE}" \
-		--build-arg VCS_REF_ARG="${GIT_HASH}" \
-		--build-arg NODE_VERSION_ARG=${NODE_VERSION} \
-		--build-arg COMPOSER_VERSION_ARG=${COMPOSER_VERSION} \
-		--build-arg AWS_CLI_VERSION_ARG=${AWS_CLI_VERSION} \
-		--build-arg PHP_EXT_REDIS_VERSION_ARG=${PHP_EXT_REDIS_VERSION} \
-		--build-arg PHP_EXT_APCU_VERSION_ARG=${PHP_EXT_APCU_VERSION} \
-		--build-arg PHP_EXT_XDEBUG_VERSION_ARG=${PHP_EXT_XDEBUG_VERSION} \
-		--target ${_BUILD_ARGS_TARGET} \
-		--tag ${DOCKER_IMAGE_NAME}:${_BUILD_ARGS_TAG} -f $(DOCKERFILE:.in=) .
+    ifeq ($(CONTAINER_ENGINE),podman)
+		@echo "Building $(CONTAINER_TARGET_IMAGE_FORMAT) image format with buildah"
+		@buildah bud --no-cache --pull-always --force-rm --squash \
+			--build-arg VERSION_ARG="${PHP_VERSION}" \
+			--build-arg RELEASE_ARG="${_BUILD_ARGS_TAG}" \
+			--build-arg BUILD_DATE_ARG="${BUILD_DATE}" \
+			--build-arg VCS_REF_ARG="${GIT_HASH}" \
+			--build-arg NODE_VERSION_ARG=${NODE_VERSION} \
+			--build-arg COMPOSER_VERSION_ARG=${COMPOSER_VERSION} \
+			--build-arg AWS_CLI_VERSION_ARG=${AWS_CLI_VERSION} \
+			--build-arg PHP_EXT_REDIS_VERSION_ARG=${PHP_EXT_REDIS_VERSION} \
+			--build-arg PHP_EXT_APCU_VERSION_ARG=${PHP_EXT_APCU_VERSION} \
+			--build-arg PHP_EXT_XDEBUG_VERSION_ARG=${PHP_EXT_XDEBUG_VERSION} \
+			--format ${CONTAINER_TARGET_IMAGE_FORMAT} \
+			--target ${_BUILD_ARGS_TARGET} \
+			--tag ${DOCKER_IMAGE_NAME}:${_BUILD_ARGS_TAG} .
+    else
+		@echo "Building $(CONTAINER_TARGET_IMAGE_FORMAT) image format with docker"
+		@docker build --no-cache --force-rm --progress=plain \
+			--build-arg VERSION_ARG="${PHP_VERSION}" \
+			--build-arg RELEASE_ARG="${_BUILD_ARGS_TAG}" \
+			--build-arg BUILD_DATE_ARG="${BUILD_DATE}" \
+			--build-arg VCS_REF_ARG="${GIT_HASH}" \
+			--build-arg NODE_VERSION_ARG=${NODE_VERSION} \
+			--build-arg COMPOSER_VERSION_ARG=${COMPOSER_VERSION} \
+			--build-arg AWS_CLI_VERSION_ARG=${AWS_CLI_VERSION} \
+			--build-arg PHP_EXT_REDIS_VERSION_ARG=${PHP_EXT_REDIS_VERSION} \
+			--build-arg PHP_EXT_APCU_VERSION_ARG=${PHP_EXT_APCU_VERSION} \
+			--build-arg PHP_EXT_XDEBUG_VERSION_ARG=${PHP_EXT_XDEBUG_VERSION} \
+			--target ${_BUILD_ARGS_TARGET} \
+			--tag ${DOCKER_IMAGE_NAME}:${_BUILD_ARGS_TAG} -f $(DOCKERFILE:.in=) .
+    endif
 
 test: # Test [fpm,apache,nginx,cli] prd variant Docker images
 	@$(MAKE) -s _test-fpm-prd
@@ -220,156 +178,12 @@ _test-cli-%:
 
 _tester: 
 	@$(MAKE) -s _bats \
-		-e DOCKER_IMAGE_NAME="${DOCKER_IMAGE_NAME}:${_TEST_ARGS_TAG}"
+		-e DOCKER_IMAGE_NAME="${DOCKER_IMAGE_NAME}:${_TEST_ARGS_TAG}" \
+		-e CONTAINER_ENGINE="${CONTAINER_ENGINE}"
 
 _bats:
 	@echo "Test [${DOCKER_IMAGE_NAME}] Docker image ..."
 	@bats test/tests.${_TEST_ARGS_VARIANT}.bats
-
-test-with-podman: # Test [fpm,apache,nginx,cli] prd variant Docker images (with Podman)
-	@$(MAKE) -s _tester_with_podman-fpm-prd
-	@$(MAKE) -s _tester_with_podman-apache-prd
-	@$(MAKE) -s _tester_with_podman-nginx-prd
-	@$(MAKE) -s _tester_with_podman-cli-prd
-
-test-with-podman-dev: # Test [fpm,apache,nginx,cli] dev variant Docker images (with Podman)
-	@$(MAKE) -s _tester_with_podman-fpm-dev
-	@$(MAKE) -s _tester_with_podman-apache-dev
-	@$(MAKE) -s _tester_with_podman-nginx-dev
-	@$(MAKE) -s _tester_with_podman-cli-dev
-
-test-with-podman-fpm: # Test [fpm] prd variant Docker image (with Podman)
-	@$(MAKE) -s _tester_with_podman-fpm-prd
-
-test-with-podman-fpm-dev: # Test [fpm] dev variant Docker image (with Podman)
-	@$(MAKE) -s _tester_with_podman-fpm-dev
-
-test-with-podman-apache: # Test [apache] prd variant Docker image (with Podman)
-	@$(MAKE) -s _tester_with_podman-apache-prd
-
-test-with-podman-apache-dev: # Test [apache] dev variant Docker image (with Podman)
-	@$(MAKE) -s _tester_with_podman-apache-dev
-
-test-with-podman-nginx: # Test [nginx] prd variant Docker image (with Podman)
-	@$(MAKE) -s _tester_with_podman-nginx-prd
-
-test-with-podman-nginx-dev: ## Test [nginx] dev variant Docker image (with Podman)
-	@$(MAKE) -s _tester_with_podman-nginx-dev
-
-test-with-podman-cli: # Test [cli] prd variant Docker image (with Podman)
-	@$(MAKE) -s _tester_with_podman-cli-prd
-
-test-with-podman-cli-dev: ## Test [cli] dev variant Docker image (with Podman)
-	@$(MAKE) -s _tester_with_podman-cli-dev
-
-test-with-podman-all: # Test [fpm,apache,nginx,cli] [prd,dev] variant Docker images
-	@$(MAKE) -s _tester_with_podman-fpm-prd
-	@$(MAKE) -s _tester_with_podman-apache-prd
-	@$(MAKE) -s _tester_with_podman-nginx-prd
-	@$(MAKE) -s _tester_with_podman-cli-prd
-	@$(MAKE) -s _tester_with_podman-fpm-dev
-	@$(MAKE) -s _tester_with_podman-apache-dev
-	@$(MAKE) -s _tester_with_podman-nginx-dev
-	@$(MAKE) -s _tester_with_podman-cli-dev
-
-_tester_with_podman-fpm-%: 
-	@$(MAKE) -s _tester_with_podman \
-		-e _TEST_ARGS_TAG="${PHP_VERSION}-fpm-$*" \
-		-e _TEST_ARGS_VARIANT="fpm"
-
-_tester_with_podman-apache-%:
-	@$(MAKE) -s _tester_with_podman \
-		-e _TEST_ARGS_TAG="${PHP_VERSION}-apache-$*" \
-		-e _TEST_ARGS_VARIANT="apache"
-
-_tester_with_podman-nginx-%:
-	@$(MAKE) -s _tester_with_podman \
-		-e _TEST_ARGS_TAG="${PHP_VERSION}-nginx-$*" \
-		-e _TEST_ARGS_VARIANT="nginx"
-
-_tester_with_podman-cli-%:
-	@$(MAKE) -s _tester_with_podman \
-		-e _TEST_ARGS_TAG="${PHP_VERSION}-cli-$*" \
-		-e _TEST_ARGS_VARIANT="cli"
-
-_tester_with_podman:
-	@$(MAKE) -s _bats_with_podman \
-		-e DOCKER_IMAGE_NAME="${DOCKER_IMAGE_NAME}:${_TEST_ARGS_TAG}"
-
-_bats_with_podman:
-	@echo "Test [${DOCKER_IMAGE_NAME}] Docker image with Podman ..."
-	@bats test/tests-podman.${_TEST_ARGS_VARIANT}.bats
-
-trim: # Trim [fpm,apache,nginx,cli] prd variant Docker images
-	@$(MAKE) -s _trim-fpm-prd
-	@$(MAKE) -s _trim-apache-prd
-	@$(MAKE) -s _trim-nginx-prd
-	@$(MAKE) -s _trim-cli-prd
-
-trim-dev: # Trim [fpm,apache,nginx,cli] dev variant Docker images
-	@$(MAKE) -s _trim-fpm-dev
-	@$(MAKE) -s _trim-apache-dev
-	@$(MAKE) -s _trim-nginx-dev
-	@$(MAKE) -s _trim-cli-dev
-
-trim-fpm: # Test [fpm] prd variant Docker image
-	@$(MAKE) -s _trim-fpm-prd
-
-trim-fpm-dev: # Test [fpm] dev variant Docker image
-	@$(MAKE) -s _trim-fpm-dev
-
-trim-cli: # Test [cli] prd variant Docker image
-	@$(MAKE) -s _trim-fpm-prd
-
-trim-cli-dev: # Test [cli] dev variant Docker image
-	@$(MAKE) -s _trim-fpm-dev
-
-trim-apache: # Test [apache] prd variant Docker image
-	@$(MAKE) -s _trim-apache-prd
-
-trim-apache-dev: # Test [apache] dev variant Docker image
-	@$(MAKE) -s _trim-apache-dev
-
-trim-nginx: # Test [nginx] prd variant Docker image
-	@$(MAKE) -s _trim-nginx-prd
-
-trim-nginx-dev: ## Test [nginx] dev variant Docker image
-	@$(MAKE) -s _trim-nginx-dev
-
-trim-all: # Test [fpm,apache,nginx] [prd,dev] variant Docker images
-	@$(MAKE) -s _trim-fpm-prd
-	@$(MAKE) -s _trim-apache-prd
-	@$(MAKE) -s _trim-nginx-prd
-	@$(MAKE) -s _trim-cli-prd
-	@$(MAKE) -s _trim-fpm-dev
-	@$(MAKE) -s _trim-apache-dev
-	@$(MAKE) -s _trim-nginx-dev
-	@$(MAKE) -s _trim-cli-dev
-
-_trim-fpm-%:
-	@$(MAKE) -s _squash \
-		-e _TEST_ARGS_TAG="${PHP_VERSION}-fpm-$*"
-
-_trim-cli-%:
-	@$(MAKE) -s _squash \
-		-e _TEST_ARGS_TAG="${PHP_VERSION}-cli-$*"
-
-_trim-apache-%:
-	@$(MAKE) -s _squash \
-		-e _TEST_ARGS_TAG="${PHP_VERSION}-apache-$*"
-
-_trim-nginx-%:
-	@$(MAKE) -s _squash \
-		-e _TEST_ARGS_TAG="${PHP_VERSION}-nginx-$*"
-
-_squash:
-	@echo "Trim [${DOCKER_IMAGE_NAME}:${_TEST_ARGS_TAG}] Docker image ..."
-	@docker-squash --message "Build and Squashed locally with docker-squash" \
-		--tag ${DOCKER_IMAGE_NAME}:${_TEST_ARGS_TAG} \
-		--output-path squashed.tar \
-		${DOCKER_IMAGE_NAME}:${_TEST_ARGS_TAG}
-	@cat squashed.tar | docker load
-	@rm squashed.tar
 
 cmd-exists-%:
 	@hash $(*) > /dev/null 2>&1 || \
@@ -379,4 +193,4 @@ Dockerfile: # generate Dockerfile
 	@$(MAKE) -s _dockerfile
 
 _dockerfile: $(LIB)/*.m4
-	m4 -I $(LIB) $(LIB)/$(DOCKERFILE) > $(DOCKERFILE:.in=)
+	sed -e 's/# include(\(.*\))/include(\1)/g' $(LIB)/$(DOCKERFILE) | m4 -I $(LIB) > $(DOCKERFILE:.in=)
