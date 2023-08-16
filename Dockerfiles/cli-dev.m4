@@ -4,7 +4,7 @@ ARG PHP_EXT_XDEBUG_VERSION_ARG
 LABEL be.fgov.elasticms.base.environment="dev" \
       be.fgov.elasticms.base.composer-version="${COMPOSER_VERSION_ARG:-2.5.8}"
 
-ENV PHP_EXT_XDEBUG_VERSION=${PHP_EXT_XDEBUG_VERSION_ARG:-3.2.0}
+ENV PHP_EXT_XDEBUG_VERSION=${PHP_EXT_XDEBUG_VERSION_ARG:-3.2.2}
 
 USER root
 
