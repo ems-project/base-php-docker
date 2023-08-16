@@ -3,7 +3,7 @@ ARG VERSION_ARG
 ARG NODE_VERSION_ARG
 ARG COMPOSER_VERSION_ARG
 
-FROM composer:${COMPOSER_VERSION_ARG:-2.5.1} AS composer
+FROM composer:${COMPOSER_VERSION_ARG:-2.5.8} AS composer
 FROM node:${NODE_VERSION_ARG:-18}-alpine3.18 AS node
 FROM php:${VERSION_ARG:-8.2.7}-fpm-alpine3.18 AS fpm-prd
 
