@@ -30,7 +30,7 @@ jobs:
       php-ext-xdebug-version: ${{ steps.prep.outputs.php-ext-xdebug-version }}
 
     steps:
-      - uses: actions/checkout@v3
+      - uses: actions/checkout@v4
 
       - name: Fill GitHub Environment Variables
         uses: FranzDiebold/github-env-vars-action@v2
@@ -70,7 +70,7 @@ jobs:
     runs-on: ubuntu-20.04
     needs: init
     steps:
-      - uses: actions/checkout@v3
+      - uses: actions/checkout@v4
 
       - name: Set up Docker Buildx
         id: buildx
@@ -163,7 +163,7 @@ jobs:
     runs-on: ubuntu-20.04
     needs: [init,build]
     steps:
-      - uses: actions/checkout@v3
+      - uses: actions/checkout@v4
 
       - name: Setup BATS testing framework
         uses: zebby76/setup-bats@v1
