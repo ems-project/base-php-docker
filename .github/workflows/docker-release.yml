@@ -86,7 +86,7 @@ jobs:
 
       - name: Fill "${{ needs.init.outputs.docker-image-name }}" Docker Image metadata
         id: meta
-        uses: docker/metadata-action@v4
+        uses: docker/metadata-action@v5
         with:
           github-token: ${{ secrets.GITHUB_TOKEN }}
           images: "${{ needs.init.outputs.docker-image-name }}"
