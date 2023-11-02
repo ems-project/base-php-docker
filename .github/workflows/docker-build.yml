@@ -17,7 +17,7 @@ jobs:
     runs-on: ubuntu-20.04
 
     steps:
-      - uses: actions/checkout@v3
+      - uses: actions/checkout@v4
 
       - name: Fill GitHub Environment Variables
         uses: FranzDiebold/github-env-vars-action@v2
@@ -35,7 +35,7 @@ jobs:
 
       - name: Fill "${{ steps.prep.outputs.docker-image-name }}" Docker Image metadata
         id: meta
-        uses: docker/metadata-action@v4
+        uses: docker/metadata-action@v5
         with:
           github-token: ${{ secrets.GITHUB_TOKEN }}
           images: "${{ steps.prep.outputs.docker-image-name }}"
@@ -44,7 +44,7 @@ jobs:
 
       - name: Set up Docker Buildx
         id: buildx
-        uses: docker/setup-buildx-action@v2
+        uses: docker/setup-buildx-action@v3
 
       - name: Cache Docker layers
         uses: actions/cache@v3
@@ -60,7 +60,7 @@ jobs:
 
       - name: Build "${{ steps.prep.outputs.docker-image-name }}" Docker Image
         id: build
-        uses: docker/build-push-action@v4
+        uses: docker/build-push-action@v5
         with:
           builder: ${{ steps.buildx.outputs.name }}
           context: .
