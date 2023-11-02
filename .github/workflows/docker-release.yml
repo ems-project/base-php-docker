@@ -1,6 +1,6 @@
-name: Docker Release V2
+name: Docker Release
 
-run-name: Docker Release V2 ${{ github.ref_name }} by @${{ github.actor }}
+run-name: Docker Release ${{ github.ref_name }} by @${{ github.actor }}
 
 on:
   push:
