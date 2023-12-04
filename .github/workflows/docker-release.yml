@@ -66,6 +66,9 @@ jobs:
     strategy:
       matrix:
         image-variant: [fpm-prd,apache-prd,nginx-prd,cli-prd,fpm-dev,apache-dev,nginx-dev,cli-dev]
+        platform:
+          - linux/amd64
+          - linux/arm64/v8
 
     runs-on: ubuntu-20.04
     needs: init
@@ -107,6 +110,7 @@ jobs:
           context: .
           file: Dockerfile
           target: ${{ matrix.image-variant }}
+          platforms: ${{ matrix.platform }}
           build-args: |
             VERSION_ARG=${{ needs.init.outputs.version-patch }}
             RELEASE_ARG=${{ needs.init.outputs.github-ci-run-id }}
@@ -159,6 +163,9 @@ jobs:
     strategy:
       matrix:
         image-variant: [fpm-prd,apache-prd,nginx-prd,cli-prd,fpm-dev,apache-dev,nginx-dev,cli-dev]
+        platform:
+          - linux/amd64
+          - linux/arm64/v8
 
     runs-on: ubuntu-20.04
     needs: [init,build]
@@ -224,6 +231,9 @@ jobs:
       max-parallel: 1
       matrix:
         image-variant: [fpm-dev,apache-dev,nginx-dev,cli-dev]
+        platform:
+          - linux/amd64
+          - linux/arm64/v8
 
     runs-on: ubuntu-20.04
     needs:  [init,tests]
@@ -287,6 +297,9 @@ jobs:
       max-parallel: 1
       matrix:
         image-variant: [fpm-prd,apache-prd,nginx-prd,cli-prd]
+        platform:
+          - linux/amd64
+          - linux/arm64/v8
 
     runs-on: ubuntu-20.04
     needs:  [init,tests]
@@ -393,6 +406,9 @@ jobs:
     strategy:
       matrix:
         image-variant: [fpm-prd,apache-prd,nginx-prd,cli-prd,fpm-dev,apache-dev,nginx-dev,cli-dev]
+        platform:
+          - linux/amd64
+          - linux/arm64/v8
 
     runs-on: ubuntu-20.04
     needs: [sign-prd,sign-dev]
