@@ -66,6 +66,9 @@ jobs:
     strategy:
       matrix:
         image-variant: [fpm-prd,apache-prd,nginx-prd,cli-prd,fpm-dev,apache-dev,nginx-dev,cli-dev]
+        platform:
+          - linux/amd64
+          - linux/arm64/v8
 
     runs-on: ubuntu-20.04
     needs: init
@@ -107,7 +110,7 @@ jobs:
           context: .
           file: Dockerfile
           target: ${{ matrix.image-variant }}
-          platforms: linux/amd64,linux/arm64
+          platforms: ${{ matrix.platform }}
           build-args: |
             VERSION_ARG=${{ needs.init.outputs.version-patch }}
             RELEASE_ARG=${{ needs.init.outputs.github-ci-run-id }}
