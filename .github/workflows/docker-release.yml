@@ -163,11 +163,11 @@ jobs:
     strategy:
       matrix:
         image-variant: [fpm-prd,apache-prd,nginx-prd,cli-prd,fpm-dev,apache-dev,nginx-dev,cli-dev]
-        platform:
-          - linux/amd64
-          - linux/arm64/v8
+        os:
+          - ubuntu-20.04
+          - macos-latest-large
 
-    runs-on: ubuntu-20.04
+    runs-on: ${{ matrix.os }}
     needs: [init,build]
     steps:
       - uses: actions/checkout@v4
@@ -231,11 +231,11 @@ jobs:
       max-parallel: 1
       matrix:
         image-variant: [fpm-dev,apache-dev,nginx-dev,cli-dev]
-        platform:
-          - linux/amd64
-          - linux/arm64/v8
+        os:
+          - ubuntu-20.04
+          - macos-latest-large
 
-    runs-on: ubuntu-20.04
+    runs-on: ${{ matrix.os }}
     needs:  [init,tests]
 
     steps:
@@ -297,11 +297,11 @@ jobs:
       max-parallel: 1
       matrix:
         image-variant: [fpm-prd,apache-prd,nginx-prd,cli-prd]
-        platform:
-          - linux/amd64
-          - linux/arm64/v8
+        os:
+          - ubuntu-20.04
+          - macos-latest-large
 
-    runs-on: ubuntu-20.04
+    runs-on: ${{ matrix.os }}
     needs:  [init,tests]
 
     steps:
@@ -406,11 +406,11 @@ jobs:
     strategy:
       matrix:
         image-variant: [fpm-prd,apache-prd,nginx-prd,cli-prd,fpm-dev,apache-dev,nginx-dev,cli-dev]
-        platform:
-          - linux/amd64
-          - linux/arm64/v8
+        os:
+          - ubuntu-20.04
+          - macos-latest-large
 
-    runs-on: ubuntu-20.04
+    runs-on: ${{ matrix.os }}
     needs: [sign-prd,sign-dev]
     steps:
       - uses: joutvhu/delete-artifact@v1
