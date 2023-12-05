@@ -121,7 +121,7 @@ jobs:
             PHP_EXT_XDEBUG_VERSION_ARG=${{ needs.init.outputs.php-ext-xdebug-version }}
           tags: ${{ steps.meta.outputs.tags }}
           labels: ${{ steps.meta.outputs.labels }}
-          outputs: type=docker,dest=/tmp/builded.tar
+          outputs: type=oci,dest=/tmp/builded.tar
 
       - name: Install Docker Squash
         id: install-squash
