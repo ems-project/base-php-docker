@@ -79,7 +79,7 @@ jobs:
             PHP_EXT_APCU_VERSION_ARG=${{ env.PHP_EXT_APCU_VERSION }}
             PHP_EXT_XDEBUG_VERSION_ARG=${{ env.PHP_EXT_XDEBUG_VERSION }}
           push: false
-          load: true
+          load: false
           tags: ${{ steps.meta.outputs.tags }}
           labels: ${{ steps.meta.outputs.labels }}
           outputs: type=oci,dest=/tmp/image.tar
