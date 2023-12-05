@@ -123,26 +123,26 @@ jobs:
           labels: ${{ steps.meta.outputs.labels }}
           outputs: type=oci,dest=/tmp/builded.tar
 
-#      - name: Install Docker Squash
-#        id: install-squash
-#        run: |
-#          pip install docker-squash
-#
-#      - name: Squash "${{ needs.init.outputs.docker-image-name }}:${{ needs.init.outputs.github-ci-sha-short }}-${{ matrix.image-variant }}" Docker Image
-#        id: squash
-#        run: |
-#          cat /tmp/builded.tar | docker load
-#          docker-squash --message "Build and Squashed in GitHub Action" \
-#            --tag ${{ needs.init.outputs.docker-image-name }}:${{ needs.init.outputs.github-ci-sha-short }}-${{ matrix.image-variant }} \
-#            --output-path /tmp/squashed.tar \
-#            --cleanup \
-#            ${{ needs.init.outputs.docker-image-name }}:${{ needs.init.outputs.github-ci-sha-short }}-${{ matrix.image-variant }}
-#          cat /tmp/squashed.tar | docker load
-#          tags=$(echo "${{ steps.meta.outputs.tags }}" | tr "\n" " ")
-#          for tag in $tags; do
-#            docker tag ${{ needs.init.outputs.docker-image-name }}:${{ needs.init.outputs.github-ci-sha-short }}-${{ matrix.image-variant }} $tag
-#          done
-#          docker save --output /tmp/final.tar $tags
+      - name: Install Docker Squash
+        id: install-squash
+        run: |
+          pip install docker-squash
+
+      - name: Squash "${{ needs.init.outputs.docker-image-name }}:${{ needs.init.outputs.github-ci-sha-short }}-${{ matrix.image-variant }}" Docker Image
+        id: squash
+        run: |
+          cat /tmp/builded.tar | docker load
+          docker-squash --message "Build and Squashed in GitHub Action" \
+            --tag ${{ needs.init.outputs.docker-image-name }}:${{ needs.init.outputs.github-ci-sha-short }}-${{ matrix.image-variant }} \
+            --output-path /tmp/squashed.tar \
+            --cleanup \
+            ${{ needs.init.outputs.docker-image-name }}:${{ needs.init.outputs.github-ci-sha-short }}-${{ matrix.image-variant }}
+          cat /tmp/squashed.tar | docker load
+          tags=$(echo "${{ steps.meta.outputs.tags }}" | tr "\n" " ")
+          for tag in $tags; do
+            docker tag ${{ needs.init.outputs.docker-image-name }}:${{ needs.init.outputs.github-ci-sha-short }}-${{ matrix.image-variant }} $tag
+          done
+          docker save --output /tmp/final.tar $tags
 
       - name: Check "${{ needs.init.outputs.docker-image-name }}:${{ needs.init.outputs.github-ci-sha-short }}-${{ matrix.image-variant }}" Docker Images
         run: |
@@ -153,7 +153,7 @@ jobs:
         uses: actions/upload-artifact@v3
         with:
           name: ${{ matrix.image-variant }}
-          path: /tmp/builded.tar
+          path: /tmp/final.tar
 
   tests:
 
@@ -182,7 +182,7 @@ jobs:
 
       - name: Load Docker image
         run: |
-          docker load --input /tmp/builded.tar
+          docker load --input /tmp/final.tar
           docker image ls -a
 
       - name: Scan "${{ needs.init.outputs.docker-image-name }}:${{ needs.init.outputs.github-ci-sha-short }}-${{ matrix.image-variant }}" Docker image
@@ -242,7 +242,7 @@ jobs:
 
       - name: Load Docker image
         run: |
-          docker load --input /tmp/builded.tar
+          docker load --input /tmp/final.tar
           docker image ls -a
 
       - name: Login to DockerHub
@@ -305,7 +305,7 @@ jobs:
 
       - name: Load Docker image
         run: |
-          docker load --input /tmp/builded.tar
+          docker load --input /tmp/final.tar
           docker image ls -a
 
       - name: Login to DockerHub

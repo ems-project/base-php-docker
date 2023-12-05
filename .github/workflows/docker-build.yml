@@ -1,4 +1,4 @@
-name: Docker Build (V2)
+name: Docker Build
 
 on:
   push:
