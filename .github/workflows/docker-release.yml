@@ -153,7 +153,7 @@ jobs:
         uses: actions/upload-artifact@v3
         with:
           name: ${{ matrix.image-variant }}
-          path: /tmp/final.tar
+          path: /tmp/builded.tar
 
   tests:
 
@@ -182,7 +182,7 @@ jobs:
 
       - name: Load Docker image
         run: |
-          docker load --input /tmp/final.tar
+          docker load --input /tmp/builded.tar
           docker image ls -a
 
       - name: Scan "${{ needs.init.outputs.docker-image-name }}:${{ needs.init.outputs.github-ci-sha-short }}-${{ matrix.image-variant }}" Docker image
@@ -242,7 +242,7 @@ jobs:
 
       - name: Load Docker image
         run: |
-          docker load --input /tmp/final.tar
+          docker load --input /tmp/builded.tar
           docker image ls -a
 
       - name: Login to DockerHub
@@ -305,7 +305,7 @@ jobs:
 
       - name: Load Docker image
         run: |
-          docker load --input /tmp/final.tar
+          docker load --input /tmp/builded.tar
           docker image ls -a
 
       - name: Login to DockerHub
