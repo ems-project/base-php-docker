@@ -84,20 +84,20 @@ jobs:
           labels: ${{ steps.meta.outputs.labels }}
           outputs: type=oci,dest=/tmp/image.tar
 
-      - name: Install Docker Squash
-        id: install-squash
-        run: |
-          pip install docker-squash
-
-      - name: Squash "${{ steps.prep.outputs.docker-image-name }}" Docker Images
-        id: squash
-        run: |
-          cat /tmp/image.tar | docker load
-          docker-squash --message "Build and Squashed in GitHub Action" \
-            --tag ${{ steps.prep.outputs.docker-image-name }}:rc-${{ matrix.image-variant }} \
-            --output-path /tmp/image.tar \
-            ${{ steps.prep.outputs.docker-image-name }}:rc-${{ matrix.image-variant }}
-          cat /tmp/image.tar | docker load
+#      - name: Install Docker Squash
+#        id: install-squash
+#        run: |
+#          pip install docker-squash
+#
+#      - name: Squash "${{ steps.prep.outputs.docker-image-name }}" Docker Images
+#        id: squash
+#        run: |
+#          cat /tmp/image.tar | docker load
+#          docker-squash --message "Build and Squashed in GitHub Action" \
+#            --tag ${{ steps.prep.outputs.docker-image-name }}:rc-${{ matrix.image-variant }} \
+#            --output-path /tmp/image.tar \
+#            ${{ steps.prep.outputs.docker-image-name }}:rc-${{ matrix.image-variant }}
+#          cat /tmp/image.tar | docker load
 
       - name: Check Docker Images
         run: |
