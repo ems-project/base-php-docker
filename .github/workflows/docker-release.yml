@@ -132,12 +132,12 @@ jobs:
         id: squash
         run: |
           cat /tmp/builded.tar | docker load
-          docker-squash --message "Build and Squashed in GitHub Action" \
-            --tag ${{ needs.init.outputs.docker-image-name }}:${{ needs.init.outputs.github-ci-sha-short }}-${{ matrix.image-variant }} \
-            --output-path /tmp/squashed.tar \
-            --cleanup \
-            ${{ needs.init.outputs.docker-image-name }}:${{ needs.init.outputs.github-ci-sha-short }}-${{ matrix.image-variant }}
-          cat /tmp/squashed.tar | docker load
+#          docker-squash --message "Build and Squashed in GitHub Action" \
+#            --tag ${{ needs.init.outputs.docker-image-name }}:${{ needs.init.outputs.github-ci-sha-short }}-${{ matrix.image-variant }} \
+#            --output-path /tmp/squashed.tar \
+#            --cleanup \
+#            ${{ needs.init.outputs.docker-image-name }}:${{ needs.init.outputs.github-ci-sha-short }}-${{ matrix.image-variant }}
+#          cat /tmp/squashed.tar | docker load
           tags=$(echo "${{ steps.meta.outputs.tags }}" | tr "\n" " ")
           for tag in $tags; do
             docker tag ${{ needs.init.outputs.docker-image-name }}:${{ needs.init.outputs.github-ci-sha-short }}-${{ matrix.image-variant }} $tag
