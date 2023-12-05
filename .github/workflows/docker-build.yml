@@ -13,9 +13,6 @@ jobs:
     strategy:
       matrix:
         image-variant: [fpm-prd,apache-prd,nginx-prd,cli-prd,fpm-dev,apache-dev,nginx-dev,cli-dev]
-        platform:
-          - linux/amd64
-          - linux/arm64/v8
 
     runs-on: ubuntu-20.04
 
@@ -69,7 +66,7 @@ jobs:
           context: .
           file: Dockerfile
           target: ${{ matrix.image-variant }}
-          platforms: ${{ matrix.platform }}
+          platforms: linux/amd64,linux/arm/v7,linux/arm64
           build-args: |
             VERSION_ARG=${{ env.PHP_VERSION }}
             RELEASE_ARG=${{ env.CI_RUN_ID }}
