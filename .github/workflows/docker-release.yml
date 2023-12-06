@@ -121,33 +121,8 @@ jobs:
             PHP_EXT_XDEBUG_VERSION_ARG=${{ needs.init.outputs.php-ext-xdebug-version }}
           tags: ${{ steps.meta.outputs.tags }}
           labels: ${{ steps.meta.outputs.labels }}
-          outputs: type=oci,dest=/tmp/builded.tar
-
-      - name: Install Docker Squash
-        id: install-squash
-        run: |
-          pip install docker-squash
-
-      - name: Squash "${{ needs.init.outputs.docker-image-name }}:${{ needs.init.outputs.github-ci-sha-short }}-${{ matrix.image-variant }}" Docker Image
-        id: squash
-        run: |
-          cat /tmp/builded.tar | docker load
-          tags=$(echo "${{ steps.meta.outputs.tags }}" | tr "\n" " ")
-          for tag in $tags; do
-            docker tag ${{ needs.init.outputs.docker-image-name }}:${{ needs.init.outputs.github-ci-sha-short }}-${{ matrix.image-variant }} $tag
-          done
-          docker save --output /tmp/final.tar $tags
-
-      - name: Check "${{ needs.init.outputs.docker-image-name }}:${{ needs.init.outputs.github-ci-sha-short }}-${{ matrix.image-variant }}" Docker Images
-        run: |
-          docker image inspect ${{ needs.init.outputs.docker-image-name }}:${{ needs.init.outputs.github-ci-sha-short }}-${{ matrix.image-variant }}
-          docker history ${{ needs.init.outputs.docker-image-name }}:${{ needs.init.outputs.github-ci-sha-short }}-${{ matrix.image-variant }}
-
-      - name: Upload "${{ needs.init.outputs.docker-image-name }}:${{ needs.init.outputs.github-ci-sha-short }}-${{ matrix.image-variant }}" Docker image artifact
-        uses: actions/upload-artifact@v3
-        with:
-          name: ${{ matrix.image-variant }}
-          path: /tmp/final.tar
+          squash: true
+          push: true
 
   tests:
 
