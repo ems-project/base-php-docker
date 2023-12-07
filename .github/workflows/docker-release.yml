@@ -107,7 +107,6 @@ jobs:
           context: .
           file: Dockerfile
           target: ${{ matrix.image-variant }}
-          platforms: linux/amd64,linux/arm/v7,linux/arm64
           build-args: |
             VERSION_ARG=${{ needs.init.outputs.version-patch }}
             RELEASE_ARG=${{ needs.init.outputs.github-ci-run-id }}
@@ -121,8 +120,39 @@ jobs:
             PHP_EXT_XDEBUG_VERSION_ARG=${{ needs.init.outputs.php-ext-xdebug-version }}
           tags: ${{ steps.meta.outputs.tags }}
           labels: ${{ steps.meta.outputs.labels }}
-          squash: true
-          push: true
+          outputs: type=docker,dest=/tmp/builded.tar
+
+      - name: Install Docker Squash
+        id: install-squash
+        run: |
+          pip install docker-squash
+
+      - name: Squash "${{ needs.init.outputs.docker-image-name }}:${{ needs.init.outputs.github-ci-sha-short }}-${{ matrix.image-variant }}" Docker Image
+        id: squash
+        run: |
+          cat /tmp/builded.tar | docker load
+          docker-squash --message "Build and Squashed in GitHub Action" \
+            --tag ${{ needs.init.outputs.docker-image-name }}:${{ needs.init.outputs.github-ci-sha-short }}-${{ matrix.image-variant }} \
+            --output-path /tmp/squashed.tar \
+            --cleanup \
+            ${{ needs.init.outputs.docker-image-name }}:${{ needs.init.outputs.github-ci-sha-short }}-${{ matrix.image-variant }}
+          cat /tmp/squashed.tar | docker load
+          tags=$(echo "${{ steps.meta.outputs.tags }}" | tr "\n" " ")
+          for tag in $tags; do
+            docker tag ${{ needs.init.outputs.docker-image-name }}:${{ needs.init.outputs.github-ci-sha-short }}-${{ matrix.image-variant }} $tag
+          done
+          docker save --output /tmp/final.tar $tags
+
+      - name: Check "${{ needs.init.outputs.docker-image-name }}:${{ needs.init.outputs.github-ci-sha-short }}-${{ matrix.image-variant }}" Docker Images
+        run: |
+          docker image inspect ${{ needs.init.outputs.docker-image-name }}:${{ needs.init.outputs.github-ci-sha-short }}-${{ matrix.image-variant }}
+          docker history ${{ needs.init.outputs.docker-image-name }}:${{ needs.init.outputs.github-ci-sha-short }}-${{ matrix.image-variant }}
+
+      - name: Upload "${{ needs.init.outputs.docker-image-name }}:${{ needs.init.outputs.github-ci-sha-short }}-${{ matrix.image-variant }}" Docker image artifact
+        uses: actions/upload-artifact@v3
+        with:
+          name: ${{ matrix.image-variant }}
+          path: /tmp/final.tar
 
   tests:
 
