@@ -28,7 +28,7 @@ ENV MAIL_SMTP_SERVER="" \
     AWS_CLI_VERSION=${AWS_CLI_VERSION_ARG:-1.20.58} \
     AWS_CLI_DOWNLOAD_URL="https://github.com/aws/aws-cli/archive" \
     PHP_EXT_REDIS_VERSION=${PHP_EXT_REDIS_VERSION_ARG:-6.0.2} \
-    PHP_EXT_APCU_VERSION=${PHP_EXT_APCU_VERSION_ARG:-5.1.21} \
+    PHP_EXT_APCU_VERSION=${PHP_EXT_APCU_VERSION_ARG:-5.1.23} \
     HOME=/home/default \
     PATH=/opt/bin:/usr/local/bin:/usr/bin:$PATH
 
