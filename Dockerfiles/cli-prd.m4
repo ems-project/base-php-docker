@@ -25,8 +25,7 @@ USER root
 
 ENV MAIL_SMTP_SERVER="" \
     MAIL_FROM_DOMAIN="" \
-    AWS_CLI_VERSION=${AWS_CLI_VERSION_ARG:-1.20.58} \
-    AWS_CLI_DOWNLOAD_URL="https://github.com/aws/aws-cli/archive" \
+    AWS_CLI_VERSION=${AWS_CLI_VERSION_ARG:-2.13.5} \
     PHP_EXT_REDIS_VERSION=${PHP_EXT_REDIS_VERSION_ARG:-6.0.2} \
     PHP_EXT_APCU_VERSION=${PHP_EXT_APCU_VERSION_ARG:-5.1.23} \
     HOME=/home/default \
@@ -75,6 +74,7 @@ RUN mkdir -p /home/default /opt/etc /opt/src /var/lock \
                                       bash gettext ssmtp postgresql-client postgresql-libs \
                                       libjpeg-turbo freetype libpng libwebp libxpm mailx coreutils libxslt \
                                       mysql-client jq icu-libs libxml2 python3 py3-pip groff tidyhtml \
+                                      aws-cli=~${AWS_CLI_VERSION} \
     && cp "$PHP_INI_DIR/php.ini-production" "$PHP_INI_DIR/php.ini" \
     && echo "Setup timezone ..." \
     && cp /usr/share/zoneinfo/Europe/Brussels /etc/localtime \
@@ -87,12 +87,7 @@ RUN mkdir -p /home/default /opt/etc /opt/src /var/lock \
     && echo 'opcache.max_accelerated_files=4000' >> /usr/local/etc/php/conf.d/opcache-recommended.ini \
     && echo 'opcache.revalidate_freq=2' >> /usr/local/etc/php/conf.d/opcache-recommended.ini \
     && echo 'opcache.fast_shutdown=1' >> /usr/local/etc/php/conf.d/opcache-recommended.ini \
-    && echo "Download and install aws-cli ..." \
-    && mkdir -p /tmp/aws-cli \
-    && curl -sSfLk ${AWS_CLI_DOWNLOAD_URL}/${AWS_CLI_VERSION}.tar.gz | tar -xzC /tmp/aws-cli --strip-components=1 \
-    && cd /tmp/aws-cli \
-    && python3 setup.py install \
-    && cd /opt && rm -Rf /tmp/aws-cli \
+    && cd /opt \
     && apk del .build-deps \
     && rm -rf /var/cache/apk/* \
     && echo "Setup permissions on filesystem for non-privileged user ..." \
