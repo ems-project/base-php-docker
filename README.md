@@ -43,49 +43,49 @@ Default value of Docker build arguments is grabbed from the [.build.env](.build.
 ## Example building __fpm__ variant __prd__ Docker image
 
 ```sh
-make build-fpm PHP_VERSION=8.2.12
+make build-fpm PHP_VERSION=8.3.0
 ```
 
-__Provide docker image__ : `docker.io/elasticms/base-php:8.2.12-fpm-prd`
+__Provide docker image__ : `docker.io/elasticms/base-php:8.3.0-fpm-prd`
 
 ```sh
-make build-fpm PHP_VERSION=8.2.12 DOCKER_IMAGE_NAME=docker.io/lambdauser/mybasephpimage
+make build-fpm PHP_VERSION=8.3.0 DOCKER_IMAGE_NAME=docker.io/lambdauser/mybasephpimage
 ```
 
-__Provide docker image__ : `docker.io/lambdauser/mybasephpimage:8.2.12-fpm-prd`
+__Provide docker image__ : `docker.io/lambdauser/mybasephpimage:8.3.0-fpm-prd`
 
 ## Example building __fpm__ variant __dev__ Docker image
 
 ```sh
-make build-fpm-dev PHP_VERSION=8.2.12
+make build-fpm-dev PHP_VERSION=8.3.0
 ```
 
-__Provide docker image__ : `docker.io/elasticms/base-php:8.2.12-fpm-dev`
+__Provide docker image__ : `docker.io/elasticms/base-php:8.3.0-fpm-dev`
 
 ## Example building __nginx__ variant __dev__ Docker image
 
 ```sh
-make build-nginx-dev PHP_VERSION=8.2.12
+make build-nginx-dev PHP_VERSION=8.3.0
 ```
 
-__Provide docker image__ : `docker.io/elasticms/base-php:8.2.12-nginx-dev`
+__Provide docker image__ : `docker.io/elasticms/base-php:8.3.0-nginx-dev`
 
 ## Example building __all__ variants Docker image
 
 ```sh
-make build-all PHP_VERSION=8.2.12
+make build-all PHP_VERSION=8.3.0
 ```
 
 __Provide docker images__ : 
 
-- `docker.io/elasticms/base-php:8.2.12-fpm-prd`
-- `docker.io/elasticms/base-php:8.2.12-fpm-dev`
-- `docker.io/elasticms/base-php:8.2.12-apache-prd`
-- `docker.io/elasticms/base-php:8.2.12-apache-dev`
-- `docker.io/elasticms/base-php:8.2.12-nginx-prd`
-- `docker.io/elasticms/base-php:8.2.12-nginx-dev`
-- `docker.io/elasticms/base-php:8.2.12-cli-prd`
-- `docker.io/elasticms/base-php:8.2.12-cli-dev`
+- `docker.io/elasticms/base-php:8.3.0-fpm-prd`
+- `docker.io/elasticms/base-php:8.3.0-fpm-dev`
+- `docker.io/elasticms/base-php:8.3.0-apache-prd`
+- `docker.io/elasticms/base-php:8.3.0-apache-dev`
+- `docker.io/elasticms/base-php:8.3.0-nginx-prd`
+- `docker.io/elasticms/base-php:8.3.0-nginx-dev`
+- `docker.io/elasticms/base-php:8.3.0-cli-prd`
+- `docker.io/elasticms/base-php:8.3.0-cli-dev`
 # Test
 
 ## Prerequisite
@@ -101,13 +101,13 @@ make test[-fpm|-apache|-nginx|-cli|-all][-dev] PHP_VERSION=<PHP Version you want
 ## Example testing of __prd__ builded docker image
 
 ```sh
-make test PHP_VERSION=8.2.12
+make test PHP_VERSION=8.3.0
 ```
 
 ## Example testing of __dev__ builded docker image
 
 ```sh
-make test-dev PHP_VERSION=8.2.12
+make test-dev PHP_VERSION=8.3.0
 ```
 
 # Releases
@@ -116,10 +116,10 @@ Releases are done via GitHub actions and uploaded on Docker Hub.
 
 # Supported tags and respective Dockerfile links
 
-- [`8.2.x-fpm`, `8.2-fpm`, `8.2.x-fpm-prd`, `8.2-fpm-prd`, `8.2.y-fpm-dev`, `8.2-fpm-dev`](Dockerfiles/Dockerfile.in)
-- [`8.2.x-apache`, `8.2-apache`, `8.2.x-apache-prd`, `8.2-apache-prd`, `8.2.y-apache-dev`, `8.2-apache-dev`](Dockerfiles/Dockerfile.in)
-- [`8.2.x-nginx`, `8.2-nginx`, `8.2.x-nginx-prd`, `8.2-nginx-prd`, `8.2.y-nginx-dev`, `8.2-nginx-dev`](Dockerfiles/Dockerfile.in)
-- [`8.2.x-cli`, `8.2-cli`, `8.2.x-cli-prd`, `8.2-cli-prd`, `8.2.y-cli-dev`, `8.2-cli-dev`](Dockerfiles/Dockerfile.in)
+- [`8.3.x-fpm`, `8.3-fpm`, `8.3.x-fpm-prd`, `8.3-fpm-prd`, `8.3.y-fpm-dev`, `8.3-fpm-dev`](Dockerfiles/Dockerfile.in)
+- [`8.3.x-apache`, `8.3-apache`, `8.3.x-apache-prd`, `8.3-apache-prd`, `8.3.y-apache-dev`, `8.3-apache-dev`](Dockerfiles/Dockerfile.in)
+- [`8.3.x-nginx`, `8.3-nginx`, `8.3.x-nginx-prd`, `8.3-nginx-prd`, `8.3.y-nginx-dev`, `8.3-nginx-dev`](Dockerfiles/Dockerfile.in)
+- [`8.3.x-cli`, `8.3-cli`, `8.3.x-cli-prd`, `8.3-cli-prd`, `8.3.y-cli-dev`, `8.3-cli-dev`](Dockerfiles/Dockerfile.in)
 
 # Image Variants
 
@@ -127,7 +127,7 @@ The `docker.io/elasticms/base-php` images come in many flavors, each designed fo
 
 ## `docker.io/elasticms/base-php:<version>-fpm[-prd]`  
 
-This image is based and use the official PHP Docker Hub image [`docker.io/php:8.2.x-fpm-alpine3.16`](https://hub.docker.com/_/php) as parent.  
+This image is based and use the official PHP Docker Hub image [`docker.io/php:8.3.x-fpm-alpine3.16`](https://hub.docker.com/_/php) as parent.  
 It is configured and configurable to support any PHP application.  
 It use the default php.ini-production configuration files and Supervisor to help automate the Docker image.  
 

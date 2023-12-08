@@ -7,7 +7,7 @@ ARG PHP_EXT_REDIS_VERSION_ARG
 ARG PHP_EXT_APCU_VERSION_ARG
 
 LABEL be.fgov.elasticms.base.build-date=$BUILD_DATE_ARG \
-      be.fgov.elasticms.base.name="Base PHP 8.2.x Docker Image" \
+      be.fgov.elasticms.base.name="Base PHP 8.3.x Docker Image" \
       be.fgov.elasticms.base.description="Docker base image is the basic image on which you add layers (which are basically filesystem changes) and create a final image containing your App." \
       be.fgov.elasticms.base.url="https://hub.docker.com/repository/docker/elasticms/base-php" \
       be.fgov.elasticms.base.vcs-ref=$VCS_REF_ARG \
