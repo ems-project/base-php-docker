@@ -149,7 +149,7 @@ jobs:
           docker history ${{ needs.init.outputs.docker-image-name }}:${{ needs.init.outputs.github-ci-sha-short }}-${{ matrix.image-variant }}
 
       - name: Upload "${{ needs.init.outputs.docker-image-name }}:${{ needs.init.outputs.github-ci-sha-short }}-${{ matrix.image-variant }}" Docker image artifact
-        uses: actions/upload-artifact@v3
+        uses: actions/upload-artifact@v4
         with:
           name: ${{ matrix.image-variant }}
           path: /tmp/final.tar
