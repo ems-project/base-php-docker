@@ -5,7 +5,7 @@ ARG COMPOSER_VERSION_ARG
 
 FROM composer:${COMPOSER_VERSION_ARG:-2.6.5} AS composer
 FROM node:${NODE_VERSION_ARG:-20}-alpine3.18 AS node
-FROM php:${VERSION_ARG:-8.3.0}-fpm-alpine3.18 AS fpm-prd
+FROM php:${VERSION_ARG:-8.3.1}-fpm-alpine3.18 AS fpm-prd
 
 # include(fpm-prd.m4)
 
@@ -29,7 +29,7 @@ FROM fpm-dev AS nginx-dev
 
 # include(nginx.m4)
 
-FROM php:${VERSION_ARG:-8.3.0}-cli-alpine3.18 AS cli-prd
+FROM php:${VERSION_ARG:-8.3.1}-cli-alpine3.18 AS cli-prd
 
 # include(cli-prd.m4)
 
