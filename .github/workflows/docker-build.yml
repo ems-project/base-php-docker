@@ -14,7 +14,7 @@ jobs:
       matrix:
         image-variant: [fpm-prd,apache-prd,nginx-prd,cli-prd,fpm-dev,apache-dev,nginx-dev,cli-dev]
 
-    runs-on: ubuntu-20.04
+    runs-on: ubuntu-22.04
 
     steps:
       - uses: actions/checkout@v4
@@ -23,7 +23,7 @@ jobs:
         uses: FranzDiebold/github-env-vars-action@v2
 
       - name: Fill PHP Version Environment Variable
-        uses: c-py/action-dotenv-to-setenv@v4
+        uses: c-py/action-dotenv-to-setenv@v5
         with:
           env-file: .build.env
 
