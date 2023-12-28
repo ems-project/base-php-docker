@@ -23,7 +23,7 @@ jobs:
         uses: FranzDiebold/github-env-vars-action@v2
 
       - name: Fill PHP Version Environment Variable
-        uses: c-py/action-dotenv-to-setenv@v4
+        uses: c-py/action-dotenv-to-setenv@v5
         with:
           env-file: .build.env
 
