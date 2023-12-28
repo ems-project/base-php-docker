@@ -407,7 +407,8 @@ jobs:
     runs-on: ubuntu-20.04
     needs: [sign-prd,sign-dev]
     steps:
-      - uses: joutvhu/delete-artifact@v1
+      - uses: geekyeggo/delete-artifact@v4
         with:
-          name: |
-            ${{ matrix.image-variant }}
+          token: ${{ secrets.GITHUB_TOKEN }}
+          name: ${{ matrix.image-variant }}
+          failOnError: false
