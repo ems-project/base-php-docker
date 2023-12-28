@@ -11,7 +11,7 @@ jobs:
 
   init:
 
-    runs-on: ubuntu-22.04
+    runs-on: ubuntu-20.04
 
     outputs:
       version-patch: ${{ steps.prep.outputs.version-patch }}
@@ -67,7 +67,7 @@ jobs:
       matrix:
         image-variant: [fpm-prd,apache-prd,nginx-prd,cli-prd,fpm-dev,apache-dev,nginx-dev,cli-dev]
 
-    runs-on: ubuntu-22.04
+    runs-on: ubuntu-20.04
     needs: init
     steps:
       - uses: actions/checkout@v4
@@ -160,7 +160,7 @@ jobs:
       matrix:
         image-variant: [fpm-prd,apache-prd,nginx-prd,cli-prd,fpm-dev,apache-dev,nginx-dev,cli-dev]
 
-    runs-on: ubuntu-22.04
+    runs-on: ubuntu-20.04
     needs: [init,build]
     steps:
       - uses: actions/checkout@v4
@@ -225,10 +225,15 @@ jobs:
       matrix:
         image-variant: [fpm-dev,apache-dev,nginx-dev,cli-dev]
 
-    runs-on: ubuntu-22.04
+    runs-on: ubuntu-20.04
     needs:  [init,tests]
 
     steps:
+
+      - name: Install Dependencies
+        run: |
+          sudo apt update
+          sudo apt install -y notary
 
       - name: Set up Docker Buildx
         uses: docker/setup-buildx-action@v3
@@ -288,7 +293,7 @@ jobs:
       matrix:
         image-variant: [fpm-prd,apache-prd,nginx-prd,cli-prd]
 
-    runs-on: ubuntu-22.04
+    runs-on: ubuntu-20.04
     needs:  [init,tests]
 
     steps:
@@ -394,7 +399,7 @@ jobs:
       matrix:
         image-variant: [fpm-prd,apache-prd,nginx-prd,cli-prd,fpm-dev,apache-dev,nginx-dev,cli-dev]
 
-    runs-on: ubuntu-22.04
+    runs-on: ubuntu-20.04
     needs: [sign-prd,sign-dev]
     steps:
       - uses: joutvhu/delete-artifact@v1
