@@ -127,7 +127,7 @@ The `docker.io/elasticms/base-php` images come in many flavors, each designed fo
 
 ## `docker.io/elasticms/base-php:<version>-fpm[-prd]`  
 
-This image is based and use the official PHP Docker Hub image [`docker.io/php:8.3.x-fpm-alpine3.16`](https://hub.docker.com/_/php) as parent.  
+This image is based and use the official PHP Docker Hub image [`docker.io/php:8.3.x-fpm-alpine3.19`](https://hub.docker.com/_/php) as parent.  
 It is configured and configurable to support any PHP application.  
 It use the default php.ini-production configuration files and Supervisor to help automate the Docker image.  
 
