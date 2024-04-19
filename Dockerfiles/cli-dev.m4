@@ -34,12 +34,12 @@ RUN echo "Install and Configure required extra PHP packages ..." \
     && echo "Configure Composer ..." \
     && mkdir /home/default/.composer \
     && chown 1001:0 /home/default/.composer \
-    && chmod -R ug+rw /home/default/.composer \
+    && chmod -R ugo+rw /home/default/.composer \
     && rm -rf /var/cache/apk/* \
     && echo "Setup permissions on filesystem for non-privileged user ..." \
     && chown -Rf 1001:0 /home/default \
-    && chmod -R ug+rw /home/default \
-    && find /home/default -type d -exec chmod ug+x {} \;
+    && chmod -R ugo+rw /home/default \
+    && find /home/default -type d -exec chmod ugo+x {} \;
 
 EXPOSE 9003
 
