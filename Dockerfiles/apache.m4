@@ -11,12 +11,12 @@ RUN apk add --update --no-cache --virtual .php-apache-rundeps apache2 apache2-ut
     && rm -rf /var/cache/apk/* \
     && echo "Setup permissions on filesystem for non-privileged user ..." \
     && chown -Rf 1001:0 /etc/apache2 /run/apache2 /var/run/apache2 /var/log/apache2 /var/www/html \
-    && chmod -R ug+rw /etc/apache2 /run/apache2 /var/run/apache2 /var/log/apache2 /var/www/html \
-    && find /run/apache2 -type d -exec chmod ug+x {} \; \
-    && find /etc/apache2 -type d -exec chmod ug+x {} \; \
-    && find /run/apache2 -type d -exec chmod ug+x {} \; \
-    && find /var/run/apache2 -type d -exec chmod ug+x {} \; \
-    && find /var/log/apache2 -type d -exec chmod ug+x {} \;
+    && chmod -R ugo+rw /etc/apache2 /run/apache2 /var/run/apache2 /var/log/apache2 /var/www/html \
+    && find /run/apache2 -type d -exec chmod ugo+x {} \; \
+    && find /etc/apache2 -type d -exec chmod ugo+x {} \; \
+    && find /run/apache2 -type d -exec chmod ugo+x {} \; \
+    && find /var/run/apache2 -type d -exec chmod ugo+x {} \; \
+    && find /var/log/apache2 -type d -exec chmod ugo+x {} \;
 
 USER 1001
 

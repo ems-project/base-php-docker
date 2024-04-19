@@ -99,12 +99,12 @@ RUN mkdir -p /home/default /opt/etc /opt/bin/container-entrypoint.d /opt/src /va
     && chown -Rf 1001:0 /home/default /opt /etc/ssmtp /usr/local/etc /var/run/php-fpm /var/lock \
                         /var/log/supervisord.log /etc/supervisord /var/run/supervisord.pid \
                         /etc/varnish /var/lib/varnish \
-    && chmod -R ug+rw /home/default /opt /etc/ssmtp /usr/local/etc /var/run/php-fpm /var/lock \
+    && chmod -R ugo+rw /home/default /opt /etc/ssmtp /usr/local/etc /var/run/php-fpm /var/lock \
                       /var/log/supervisord.log /etc/supervisord /var/run/supervisord.pid \
                       /etc/varnish /var/lib/varnish \
-    && find /opt -type d -exec chmod ug+x {} \; \
-    && find /var/lock -type d -exec chmod ug+x {} \; \
-    && find /usr/local/etc -type d -exec chmod ug+x {} \;
+    && find /opt -type d -exec chmod ugo+x {} \; \
+    && find /var/lock -type d -exec chmod ugo+x {} \; \
+    && find /usr/local/etc -type d -exec chmod ugo+x {} \;
 
 USER 1001
 

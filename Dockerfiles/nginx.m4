@@ -13,14 +13,14 @@ RUN apk add --update --no-cache --virtual .php-nginx-rundeps nginx \
     && echo "Setup permissions on filesystem for non-privileged user ..." \
     && chown -Rf 1001:0 /etc/nginx /var/log/nginx /var/run/nginx /var/cache/nginx \
                         /var/lib/nginx /usr/share/nginx /var/tmp/nginx \
-    && chmod -R ug+rw /etc/nginx /var/log/nginx /var/run/nginx /var/cache/nginx \
+    && chmod -R ugo+rw /etc/nginx /var/log/nginx /var/run/nginx /var/cache/nginx \
                       /var/lib/nginx /usr/share/nginx /var/tmp/nginx \
-    && find /etc/nginx -type d -exec chmod ug+x {} \; \
-    && find /var/log/nginx -type d -exec chmod ug+x {} \; \
-    && find /var/run/nginx -type d -exec chmod ug+x {} \; \
-    && find /var/lib/nginx -type d -exec chmod ug+x {} \; \
-    && find /var/tmp/nginx -type d -exec chmod ug+x {} \; \
-    && find /usr/share/nginx -type d -exec chmod ug+x {} \;
+    && find /etc/nginx -type d -exec chmod ugo+x {} \; \
+    && find /var/log/nginx -type d -exec chmod ugo+x {} \; \
+    && find /var/run/nginx -type d -exec chmod ugo+x {} \; \
+    && find /var/lib/nginx -type d -exec chmod ugo+x {} \; \
+    && find /var/tmp/nginx -type d -exec chmod ugo+x {} \; \
+    && find /usr/share/nginx -type d -exec chmod ugo+x {} \;
 
 USER 1001
 

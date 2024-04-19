@@ -41,7 +41,7 @@ RUN echo "Install and Configure required extra PHP packages ..." \
     && echo "Configure Composer ..." \
     && mkdir /home/default/.composer \
     && chown 1001:0 /home/default/.composer \
-    && chmod -R ug+rw /home/default/.composer \
+    && chmod -R ugo+rw /home/default/.composer \
     && apk del .build-deps \
     && rm -rf /var/cache/apk/*
 

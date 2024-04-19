@@ -97,9 +97,9 @@ RUN mkdir -p /home/default /opt/etc /opt/src /var/lock \
     && rm -rf /var/cache/apk/* \
     && echo "Setup permissions on filesystem for non-privileged user ..." \
     && chown -Rf 1001:0 /home/default /opt /etc/ssmtp /var/lock \
-    && chmod -R ug+rw /home/default /opt /etc/ssmtp \
-    && find /opt -type d -exec chmod ug+x {} \; \
-    && find /var/lock -type d -exec chmod ug+x {} \;
+    && chmod -R ugo+rw /home/default /opt /etc/ssmtp \
+    && find /opt -type d -exec chmod ugo+x {} \; \
+    && find /var/lock -type d -exec chmod ugo+x {} \;
 
 ENTRYPOINT ["container-entrypoint-cli"]
 
