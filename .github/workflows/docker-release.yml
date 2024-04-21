@@ -215,7 +215,7 @@ jobs:
           CONTAINER_ENGINE: docker
         run: |
           docker network create docker_default
-          docker pull curlimages/curl:8.1.2:latest
+          docker pull curlimages/curl:8.1.2
           bats -r test/tests.${{ steps.prep-test.outputs.image-flavor }}.bats
 
   sign-dev:
