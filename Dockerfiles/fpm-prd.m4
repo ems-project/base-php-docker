@@ -21,9 +21,7 @@ LABEL be.fgov.elasticms.base.build-date=$BUILD_DATE_ARG \
 
 USER root
 
-ENV MAIL_SMTP_SERVER="" \
-    MAIL_FROM_DOMAIN="" \
-    AWS_CLI_VERSION=${AWS_CLI_VERSION_ARG:-2.13.5} \
+ENV AWS_CLI_VERSION=${AWS_CLI_VERSION_ARG:-2.13.5} \
     PHP_EXT_REDIS_VERSION=${PHP_EXT_REDIS_VERSION_ARG:-6.0.2} \
     PHP_EXT_APCU_VERSION=${PHP_EXT_APCU_VERSION_ARG:-5.1.23} \
     PHP_FPM_MAX_CHILDREN=${PHP_FPM_MAX_CHILDREN:-5} \
@@ -33,13 +31,24 @@ ENV MAIL_SMTP_SERVER="" \
     PATH=/opt/bin:/usr/local/bin:/usr/bin:$PATH
 
 COPY --from=hairyhenderson/gomplate:stable /gomplate /usr/bin/gomplate
+COPY --chmod=644 --chown=root:root etc/php/conf.d/ /usr/local/etc/php/conf.d/
+COPY --chmod=664 --chown=1001:0 config/php/ /app/config/php/
+COPY --chmod=664 --chown=1001:0 config/supervisor.d/ /app/config/supervisor.d/
 
-COPY --chmod=775 --chown=1001:0 etc/php/conf.d/ /usr/local/etc/php/conf.d/
-COPY --chmod=775 --chown=1001:0 etc/php/php-fpm.d/ /opt/etc/php/php-fpm.d/
-COPY --chmod=775 --chown=1001:0 etc/ssmtp/ /opt/etc/ssmtp/
-COPY --chmod=775 --chown=1001:0 bin/ /usr/local/bin/
+COPY --chmod=775 --chown=root:root bin/ /usr/local/bin/
 
-RUN mkdir -p /home/default /opt/etc /opt/bin/container-entrypoint.d /opt/src /var/lock \
+RUN mkdir -p /home/default \
+             /app/var/lock \
+             /app/var/log \
+             /app/var/run/varnish \
+             /app/var/run/php-fpm \
+             /app/var/cache/varnish/varnishd \
+             /app/etc/php/php-fpm.d \
+             /app/etc/supervisor.d \
+             /app/bin/container-entrypoint.d \
+             /app/src \
+             /app/tmp \
+    && echo "include=/app/etc/php/php-fpm.d/*.conf" >> /usr/local/etc/php-fpm.conf \
     && chmod +x /usr/local/bin/apk-list \
                 /usr/local/bin/container-entrypoint \
                 /usr/local/bin/wait-for-it \
@@ -72,9 +81,10 @@ RUN mkdir -p /home/default /opt/etc /opt/bin/container-entrypoint.d /opt/src /va
                                       mysql-client jq icu-libs libxml2 python3 py3-pip groff supervisor \
                                       varnish tidyhtml \
                                       aws-cli=~${AWS_CLI_VERSION} \
-    && rm /etc/supervisord.conf \
-    && mkdir -p /var/run/php-fpm /etc/supervisord/supervisord.d \
-    && touch /var/log/supervisord.log /var/run/supervisord.pid /etc/varnish/secret \
+    && mv /etc/supervisord.conf /etc/supervisord.conf.orig \
+    && touch /app/var/log/supervisord.log \
+             /app/var/run/supervisord.pid \
+             /app/var/cache/varnish/secret \
     && cp "$PHP_INI_DIR/php.ini-production" "$PHP_INI_DIR/php.ini" \
     && echo "Setup timezone ..." \
     && cp /usr/share/zoneinfo/Europe/Brussels /etc/localtime \
@@ -91,15 +101,9 @@ RUN mkdir -p /home/default /opt/etc /opt/bin/container-entrypoint.d /opt/src /va
     && apk del .build-deps \
     && rm -rf /var/cache/apk/* \
     && echo "Setup permissions on filesystem for non-privileged user ..." \
-    && chown -Rf 1001:0 /home/default /opt /etc/ssmtp /usr/local/etc /var/run/php-fpm /var/lock \
-                        /var/log/supervisord.log /etc/supervisord /var/run/supervisord.pid \
-                        /etc/varnish /var/lib/varnish \
-    && chmod -R ugo+rw /home/default /opt /etc/ssmtp /usr/local/etc /var/run/php-fpm /var/lock \
-                      /var/log/supervisord.log /etc/supervisord /var/run/supervisord.pid \
-                      /etc/varnish /var/lib/varnish \
-    && find /opt -type d -exec chmod ugo+x {} \; \
-    && find /var/lock -type d -exec chmod ugo+x {} \; \
-    && find /usr/local/etc -type d -exec chmod ugo+x {} \;
+    && chown -Rf 1001:0 /home/default /app /var/lib/varnish \
+    && chmod -R ugo+rw /home/default /app /var/lib/varnish \
+    && find /app -type d -exec chmod ugo+x {} \;
 
 USER 1001
 
@@ -107,7 +111,7 @@ ENTRYPOINT ["container-entrypoint"]
 
 EXPOSE 6081/tcp 6082/tcp
 
-HEALTHCHECK --start-period=10s --interval=1m --timeout=5s --retries=5 \
+HEALTHCHECK --start-period=2s --interval=1m --timeout=5s --retries=5 \
         CMD bash -c '[ -S /var/run/php-fpm/php-fpm.sock ]'
 
 CMD ["php-fpm", "-F", "-R"]

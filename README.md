@@ -2,11 +2,26 @@
 
 Docker base image is the basic image on which you add layers (which are basically filesystem changes) and create a final image containing your App.  
 
+# <span style="color: red">Breaking Changes: v8.3.6</span>
+
+<span style="color: red">
+
+- remove `ssmtp` support
+- changing folder structure 
+  - `/app/bin` - PHP Application configuration / startup scripts
+  - `/app/src` - PHP Application sources
+  - `/app/config` - PHP Application configuration / templates files
+  - `/app/etc` - runtime generated config files
+  - `/app/var` - runtime files
+  - `/app/tmp` - temporary files
+
+</span>
+
 # Features
 
 Use [Official PHP Docker image](https://hub.docker.com/_/php) as parent.  
 Use [Supervisor](http://supervisord.org/) as manager for Webserver **and** PHP-FPM.  Supervisord is therefore process 1.  
-Run container as non-privileged.  
+Run read-only container in non-privileged mode. 
 Container Entrypoint hooks available.  
 
 - Installation of [Nginx](https://pkgs.alpinelinux.org/package/v3.18/main/x86_64/nginx).  

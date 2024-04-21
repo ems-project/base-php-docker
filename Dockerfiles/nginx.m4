@@ -2,31 +2,38 @@ LABEL be.fgov.elasticms.base.variant="nginx"
 
 USER root
 
-COPY --chmod=775 --chown=1001:0 etc/nginx/ /etc/nginx/
-COPY --chmod=775 --chown=1001:0 etc/supervisord.nginx/ /etc/supervisord/
-COPY --chmod=775 --chown=1001:0 src/ /usr/share/nginx/html/
+ENV NGINX_ENABLED=true
 
-RUN apk add --update --no-cache --virtual .php-nginx-rundeps nginx \
-    && mkdir -p /var/log/nginx /var/cache/nginx /var/tmp/nginx \
-                /var/run/nginx /var/lib/nginx /usr/share/nginx/cache/fcgi \
+COPY --chmod=775 --chown=root:root etc/nginx/ /etc/nginx/
+COPY --chmod=775 --chown=root:root etc/supervisord.nginx/supervisord.conf /etc/supervisord.conf
+COPY --chmod=664 --chown=1001:0 src/ /usr/share/nginx/html/
+COPY --chmod=775 --chown=1001:0 config/nginx/ /app/config/nginx/
+
+RUN mkdir -p /app/etc/nginx/sites-enabled \
+             /app/var/run/nginx \
+             /app/var/cache/nginx/fcgi \
+             /app/var/tmp/client \
+             /app/var/tmp/scgi \
+             /app/var/tmp/fastcgi \
+             /app/var/tmp/uwsgi \
+             /app/var/tmp/scgi  \
+    && apk add --update --no-cache --virtual .php-nginx-rundeps nginx \
     && rm -rf /etc/nginx/conf.d/default.conf /var/cache/apk/* \
     && echo "Setup permissions on filesystem for non-privileged user ..." \
-    && chown -Rf 1001:0 /etc/nginx /var/log/nginx /var/run/nginx /var/cache/nginx \
-                        /var/lib/nginx /usr/share/nginx /var/tmp/nginx \
-    && chmod -R ugo+rw /etc/nginx /var/log/nginx /var/run/nginx /var/cache/nginx \
-                      /var/lib/nginx /usr/share/nginx /var/tmp/nginx \
-    && find /etc/nginx -type d -exec chmod ugo+x {} \; \
-    && find /var/log/nginx -type d -exec chmod ugo+x {} \; \
-    && find /var/run/nginx -type d -exec chmod ugo+x {} \; \
-    && find /var/lib/nginx -type d -exec chmod ugo+x {} \; \
-    && find /var/tmp/nginx -type d -exec chmod ugo+x {} \; \
-    && find /usr/share/nginx -type d -exec chmod ugo+x {} \;
+    && chown -Rf 1001:0 /app/etc/nginx \
+                        /app/var/run/nginx \
+                        /app/var/cache/nginx \
+                        /app/var/tmp \
+    && chmod -R ugo+rw /app/etc/nginx \
+                       /app/var/run/nginx \
+                       /app/var/cache/nginx \
+                       /app/var/tmp
 
 USER 1001
 
 ENTRYPOINT ["container-entrypoint"]
 
-HEALTHCHECK --start-period=10s --interval=1m --timeout=5s --retries=5 \
+HEALTHCHECK --start-period=2s --interval=1m --timeout=5s --retries=5 \
         CMD curl --fail --header "Host: default.localhost" http://localhost:9000/index.php || exit 1
 
-CMD ["/usr/bin/supervisord", "-c", "/etc/supervisord/supervisord.conf"]
+CMD ["/usr/bin/supervisord", "-c", "/etc/supervisord.conf"]

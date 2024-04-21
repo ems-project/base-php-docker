@@ -36,18 +36,31 @@ services:
       - DB_NAME=${BATS_DB_NAME}
       - VARNISH_ENABLED=${BATS_VARNISH_ENABLED}
       - VARNISH_VCL_CONF_CUSTOM=${BATS_VARNISH_VCL_CONF_CUSTOM}
-    command: ["/usr/bin/supervisord","-c","/etc/supervisord/supervisord.conf"]
+    command: ["/usr/bin/supervisord","-c","/etc/supervisord.conf"]
     volumes:
-      - php_scripts:/opt/bin/container-entrypoint.d
+      - app_bin:/app/bin/container-entrypoint.d
+      - app_var:/app/var
+      - app_etc:/app/etc
+      - tmp:/tmp
       - "${PWD}/test/etc/varnish/my-vcl-test-file.vcl:${BATS_VARNISH_VCL_CONF_CUSTOM}"
     networks:
       - default
     mem_limit: 512m
+    read_only: true
 
 volumes:
-  php_scripts:
+  app_bin:
     external:
-      name: ${BATS_PHP_SCRIPTS_VOLUME_NAME}
+      name: ${BATS_APP_BIN_VOLUME_NAME}
+  app_var:
+    external:
+      name: ${BATS_APP_VAR_VOLUME_NAME}
+  app_etc:
+    external:
+      name: ${BATS_APP_ETC_VOLUME_NAME}
+  tmp:
+    external:
+      name: ${BATS_TMP_VOLUME_NAME}
 
 networks:
   default:

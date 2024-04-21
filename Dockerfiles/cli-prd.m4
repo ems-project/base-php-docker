@@ -23,9 +23,7 @@ LABEL be.fgov.elasticms.base.build-date=$BUILD_DATE_ARG \
 
 USER root
 
-ENV MAIL_SMTP_SERVER="" \
-    MAIL_FROM_DOMAIN="" \
-    AWS_CLI_VERSION=${AWS_CLI_VERSION_ARG:-2.13.5} \
+ENV AWS_CLI_VERSION=${AWS_CLI_VERSION_ARG:-2.13.5} \
     PHP_EXT_REDIS_VERSION=${PHP_EXT_REDIS_VERSION_ARG:-6.0.2} \
     PHP_EXT_APCU_VERSION=${PHP_EXT_APCU_VERSION_ARG:-5.1.23} \
     HOME=/home/default \
@@ -40,10 +38,9 @@ COPY --from=node /usr/local/include /usr/local/include
 COPY --from=node /usr/local/bin /usr/local/bin
 
 COPY --chmod=775 --chown=1001:0 etc/php/ /usr/local/etc/
-COPY --chmod=775 --chown=1001:0 etc/ssmtp/ /opt/etc/ssmtp/
 COPY --chmod=775 --chown=1001:0 bin/ /usr/local/bin/
 
-RUN mkdir -p /home/default /opt/etc /opt/src /var/lock \
+RUN mkdir -p /home/default /app \
     && chmod +x /usr/local/bin/apk-list \
                 /usr/local/bin/container-entrypoint-cli \
                 /usr/local/bin/wait-for-it \
@@ -91,10 +88,9 @@ RUN mkdir -p /home/default /opt/etc /opt/src /var/lock \
     && apk del .build-deps \
     && rm -rf /var/cache/apk/* \
     && echo "Setup permissions on filesystem for non-privileged user ..." \
-    && chown -Rf 1001:0 /home/default /opt /etc/ssmtp /var/lock \
-    && chmod -R ugo+rw /home/default /opt /etc/ssmtp \
-    && find /opt -type d -exec chmod ugo+x {} \; \
-    && find /var/lock -type d -exec chmod ugo+x {} \;
+    && chown -Rf 1001:0 /home/default /app \
+    && chmod -R ugo+rw /home/default /app \
+    && find /app -type d -exec chmod ugo+x {} \;
 
 ENTRYPOINT ["container-entrypoint-cli"]
 

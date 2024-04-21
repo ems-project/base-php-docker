@@ -19,26 +19,34 @@ export BATS_CONTAINER_HEAP_PERCENT="${BATS_CONTAINER_HEAP_PERCENT:-0.80}"
 
 export BATS_STORAGE_SERVICE_NAME="mysql"
 
-export BATS_PHP_SCRIPTS_VOLUME_NAME=${BATS_PHP_SCRIPTS_VOLUME_NAME:-php_scripts}
+export BATS_TMP_VOLUME_NAME=${BATS_TMP_VOLUME_NAME:-tmp}
+
+export BATS_APP_VAR_VOLUME_NAME=${BATS_APP_VAR_VOLUME_NAME:-app_var}
+export BATS_APP_ETC_VOLUME_NAME=${BATS_APP_ETC_VOLUME_NAME:-app_etc}
+export BATS_APP_BIN_VOLUME_NAME=${BATS_APP_BIN_VOLUME_NAME:-app_bin}
 
 export BATS_PHP_DOCKER_IMAGE_NAME="${DOCKER_IMAGE_NAME:-docker.io/elasticms/base-php:8.3-apache}"
 
 export BATS_VARNISH_ENABLED=${BATS_VARNISH_ENABLED:-"false"}
-export BATS_VARNISH_VCL_CONF_CUSTOM=${BATS_VARNISH_VCL_CONF_CUSTOM:-"/etc/varnish/bats.vcl"}
+export BATS_VARNISH_VCL_CONF_CUSTOM=${BATS_VARNISH_VCL_CONF_CUSTOM:-"/app/etc/varnish/bats.vcl"}
 
-export BATS_UID=$(id -u)
+#export BATS_UID=$(id -u)
+export BATS_UID="9999:9999"
 
 export BATS_CONTAINER_ENGINE="${CONTAINER_ENGINE:-podman}"
 export BATS_CONTAINER_COMPOSE_ENGINE="${BATS_CONTAINER_ENGINE}-compose"
 export BATS_CONTAINER_NETWORK_NAME="${CONTAINER_NETWORK_NAME:-docker_default}"
 
 @test "[$TEST_FILE] Create Docker external volumes (local)" {
-  command ${BATS_CONTAINER_ENGINE} volume create -d local ${BATS_PHP_SCRIPTS_VOLUME_NAME}
+  command ${BATS_CONTAINER_ENGINE} volume create -d local ${BATS_TMP_VOLUME_NAME}
+  command ${BATS_CONTAINER_ENGINE} volume create -d local ${BATS_APP_VAR_VOLUME_NAME}
+  command ${BATS_CONTAINER_ENGINE} volume create -d local ${BATS_APP_ETC_VOLUME_NAME}
+  command ${BATS_CONTAINER_ENGINE} volume create -d local ${BATS_APP_BIN_VOLUME_NAME}
 }
 
 @test "[$TEST_FILE] Loading container-entrypoint.d scripts in Docker Volume" {
 
-  run provision-docker-volume "${BATS_TEST_DIRNAME%/}/bin/container-entrypoint.d/." "${BATS_PHP_SCRIPTS_VOLUME_NAME}" "/tmp"
+  run provision-docker-volume "${BATS_TEST_DIRNAME%/}/bin/container-entrypoint.d/." "${BATS_APP_BIN_VOLUME_NAME}" "/tmp"
   assert_output -l -r 'LOADING OK'
 
 }
@@ -59,8 +67,7 @@ export BATS_CONTAINER_NETWORK_NAME="${CONTAINER_NETWORK_NAME:-docker_default}"
 @test "[$TEST_FILE] Check for Apache/PHP startup messages in containers logs" {
   container_wait_for_log php 60 "INFO success: apache entered RUNNING state"
   container_wait_for_log php 60 "INFO success: php-fpm entered RUNNING state"
-  container_wait_for_log php 60 "Running PHP script when Docker container start ..."
-  container_wait_for_log php 60 "Running Shell script when Docker container start ..."
+  container_wait_for_healthy php 60
 }
 
 @test "[$TEST_FILE] Check for Index page response code 200" {
@@ -110,8 +117,9 @@ export BATS_CONTAINER_NETWORK_NAME="${CONTAINER_NETWORK_NAME:-docker_default}"
 @test "[$TEST_FILE] Re-Check for startup messages in containers logs" {
   container_wait_for_log php 60 "INFO success: apache entered RUNNING state"
   container_wait_for_log php 60 "INFO success: php-fpm entered RUNNING state"
-  container_wait_for_log php 60 "Running PHP script when Docker container start ..."
-  container_wait_for_log php 60 "Running Shell script when Docker container start ..."
+  container_wait_for_log php 60 "INFO success: varnishd entered RUNNING state"
+  container_wait_for_log php 60 "INFO success: varnishncsa entered RUNNING state"
+  container_wait_for_healthy php 60
 }
 
 @test "[$TEST_FILE] Re-Check for Index page response code 200 via Varnish" {
@@ -154,6 +162,9 @@ export BATS_CONTAINER_NETWORK_NAME="${CONTAINER_NETWORK_NAME:-docker_default}"
 }
 
 @test "[$TEST_FILE] Cleanup Docker external volumes (local)" {
-  command docker volume rm ${BATS_PHP_SCRIPTS_VOLUME_NAME}
+  command docker volume rm ${BATS_TMP_VOLUME_NAME}
+  command docker volume rm ${BATS_APP_VAR_VOLUME_NAME}
+  command docker volume rm ${BATS_APP_ETC_VOLUME_NAME}
+  command docker volume rm ${BATS_APP_BIN_VOLUME_NAME}
 }
 

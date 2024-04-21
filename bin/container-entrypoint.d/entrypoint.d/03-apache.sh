@@ -1,0 +1,8 @@
+#!/usr/bin/env bash
+
+export APACHE_ENABLED=${APACHE_ENABLED:-"false"}
+
+export APACHE_SERVER_TOKENS=${APACHE_SERVER_TOKENS:-Prod}
+export APACHE_LISTEN=${APACHE_LISTEN:-9000}
+
+true

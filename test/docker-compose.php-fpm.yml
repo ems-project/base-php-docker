@@ -26,8 +26,8 @@ services:
     depends_on:
       - php
     volumes:
-      - php_sock:/var/run/php-fpm
-      - php_src:/usr/share/nginx/html
+      - app_var:/app/var
+      - app_src:/usr/share/nginx/html
       - nginx_config:/etc/nginx/conf.d
     networks:
       - default
@@ -51,23 +51,28 @@ services:
       - VARNISH_ENABLED=${BATS_VARNISH_ENABLED}
     command: ["php-fpm","-F","-R"]
     volumes:
-      - php_scripts:/opt/bin/container-entrypoint.d
-      - php_sock:/var/run/php-fpm
-      - php_src:/usr/share/nginx/html
+      - app_bin:/app/bin/container-entrypoint.d
+      - app_var:/app/var
+      - app_etc:/app/etc
+      - app_src:/usr/share/nginx/html 
     networks:
       - default
     mem_limit: 512m
+    read_only: true
 
 volumes:
-  php_scripts:
+  app_bin:
     external:
-      name: ${BATS_PHP_SCRIPTS_VOLUME_NAME}
-  php_sock:
+      name: ${BATS_APP_BIN_VOLUME_NAME}
+  app_var:
     external:
-      name: ${BATS_PHP_SOCKET_VOLUME_NAME}
-  php_src:
+      name: ${BATS_APP_VAR_VOLUME_NAME}
+  app_etc:
     external:
-      name: ${BATS_SOURCES_VOLUME_NAME}
+      name: ${BATS_APP_ETC_VOLUME_NAME}
+  app_src:
+    external:
+      name: ${BATS_APP_SRC_VOLUME_NAME}
   nginx_config:
     external:
       name: ${BATS_NGINX_CONFIG_VOLUME_NAME}
