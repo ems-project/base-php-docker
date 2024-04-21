@@ -6,12 +6,12 @@ load "helpers/dataloaders"
 load "lib/batslib"
 load "lib/output"
 
-export BATS_DB_DRIVER="${BATS_DB_DRIVER:-mysql}"
-export BATS_DB_HOST="${BATS_DB_HOST:-mysql}"
-export BATS_DB_PORT="${BATS_DB_PORT:-3306}"
-export BATS_DB_USER="${BATS_DB_USER:-example}"
-export BATS_DB_PASSWORD="${BATS_DB_PASSWORD:-example}"
-export BATS_DB_NAME="${BATS_DB_NAME:-example}"
+export BATS_MYSQL_DB_DRIVER="${BATS_MYSQL_DB_DRIVER:-mysql}"
+export BATS_MYSQL_DB_HOST="${BATS_MYSQL_DB_HOST:-mysql}"
+export BATS_MYSQL_DB_PORT="${BATS_MYSQL_DB_PORT:-3306}"
+export BATS_MYSQL_DB_USER="${BATS_MYSQL_DB_USER:-example}"
+export BATS_MYSQL_DB_PASSWORD="${BATS_MYSQL_DB_PASSWORD:-example}"
+export BATS_MYSQL_DB_NAME="${BATS_MYSQL_DB_NAME:-example}"
 
 export BATS_PHP_FPM_MAX_CHILDREN_AUTO_RESIZING="${BATS_PHP_FPM_MAX_CHILDREN_AUTO_RESIZING:-true}"
 export BATS_PHP_FPM_MAX_CHILDREN="${BATS_PHP_FPM_MAX_CHILDREN:-4}"
@@ -72,8 +72,8 @@ export BATS_CONTAINER_NETWORK_NAME="${CONTAINER_NETWORK_NAME:-docker_default}"
   command ${BATS_CONTAINER_COMPOSE_ENGINE} -f ${BATS_TEST_DIRNAME%/}/docker-compose.php-fpm.yml up -d mysql
 }
 
-@test "[$TEST_FILE] Check for MySQL startup messages in containers logs" {
-  container_wait_for_log mysql 60 "Starting MySQL"
+@test "[$TEST_FILE] Check for MySQL startup" {
+  container_wait_for_healthy mysql 60
 }
 
 @test "[$TEST_FILE] Starting LAMP stack services (nginx,php)" {

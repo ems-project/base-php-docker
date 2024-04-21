@@ -3,19 +3,19 @@ version: "3"
 services:
 
   mysql:
-    image: docker.io/mysql/mysql-server:5.7
+    image: docker.io/mysql/mysql-server:8.0
     container_name: mysql
-    ports:
-      - 3306:3306
     environment:
-      - MYSQL_ROOT_PASSWORD=${BATS_DB_PASSWORD}
-      - MYSQL_USER=${BATS_DB_USER}
-      - MYSQL_PASSWORD=${BATS_DB_PASSWORD}
-      - MYSQL_DATABASE=${BATS_DB_NAME}
+      - MYSQL_ROOT_PASSWORD=${BATS_MYSQL_ROOT_DB_PASSWORD}
+      - MYSQL_USER=${BATS_MYSQL_DB_USER}
+      - MYSQL_PASSWORD=${BATS_MYSQL_DB_PASSWORD}
+      - MYSQL_DATABASE=${BATS_MYSQL_DB_NAME}
       - DEBUG=false
     networks:
       - default
     mem_limit: 512m
+    healthcheck:
+      test: mysqladmin ping -h 127.0.0.1 -u $$MYSQL_USER --password=$$MYSQL_PASSWORD
 
   nginx:
     image: docker.io/nginx:alpine
@@ -42,12 +42,12 @@ services:
       - PHP_FPM_MAX_CHILDREN=${BATS_PHP_FPM_MAX_CHILDREN}
       - PHP_FPM_REQUEST_MAX_MEMORY_IN_MEGABYTES=${BATS_PHP_FPM_REQUEST_MAX_MEMORY_IN_MEGABYTES}
       - CONTAINER_HEAP_PERCENT=${BATS_CONTAINER_HEAP_PERCENT}
-      - DB_DRIVER=${BATS_DB_DRIVER}
-      - DB_HOST=${BATS_DB_HOST}
-      - DB_PORT=${BATS_DB_PORT}
-      - DB_USER=${BATS_DB_USER}
-      - DB_PASSWORD=${BATS_DB_PASSWORD}
-      - DB_NAME=${BATS_DB_NAME}
+      - DB_DRIVER=${BATS_MYSQL_DB_DRIVER}
+      - DB_HOST=${BATS_MYSQL_DB_HOST}
+      - DB_PORT=${BATS_MYSQL_DB_PORT}
+      - DB_USER=${BATS_MYSQL_DB_USER}
+      - DB_PASSWORD=${BATS_MYSQL_DB_PASSWORD}
+      - DB_NAME=${BATS_MYSQL_DB_NAME}
       - VARNISH_ENABLED=${BATS_VARNISH_ENABLED}
     command: ["php-fpm","-F","-R"]
     volumes:
