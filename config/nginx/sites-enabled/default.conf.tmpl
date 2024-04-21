@@ -4,7 +4,7 @@ error_log  /dev/stderr  debug;
 server {
 
     listen       9000;
-    listen       unix:/var/run/nginx/default.localhost.sock;
+    listen       unix:/app/var/run/nginx/default.localhost.sock;
     server_name  default.localhost;
 
     index index.php;
@@ -24,24 +24,26 @@ server {
         allow 127.0.0.1;
         allow all;
         deny all;
-        
+
         include fastcgi_params;
         fastcgi_param SCRIPT_FILENAME $document_root$fastcgi_script_name;
 
-        fastcgi_pass unix:/var/run/php-fpm/php-fpm.sock;
+        fastcgi_pass unix:/app/var/run/php-fpm/php-fpm.sock;
     }
 
     location ~ \.php$ {
+        access_log off;
+
         try_files $fastcgi_script_name =404;
 
         fastcgi_split_path_info ^(.+\.php)(/.+)$;
 
         fastcgi_param SCRIPT_FILENAME $document_root$fastcgi_script_name;
         fastcgi_param PATH_INFO $fastcgi_path_info;
-        
+
         include        fastcgi_params;
 
-        fastcgi_pass unix:/var/run/php-fpm/php-fpm.sock;
+        fastcgi_pass unix:/app/var/run/php-fpm/php-fpm.sock;
     }
 
 }

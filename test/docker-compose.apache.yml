@@ -3,19 +3,22 @@ version: "3"
 services:
 
   mysql:
-    image: docker.io/mysql/mysql-server:5.7
+    image: docker.io/mysql/mysql-server:8.0
     container_name: mysql
-    ports:
-      - 3306:3306
     environment:
-      - MYSQL_ROOT_PASSWORD=${BATS_DB_PASSWORD}
-      - MYSQL_USER=${BATS_DB_USER}
-      - MYSQL_PASSWORD=${BATS_DB_PASSWORD}
-      - MYSQL_DATABASE=${BATS_DB_NAME}
+      - MYSQL_ROOT_PASSWORD=${BATS_MYSQL_ROOT_DB_PASSWORD}
+      - MYSQL_USER=${BATS_MYSQL_DB_USER}
+      - MYSQL_PASSWORD=${BATS_MYSQL_DB_PASSWORD}
+      - MYSQL_DATABASE=${BATS_MYSQL_DB_NAME}
       - DEBUG=false
     networks:
       - default
     mem_limit: 512m
+    healthcheck:
+      interval: 5s
+      timeout: 5s
+      retries: 5
+      test: mysqladmin ping -h 127.0.0.1 -u $$MYSQL_USER --password=$$MYSQL_PASSWORD
 
   php:
     image: ${BATS_PHP_DOCKER_IMAGE_NAME}
@@ -28,26 +31,39 @@ services:
       - PHP_FPM_MAX_CHILDREN=${BATS_PHP_FPM_MAX_CHILDREN}
       - PHP_FPM_REQUEST_MAX_MEMORY_IN_MEGABYTES=${BATS_PHP_FPM_REQUEST_MAX_MEMORY_IN_MEGABYTES}
       - CONTAINER_HEAP_PERCENT=${BATS_CONTAINER_HEAP_PERCENT}
-      - DB_DRIVER=${BATS_DB_DRIVER}
-      - DB_HOST=${BATS_DB_HOST}
-      - DB_PORT=${BATS_DB_PORT}
-      - DB_USER=${BATS_DB_USER}
-      - DB_PASSWORD=${BATS_DB_PASSWORD}
-      - DB_NAME=${BATS_DB_NAME}
+      - DB_DRIVER=${BATS_MYSQL_DB_DRIVER}
+      - DB_HOST=${BATS_MYSQL_DB_HOST}
+      - DB_PORT=${BATS_MYSQL_DB_PORT}
+      - DB_USER=${BATS_MYSQL_DB_USER}
+      - DB_PASSWORD=${BATS_MYSQL_DB_PASSWORD}
+      - DB_NAME=${BATS_MYSQL_DB_NAME}
       - VARNISH_ENABLED=${BATS_VARNISH_ENABLED}
       - VARNISH_VCL_CONF_CUSTOM=${BATS_VARNISH_VCL_CONF_CUSTOM}
-    command: ["/usr/bin/supervisord","-c","/etc/supervisord/supervisord.conf"]
+    command: ["/usr/bin/supervisord","-c","/etc/supervisord.conf"]
     volumes:
-      - php_scripts:/opt/bin/container-entrypoint.d
+      - app_bin:/app/bin/container-entrypoint.d
+      - app_var:/app/var
+      - app_etc:/app/etc
+      - tmp:/tmp
       - "${PWD}/test/etc/varnish/my-vcl-test-file.vcl:${BATS_VARNISH_VCL_CONF_CUSTOM}"
     networks:
       - default
     mem_limit: 512m
+    read_only: true
 
 volumes:
-  php_scripts:
+  app_bin:
     external:
-      name: ${BATS_PHP_SCRIPTS_VOLUME_NAME}
+      name: ${BATS_APP_BIN_VOLUME_NAME}
+  app_var:
+    external:
+      name: ${BATS_APP_VAR_VOLUME_NAME}
+  app_etc:
+    external:
+      name: ${BATS_APP_ETC_VOLUME_NAME}
+  tmp:
+    external:
+      name: ${BATS_TMP_VOLUME_NAME}
 
 networks:
   default:

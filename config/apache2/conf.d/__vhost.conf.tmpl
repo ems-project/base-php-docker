@@ -1,5 +1,3 @@
-LoadModule rewrite_module modules/mod_rewrite.so
-
 <VirtualHost *:9000>
 
     ServerName default.localhost
@@ -15,10 +13,10 @@ LoadModule rewrite_module modules/mod_rewrite.so
     # Using SetHandler avoids issues with using ProxyPassMatch in combination
     # with mod_rewrite or mod_autoindex
     <FilesMatch \.php$>
-        SetHandler "proxy:unix:/var/run/php-fpm/php-fpm.sock|fcgi://localhost/"
+        SetHandler "proxy:unix:/app/var/run/php-fpm/php-fpm.sock|fcgi://localhost/"
     </FilesMatch>
 
-    DocumentRoot /var/www/html
+    DocumentRoot /var/www/localhost/htdocs
 
     Alias /real-time-status "/usr/local/php/php/fpm/status.html"
     <Directory /usr/local/php/php/fpm >
@@ -26,7 +24,7 @@ LoadModule rewrite_module modules/mod_rewrite.so
     </Directory>
 
     <Location /status >
-        SetHandler "proxy:unix:/var/run/php-fpm/php-fpm.sock|fcgi://localhost/"
+        SetHandler "proxy:unix:/app/var/run/php-fpm/php-fpm.sock|fcgi://localhost/"
         Require all granted
     </Location>
 
@@ -35,7 +33,7 @@ LoadModule rewrite_module modules/mod_rewrite.so
         Require all granted
     </Location>
 
-    ErrorLog /dev/stderr
-    CustomLog /dev/stdout common
+    ErrorLog {{.Env.APACHE_DEFAULT_VHOST_ERROR_LOG_TARGET}}
+    CustomLog {{.Env.APACHE_DEFAULT_VHOST_CUSTOM_LOG_TARGET}} combined
 
 </VirtualHost>
