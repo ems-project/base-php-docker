@@ -30,8 +30,7 @@ export BATS_PHP_DOCKER_IMAGE_NAME="${DOCKER_IMAGE_NAME:-docker.io/elasticms/base
 export BATS_VARNISH_ENABLED=${BATS_VARNISH_ENABLED:-"false"}
 export BATS_VARNISH_VCL_CONF_CUSTOM=${BATS_VARNISH_VCL_CONF_CUSTOM:-"/app/etc/varnish/bats.vcl"}
 
-#export BATS_UID=$(id -u)
-export BATS_UID="9999:9999"
+export BATS_UID=$(id -u)
 
 export BATS_CONTAINER_ENGINE="${CONTAINER_ENGINE:-podman}"
 export BATS_CONTAINER_COMPOSE_ENGINE="${BATS_CONTAINER_ENGINE}-compose"
