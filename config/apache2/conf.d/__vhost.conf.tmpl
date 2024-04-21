@@ -33,7 +33,7 @@
         Require all granted
     </Location>
 
-    ErrorLog /dev/stderr
-    CustomLog /dev/stdout common
+    ErrorLog {{.Env.APACHE_DEFAULT_VHOST_ERROR_LOG_TARGET}}
+    CustomLog {{.Env.APACHE_DEFAULT_VHOST_CUSTOM_LOG_TARGET}} combined
 
 </VirtualHost>

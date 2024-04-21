@@ -73,7 +73,7 @@ export BATS_CONTAINER_NETWORK_NAME="${CONTAINER_NETWORK_NAME:-docker_default}"
 }
 
 @test "[$TEST_FILE] Check for MySQL startup" {
-  container_wait_for_healthy mysql 60
+  container_wait_for_healthy mysql 30
 }
 
 @test "[$TEST_FILE] Starting LAMP stack services (nginx,php)" {

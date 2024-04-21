@@ -54,7 +54,7 @@ export BATS_CONTAINER_NETWORK_NAME="${CONTAINER_NETWORK_NAME:-docker_default}"
 }
 
 @test "[$TEST_FILE] Check for MySQL startup" {
-  container_wait_for_healthy mysql 60
+  container_wait_for_healthy mysql 30
 }
 
 @test "[$TEST_FILE] Starting Nginx/PHP stack services (nginx,php)" {
@@ -64,7 +64,7 @@ export BATS_CONTAINER_NETWORK_NAME="${CONTAINER_NETWORK_NAME:-docker_default}"
 @test "[$TEST_FILE] Check for Nginx/PHP startup messages in containers logs" {
   container_wait_for_log php 60 "INFO success: nginx entered RUNNING state"
   container_wait_for_log php 60 "INFO success: php-fpm entered RUNNING state"
-  container_wait_for_healthy php 60
+  container_wait_for_healthy php 10
 }
 
 @test "[$TEST_FILE] Check for Index page response code 200" {

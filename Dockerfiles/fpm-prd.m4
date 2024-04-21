@@ -101,8 +101,8 @@ RUN mkdir -p /home/default \
     && apk del .build-deps \
     && rm -rf /var/cache/apk/* \
     && echo "Setup permissions on filesystem for non-privileged user ..." \
-    && chown -Rf 1001:0 /home/default /app /var/lib/varnish \
-    && chmod -R ugo+rw /home/default /app /var/lib/varnish \
+    && chown -Rf 1001:0 /home/default /app \
+    && chmod -R ugo+rw /home/default /app \
     && find /app -type d -exec chmod ugo+x {} \;
 
 USER 1001
@@ -111,7 +111,7 @@ ENTRYPOINT ["container-entrypoint"]
 
 EXPOSE 6081/tcp 6082/tcp
 
-HEALTHCHECK --start-period=2s --interval=1m --timeout=5s --retries=5 \
+HEALTHCHECK --start-period=2s --interval=10s --timeout=5s --retries=5 \
         CMD bash -c '[ -S /var/run/php-fpm/php-fpm.sock ]'
 
 CMD ["php-fpm", "-F", "-R"]
