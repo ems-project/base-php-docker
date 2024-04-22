@@ -31,7 +31,7 @@ echo -e "    PHP-FPM Pool Memory Settings : "
 echo -e "      > pm.max_children=${PHP_FPM_MAX_CHILDREN}"
 echo -e "      > php_value[memory_limit]=${PHP_FPM_REQUEST_MAX_MEMORY_IN_MEGABYTES}M"
 
-OUTDIR="/app/etc/php/php-fpm.d /app/etc/supervisor.d /app/var/lock /app/var/run/php-fpm"
+OUTDIR="/app/etc/php/php-fpm.d /app/etc/supervisor.d /app/var/log /app/var/lock /app/var/run/php-fpm"
 mkdir -p $OUTDIR
 
 apply-template /app/config/php/php-fpm.d /app/etc/php/php-fpm.d
