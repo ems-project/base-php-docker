@@ -407,7 +407,7 @@ jobs:
     runs-on: ubuntu-20.04
     needs: [sign-prd,sign-dev]
     steps:
-      - uses: geekyeggo/delete-artifact@v4
+      - uses: geekyeggo/delete-artifact@v5
         with:
           token: ${{ secrets.GITHUB_TOKEN }}
           name: ${{ matrix.image-variant }}
