@@ -22,7 +22,7 @@ You must install `make`, `m4`.
 ## Generate Dockerfile
 
 ```sh
-make Dockefile
+make Dockerfile
 ```
 
 ## Build locally Docker images
