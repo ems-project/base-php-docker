@@ -10,3 +10,9 @@ pm.status_path = /status
 ping.path = /ping
 
 php_admin_value[memory_limit] = {{.Env.PHP_FPM_REQUEST_MAX_MEMORY_IN_MEGABYTES}}M
+
+php_flag[expose_php] = {{.Env.PHP_FPM_EXPOSE_PHP}}
+php_value[date.timezone] = {{.Env.PHP_FPM_DATE_TIMEZONE}}
+php_flag[display_errors] = {{.Env.PHP_FPM_DISPLAY_ERRORS}}
+php_value[upload_max_filesize] = {{.Env.PHP_FPM_UPLOAD_MAX_FILESIZE}}
+php_value[post_max_size] = {{.Env.PHP_FPM_POST_MAX_SIZE}}

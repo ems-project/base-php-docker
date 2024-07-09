@@ -31,7 +31,6 @@ ENV AWS_CLI_VERSION=${AWS_CLI_VERSION_ARG:-2.13.5} \
     PATH=/opt/bin:/usr/local/bin:/usr/bin:$PATH
 
 COPY --from=hairyhenderson/gomplate:stable /gomplate /usr/bin/gomplate
-COPY --chmod=644 --chown=root:root etc/php/conf.d/ /usr/local/etc/php/conf.d/
 COPY --chmod=664 --chown=1001:0 config/php/ /app/config/php/
 COPY --chmod=664 --chown=1001:0 config/supervisor.d/ /app/config/supervisor.d/
 

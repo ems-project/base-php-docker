@@ -211,13 +211,17 @@ You can change the amount of memory that PHP-FPM can use by changing / passing t
 These values can be overridden automatically by the startup script if a QoS memory limit is applied and detected in your container.  
 However, this value can be reduced to a percentage by the configuration of the environment variable ```CONTAINER_HEAP_PERCENT``` (default: 80 %).  
 
-
 | Name | Default Value | Description |
 |-|-|-|
 | ```PHP_FPM_MAX_CHILDREN_AUTO_RESIZING``` | ```true``` | Enable auto-resizing of PHP-FPM Pool Memory settings based on container size. |
 | ```PHP_FPM_MAX_CHILDREN``` | ```40``` | The maximum number of child processes to be created. ([doc](https://www.php.net/manual/en/install.fpm.configuration.php)) |
 | ```PHP_FPM_REQUEST_MAX_MEMORY_IN_MEGABYTES``` | ```16``` | The maximum amount of memory in MB that a script is allowed to allocate. ([doc](https://www.php.net/manual/fr/ini.core.php#ini.memory-limit)) |
 | ```CONTAINER_HEAP_PERCENT``` | ```0.80``` | Percentage of total memory allowed to use by PHP-FPM. |
+| ```PHP_FPM_EXPOSE_PHP``` | ```false``` | Exposes to the world that PHP is installed on the server. ([doc](https://www.php.net/manual/en/ini.core.php#ini.expose-php)) |
+| ```PHP_FPM_DATE_TIMEZONE``` | ```Europe/Brussels``` | The default timezone used by all date/time functions. ([doc](https://www.php.net/manual/en/datetime.configuration.php#ini.date.timezone)) |
+| ```PHP_FPM_DISPLAY_ERRORS``` | ```false``` | This determines whether errors should be printed to the screen as part of the output or if they should be hidden from the user. ([doc](https://www.php.net/manual/en/errorfunc.configuration.php#ini.display-errors)) |
+| ```PHP_FPM_UPLOAD_MAX_FILESIZE``` | ```2M``` | The maximum size of an uploaded file. ([doc](https://www.php.net/manual/en/ini.core.php#ini.upload-max-filesize)) |
+| ```PHP_FPM_POST_MAX_SIZE``` | ```8M``` | Sets max size of post data allowed. ([doc](https://www.php.net/manual/en/ini.core.php#ini.post-max-size)) |
 
 ## Varnish Configuration
 
