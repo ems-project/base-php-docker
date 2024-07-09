@@ -166,7 +166,7 @@ jobs:
       - uses: actions/checkout@v4
 
       - name: Setup BATS testing framework
-        uses: zebby76/setup-bats@v1
+        uses: zebby76/setup-bats@v2
         with:
           bats-version: 1.2.1
 
