@@ -40,7 +40,7 @@ services:
       - app_bin:/app/bin/container-entrypoint.d
       - app_var:/app/var
       - app_etc:/app/etc
-      - tmp:/tmp
+      - app_tmp:/app/tmp
     networks:
       - default
     mem_limit: 512m
@@ -56,9 +56,9 @@ volumes:
   app_etc:
     external:
       name: ${BATS_APP_ETC_VOLUME_NAME}
-  tmp:
+  app_tmp:
     external:
-      name: ${BATS_TMP_VOLUME_NAME}
+      name: ${BATS_APP_TMP_VOLUME_NAME}
 
 networks:
   default:

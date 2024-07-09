@@ -28,6 +28,7 @@ ENV AWS_CLI_VERSION=${AWS_CLI_VERSION_ARG:-2.13.5} \
     PHP_FPM_REQUEST_MAX_MEMORY_IN_MEGABYTES=${PHP_FPM_REQUEST_MAX_MEMORY_IN_MEGABYTES:-128} \
     CONTAINER_HEAP_PERCENT=${CONTAINER_HEAP_PERCENT:-0.80} \
     HOME=/home/default \
+    TMPDIR=/app/tmp \
     PATH=/opt/bin:/usr/local/bin:/usr/bin:$PATH
 
 COPY --from=hairyhenderson/gomplate:stable /gomplate /usr/bin/gomplate

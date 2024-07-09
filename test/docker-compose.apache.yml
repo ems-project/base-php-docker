@@ -42,7 +42,7 @@ services:
       - app_bin:/app/bin/container-entrypoint.d
       - app_var:/app/var
       - app_etc:/app/etc
-      - tmp:/tmp
+      - app_tmp:/app/tmp
       - "${PWD}/test/etc/varnish/my-vcl-test-file.vcl:${BATS_VARNISH_VCL_CONF_CUSTOM}"
     networks:
       - default
@@ -59,9 +59,9 @@ volumes:
   app_etc:
     external:
       name: ${BATS_APP_ETC_VOLUME_NAME}
-  tmp:
+  app_tmp:
     external:
-      name: ${BATS_TMP_VOLUME_NAME}
+      name: ${BATS_APP_TMP_VOLUME_NAME}
 
 networks:
   default:
