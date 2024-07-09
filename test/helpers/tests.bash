@@ -25,10 +25,14 @@ docker_cleanup() {
 # $2 HTTP path to query
 # $@ additional options to pass to the curl command
 function curl_container {
+  #local -r curl_image_name="docker.io/appropriate/curl:latest"
+  #local -r curl_image_name="docker.io/curlimages/curl:7.88.1"
+  local -r curl_image_name="docker.io/curlimages/curl:8.1.2"
+
   local -r container=$1
   local -r path=$2
   shift 2
-  ${BATS_CONTAINER_ENGINE} run --rm --net=${BATS_CONTAINER_NETWORK_NAME} --label bats-type="curl" appropriate/curl --silent \
+  ${BATS_CONTAINER_ENGINE} run --rm --net=${BATS_CONTAINER_NETWORK_NAME} --label bats-type="curl" ${curl_image_name} --silent \
     --connect-timeout 5 \
     --max-time 20 \
     --retry 4 --retry-delay 5 \
