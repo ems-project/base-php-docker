@@ -215,7 +215,7 @@ jobs:
           CONTAINER_ENGINE: docker
         run: |
           docker network create docker_default
-          docker pull appropriate/curl:latest
+          docker pull curlimages/curl:8.1.2
           bats -r test/tests.${{ steps.prep-test.outputs.image-flavor }}.bats
 
   sign-dev:
@@ -409,6 +409,5 @@ jobs:
     steps:
       - uses: geekyeggo/delete-artifact@v5
         with:
-          token: ${{ secrets.GITHUB_TOKEN }}
           name: ${{ matrix.image-variant }}
           failOnError: false
