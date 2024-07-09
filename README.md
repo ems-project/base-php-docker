@@ -24,9 +24,9 @@ Use [Supervisor](http://supervisord.org/) as manager for Webserver **and** PHP-F
 Run read-only container in non-privileged mode. 
 Container Entrypoint hooks available.  
 
-- Installation of [Nginx](https://pkgs.alpinelinux.org/package/v3.18/main/x86_64/nginx).  
-- Installation of [Apache 2.4](https://pkgs.alpinelinux.org/package/v3.18/main/x86_64/apache2).  
-- Installation of [Varnish](https://pkgs.alpinelinux.org/package/v3.18/main/x86_64/varnish).  
+- Installation of [Nginx](https://pkgs.alpinelinux.org/package/v3.20/main/x86_64/nginx).  
+- Installation of [Apache 2.4](https://pkgs.alpinelinux.org/package/v3.20/main/x86_64/apache2).  
+- Installation of [Varnish](https://pkgs.alpinelinux.org/package/v3.20/main/x86_64/varnish).  
 
 # Build
 
