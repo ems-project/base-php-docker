@@ -28,7 +28,7 @@ export BATS_VARNISH_ENABLED=${BATS_VARNISH_ENABLED:-"false"}
 export BATS_UID=$(id -u)
 
 export BATS_CONTAINER_ENGINE="${CONTAINER_ENGINE:-podman}"
-export BATS_CONTAINER_COMPOSE_ENGINE="${BATS_CONTAINER_ENGINE}-compose"
+export BATS_CONTAINER_COMPOSE_ENGINE="${BATS_CONTAINER_ENGINE} compose"
 export BATS_CONTAINER_NETWORK_NAME="${CONTAINER_NETWORK_NAME:-docker_default}"
 
 @test "[$TEST_FILE] Create Docker external volumes (local)" {
