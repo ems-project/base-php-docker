@@ -6,7 +6,7 @@ load "helpers/dataloaders"
 load "lib/batslib"
 load "lib/output"
 
-export BATS_PHP_VERSION="${PHP_VERSION:-8.3.6}"
+export BATS_PHP_VERSION="${PHP_VERSION:-8.3.9}"
 export BATS_AWS_CLI_VERSION="${AWS_CLI_VERSION:-2.13.5}"
 
 export BATS_PHP_DOCKER_IMAGE_NAME="${DOCKER_IMAGE_NAME:-docker.io/elasticms/base-php:8.3-cli}"
