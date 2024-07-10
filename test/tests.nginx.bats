@@ -23,6 +23,8 @@ export BATS_APP_TMP_VOLUME_NAME=${BATS_APP_TMP_VOLUME_NAME:-app_tmp}
 export BATS_APP_VAR_VOLUME_NAME=${BATS_APP_VAR_VOLUME_NAME:-app_var}
 export BATS_APP_ETC_VOLUME_NAME=${BATS_APP_ETC_VOLUME_NAME:-app_etc}
 export BATS_APP_BIN_VOLUME_NAME=${BATS_APP_BIN_VOLUME_NAME:-app_bin}
+export BATS_APP_CFG_VOLUME_NAME=${BATS_APP_CFG_VOLUME_NAME:-app_cfg}
+export BATS_APP_SRC_VOLUME_NAME=${BATS_APP_SRC_VOLUME_NAME:-app_src}
 
 export BATS_PHP_DOCKER_IMAGE_NAME="${DOCKER_IMAGE_NAME:-docker.io/elasticms/base-php:8.3-nginx}"
 
@@ -34,18 +36,30 @@ export BATS_CONTAINER_ENGINE="${CONTAINER_ENGINE:-podman}"
 export BATS_CONTAINER_COMPOSE_ENGINE="${BATS_CONTAINER_ENGINE} compose"
 export BATS_CONTAINER_NETWORK_NAME="${CONTAINER_NETWORK_NAME:-docker_default}"
 
+export BATS_PHP_VERSION="${PHP_VERSION:-8.3.9}"
+
 @test "[$TEST_FILE] Create Docker external volumes (local)" {
   command ${BATS_CONTAINER_ENGINE} volume create -d local ${BATS_APP_TMP_VOLUME_NAME}
   command ${BATS_CONTAINER_ENGINE} volume create -d local ${BATS_APP_VAR_VOLUME_NAME}
   command ${BATS_CONTAINER_ENGINE} volume create -d local ${BATS_APP_ETC_VOLUME_NAME}
   command ${BATS_CONTAINER_ENGINE} volume create -d local ${BATS_APP_BIN_VOLUME_NAME}
+  command ${BATS_CONTAINER_ENGINE} volume create -d local ${BATS_APP_CFG_VOLUME_NAME}
+  command ${BATS_CONTAINER_ENGINE} volume create -d local ${BATS_APP_SRC_VOLUME_NAME}
 }
 
 @test "[$TEST_FILE] Loading container-entrypoint.d scripts in Docker Volume" {
-
   run provision-docker-volume "${BATS_TEST_DIRNAME%/}/bin/container-entrypoint.d/." "${BATS_APP_BIN_VOLUME_NAME}" "/tmp"
   assert_output -l -r 'LOADING OK'
+}
 
+@test "[$TEST_FILE] Loading configuration files in Docker Volume" {
+  run provision-docker-volume "${BATS_TEST_DIRNAME%/}/config/nginx/sites-enabled/." "${BATS_APP_CFG_VOLUME_NAME}" "/tmp"
+  assert_output -l -r 'LOADING OK'
+}
+
+@test "[$TEST_FILE] Loading source files in Docker Volume" {
+  run provision-docker-volume "${BATS_TEST_DIRNAME%/}/src/." "${BATS_APP_SRC_VOLUME_NAME}" "/tmp"
+  assert_output -l -r 'LOADING OK'
 }
 
 @test "[$TEST_FILE] Starting MySQL service" {
@@ -66,24 +80,99 @@ export BATS_CONTAINER_NETWORK_NAME="${CONTAINER_NETWORK_NAME:-docker_default}"
   container_wait_for_healthy php 10
 }
 
-@test "[$TEST_FILE] Check for Index page response code 200" {
+@test "[$TEST_FILE] Check for (Default) Index page response code 200" {
   retry 12 5 curl_container php :9000/index.php -H "Host: default.localhost" -s -w %{http_code} -o /dev/null
   assert_output -l 0 $'200'
 }
 
-@test "[$TEST_FILE] Check for Index page response message" {
+@test "[$TEST_FILE] Check for (Default) Index page response message" {
   retry 12 5 curl_container php :9000/index.php -H "Host: default.localhost" -s 
   assert_output -l -r "Docker Base image - Default index.php page"
 }
 
-@test "[$TEST_FILE] Check for MySQL Connection CheckUp response code 200" {
+@test "[$TEST_FILE] Check for (Default) MySQL Connection CheckUp response code 200" {
   retry 12 5 curl_container php :9000/check-mysql.php -H "Host: default.localhost" -s -w %{http_code} -o /dev/null
   assert_output -l 0 $'200'
 }
 
-@test "[$TEST_FILE] Check for MySQL Connection CheckUp response message" {
+@test "[$TEST_FILE] Check for (Default) MySQL Connection CheckUp response message" {
   retry 12 5 curl_container php :9000/check-mysql.php -H "Host: default.localhost" -s 
   assert_output -l -r "Check MySQL Connection Done."
+}
+
+@test "[$TEST_FILE] Check for (App) Index page response code 200" {
+  retry 12 5 curl_container php :9000/index.php -H "Host: localhost" -s -w %{http_code} -o /dev/null
+  assert_output -l 0 $'200'
+}
+
+@test "[$TEST_FILE] Check for (App) Index page response message" {
+  retry 12 5 curl_container php :9000/index.php -H "Host: localhost" -s
+  assert_output -l -r "Application index.php page"
+}
+
+@test "[$TEST_FILE] Check for (App) PHPINFO page response code 200" {
+  retry 12 5 curl_container php :9000/phpinfo.php -H "Host: localhost" -s -w %{http_code} -o /dev/null
+  assert_output -l 0 $'200'
+}
+
+@test "[$TEST_FILE] Check for (App) PHPINFO page response message" {
+  retry 12 5 curl_container php :9000/phpinfo.php -H "Host: localhost" -s
+  assert_output -l -r "<h1 class=\"p\">PHP Version ${BATS_PHP_VERSION}</h1>"
+}
+
+@test "[$TEST_FILE] Check for (App) Custom response headers" {
+  retry 12 5 curl_container php :9000/index.php -H "Host: localhost" -s -I
+  assert_output -l -r "Test-Engine: bats"
+}
+
+@test "[$TEST_FILE] Check for Vhost Traffic Status Prometheus response code 200" {
+  retry 12 5 curl_container php :9090/metrics -H "Host: default.localhost" -s -w %{http_code} -o /dev/null
+  assert_output -l 0 $'200'
+}
+
+@test "[$TEST_FILE] Check for Vhost Traffic Status Prometheus response message" {
+  retry 12 5 curl_container php :9090/metrics -H "Host: default.localhost" -s
+  assert_output -l -r "# HELP nginx_vts_info Nginx info"
+}
+
+@test "[$TEST_FILE] Check for Vhost Traffic Status Monitor Page response code 200" {
+  retry 12 5 curl_container php :9090/vts-status -H "Host: default.localhost" -s -w %{http_code} -o /dev/null
+  assert_output -l 0 $'200'
+}
+
+@test "[$TEST_FILE] Check for Vhost Traffic Status Monitor Page response message" {
+  retry 12 5 curl_container php :9090/vts-status -H "Host: default.localhost" -s
+  assert_output -l -r "nginx vhost traffic status monitor"
+}
+
+@test "[$TEST_FILE] Check for PHP-FPM Ping response code 200" {
+  retry 12 5 curl_container php :9090/ping -H "Host: default.localhost" -s -w %{http_code} -o /dev/null
+  assert_output -l 0 $'200'
+}
+
+@test "[$TEST_FILE] Check for PHP-FPM Ping response message" {
+  retry 12 5 curl_container php :9090/ping -H "Host: default.localhost" -s
+  assert_output -l -r "pong"
+}
+
+@test "[$TEST_FILE] Check for PHP-FPM Status response code 200" {
+  retry 12 5 curl_container php :9090/status -H "Host: default.localhost" -s -w %{http_code} -o /dev/null
+  assert_output -l 0 $'200'
+}
+
+@test "[$TEST_FILE] Check for PHP-FPM Status response message" {
+  retry 12 5 curl_container php :9090/status -H "Host: default.localhost" -s
+  assert_output -l -r "max children reached"
+}
+
+@test "[$TEST_FILE] Check for Nginx Stub Status response code 200" {
+  retry 12 5 curl_container php :9090/stub-status -H "Host: default.localhost" -s -w %{http_code} -o /dev/null
+  assert_output -l 0 $'200'
+}
+
+@test "[$TEST_FILE] Check for Nginx Stub Status response message" {
+  retry 12 5 curl_container php :9090/stub-status -H "Host: default.localhost" -s
+  assert_output -l -r "server accepts handled requests"
 }
 
 @test "[$TEST_FILE] Stop all and delete test containers" {
@@ -95,5 +184,7 @@ export BATS_CONTAINER_NETWORK_NAME="${CONTAINER_NETWORK_NAME:-docker_default}"
   command docker volume rm ${BATS_APP_VAR_VOLUME_NAME}
   command docker volume rm ${BATS_APP_ETC_VOLUME_NAME}
   command docker volume rm ${BATS_APP_BIN_VOLUME_NAME}
+  command docker volume rm ${BATS_APP_CFG_VOLUME_NAME}
+  command docker volume rm ${BATS_APP_SRC_VOLUME_NAME}
 }
 

@@ -95,27 +95,27 @@ export BATS_CONTAINER_NETWORK_NAME="${CONTAINER_NETWORK_NAME:-docker_default}"
 
 }
 
-@test "[$TEST_FILE] Check for PHP Info page response code 200" {
+@test "[$TEST_FILE] Check for (App) PHP Info page response code 200" {
   retry 12 5 curl_container nginx :9000/phpinfo.php -H "Host: localhost" -s -w %{http_code} -o /dev/null
   assert_output -l 0 $'200'
 }
 
-@test "[$TEST_FILE] Check for Index page response code 200" {
+@test "[$TEST_FILE] Check for (App) Index page response code 200" {
   retry 12 5 curl_container nginx :9000/index.php -H "Host: localhost" -s -w %{http_code} -o /dev/null
   assert_output -l 0 $'200'
 }
 
-@test "[$TEST_FILE] Check for Index page response message" {
+@test "[$TEST_FILE] Check for (App) Index page response message" {
   retry 12 5 curl_container nginx :9000/index.php -H "Host: localhost" -s 
-  assert_output -l -r "Base image - Default index.php page"
+  assert_output -l -r "Application index.php page"
 }
 
-@test "[$TEST_FILE] Check for MySQL Connection CheckUp response code 200" {
+@test "[$TEST_FILE] Check for (App) MySQL Connection CheckUp response code 200" {
   retry 12 5 curl_container nginx :9000/check-mysql.php -H "Host: localhost" -s -w %{http_code} -o /dev/null
   assert_output -l 0 $'200'
 }
 
-@test "[$TEST_FILE] Check for MySQL Connection CheckUp response message" {
+@test "[$TEST_FILE] Check for (App) MySQL Connection CheckUp response message" {
   retry 12 5 curl_container nginx :9000/check-mysql.php -H "Host: localhost" -s 
   assert_output -l -r "Check MySQL Connection Done."
 }

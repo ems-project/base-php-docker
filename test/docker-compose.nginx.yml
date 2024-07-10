@@ -41,6 +41,8 @@ services:
       - app_var:/app/var
       - app_etc:/app/etc
       - app_tmp:/app/tmp
+      - app_cfg:/app/config/nginx/sites-enabled
+      - app_src:/app/src
     networks:
       - default
     mem_limit: 512m
@@ -59,6 +61,12 @@ volumes:
   app_tmp:
     external:
       name: ${BATS_APP_TMP_VOLUME_NAME}
+  app_cfg:
+    external:
+      name: ${BATS_APP_CFG_VOLUME_NAME}
+  app_src:
+    external:
+      name: ${BATS_APP_SRC_VOLUME_NAME}
 
 networks:
   default:
