@@ -185,7 +185,7 @@ jobs:
           docker image ls -a
 
       - name: Scan "${{ needs.init.outputs.docker-image-name }}:${{ needs.init.outputs.github-ci-sha-short }}-${{ matrix.image-variant }}" Docker image
-        uses: anchore/scan-action@v4
+        uses: anchore/scan-action@v5
         id: scan
         with:
           image: ${{ needs.init.outputs.docker-image-name }}:${{ needs.init.outputs.github-ci-sha-short }}-${{ matrix.image-variant }}
