@@ -36,7 +36,7 @@ export BATS_CONTAINER_ENGINE="${CONTAINER_ENGINE:-podman}"
 export BATS_CONTAINER_COMPOSE_ENGINE="${BATS_CONTAINER_ENGINE} compose"
 export BATS_CONTAINER_NETWORK_NAME="${CONTAINER_NETWORK_NAME:-docker_default}"
 
-export BATS_PHP_VERSION="${PHP_VERSION:-8.3.9}"
+export BATS_PHP_VERSION="${PHP_VERSION:-8.3.12}"
 
 @test "[$TEST_FILE] Create Docker external volumes (local)" {
   command ${BATS_CONTAINER_ENGINE} volume create -d local ${BATS_APP_TMP_VOLUME_NAME}
