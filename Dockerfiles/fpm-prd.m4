@@ -43,6 +43,7 @@ RUN mkdir -p /home/default \
              /app/var/run/varnish \
              /app/var/run/php-fpm \
              /app/var/cache/varnish/varnishd \
+             /app/etc/php/conf.d \
              /app/etc/php/php-fpm.d \
              /app/etc/supervisor.d \
              /app/bin/container-entrypoint.d \
