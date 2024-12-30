@@ -56,7 +56,7 @@ RUN mkdir -p /home/default /app \
     && docker-php-ext-configure tidy --with-tidy \
     && docker-php-ext-install -j "$(nproc)" soap bz2 fileinfo gettext intl pcntl pgsql \
                                             pdo_pgsql simplexml ldap gd ldap mysqli pdo_mysql \
-                                            zip bcmath exif tidy xsl \
+                                            zip bcmath exif tidy xsl calendar \
     && pecl install APCu-${PHP_EXT_APCU_VERSION} \
     && pecl install redis-${PHP_EXT_REDIS_VERSION} \
     && docker-php-ext-enable apcu redis opcache \
