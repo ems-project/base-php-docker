@@ -30,7 +30,7 @@ if(isset($_SERVER['DB_HOST']) && isset($_SERVER['DB_DRIVER']) && isset($_SERVER[
         }
 
         echo "\n";
-        echo "Check MySQL Connection Done.";
+        echo "Check DB Connection Done.";
 
 }
 ?>

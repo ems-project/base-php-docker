@@ -6,18 +6,19 @@ load "helpers/dataloaders"
 load "lib/batslib"
 load "lib/output"
 
-export BATS_MYSQL_DB_DRIVER="${BATS_MYSQL_DB_DRIVER:-mysql}"
-export BATS_MYSQL_DB_HOST="${BATS_MYSQL_DB_HOST:-mysql}"
-export BATS_MYSQL_DB_PORT="${BATS_MYSQL_DB_PORT:-3306}"
-export BATS_MYSQL_DB_USER="${BATS_MYSQL_DB_USER:-example}"
-export BATS_MYSQL_DB_PASSWORD="${BATS_MYSQL_DB_PASSWORD:-example}"
-export BATS_MYSQL_DB_NAME="${BATS_MYSQL_DB_NAME:-example}"
+export BATS_MARIADB_DB_DRIVER="${BATS_MARIADB_DB_DRIVER:-mysql}"
+export BATS_MARIADB_DB_HOST="${BATS_MARIADB_DB_HOST:-mariadb}"
+export BATS_MARIADB_DB_PORT="${BATS_MARIADB_DB_PORT:-3306}"
+export BATS_MARIADB_DB_USER="${BATS_MARIADB_DB_USER:-example}"
+export BATS_MARIADB_DB_PASSWORD="${BATS_MARIADB_DB_PASSWORD:-example}"
+export BATS_MARIADB_DB_NAME="${BATS_MARIADB_DB_NAME:-example}"
+export BATS_MARIADB_ROOT_DB_PASSWORD="${BATS_MARIADB_ROOT_DB_PASSWORD:-p4ssw0rd}"
 
 export BATS_PHP_FPM_MAX_CHILDREN="${BATS_PHP_FPM_MAX_CHILDREN:-4}"
 export BATS_PHP_FPM_REQUEST_MAX_MEMORY_IN_MEGABYTES="${BATS_PHP_FPM_REQUEST_MAX_MEMORY_IN_MEGABYTES:-128}"
 export BATS_CONTAINER_HEAP_PERCENT="${BATS_CONTAINER_HEAP_PERCENT:-0.80}"
 
-export BATS_STORAGE_SERVICE_NAME="mysql"
+export BATS_STORAGE_SERVICE_NAME="mariadb"
 
 export BATS_APP_TMP_VOLUME_NAME=${BATS_APP_TMP_VOLUME_NAME:-app_tmp}
 export BATS_APP_VAR_VOLUME_NAME=${BATS_APP_VAR_VOLUME_NAME:-app_var}
@@ -26,7 +27,7 @@ export BATS_APP_BIN_VOLUME_NAME=${BATS_APP_BIN_VOLUME_NAME:-app_bin}
 export BATS_APP_CFG_VOLUME_NAME=${BATS_APP_CFG_VOLUME_NAME:-app_cfg}
 export BATS_APP_SRC_VOLUME_NAME=${BATS_APP_SRC_VOLUME_NAME:-app_src}
 
-export BATS_PHP_DOCKER_IMAGE_NAME="${DOCKER_IMAGE_NAME:-docker.io/elasticms/base-php:8.3-nginx}"
+export BATS_PHP_DOCKER_IMAGE_NAME="${DOCKER_IMAGE_NAME:-docker.io/elasticms/base-php:8.4-nginx}"
 
 export BATS_VARNISH_ENABLED=${BATS_VARNISH_ENABLED:-"false"}
 
@@ -62,12 +63,12 @@ export BATS_PHP_VERSION="${PHP_VERSION:-8.3.15}"
   assert_output -l -r 'LOADING OK'
 }
 
-@test "[$TEST_FILE] Starting MySQL service" {
-  command ${BATS_CONTAINER_COMPOSE_ENGINE} -f ${BATS_TEST_DIRNAME%/}/docker-compose.nginx.yml up -d mysql
+@test "[$TEST_FILE] Starting MariaDB service" {
+  command ${BATS_CONTAINER_COMPOSE_ENGINE} -f ${BATS_TEST_DIRNAME%/}/docker-compose.nginx.yml up -d mariadb
 }
 
-@test "[$TEST_FILE] Check for MySQL startup" {
-  container_wait_for_healthy mysql 30
+@test "[$TEST_FILE] Check for MariaDB startup" {
+  container_wait_for_healthy mariadb 30
 }
 
 @test "[$TEST_FILE] Starting Nginx/PHP stack services (nginx,php)" {
@@ -90,14 +91,14 @@ export BATS_PHP_VERSION="${PHP_VERSION:-8.3.15}"
   assert_output -l -r "Docker Base image - Default index.php page"
 }
 
-@test "[$TEST_FILE] Check for (Default) MySQL Connection CheckUp response code 200" {
-  retry 12 5 curl_container php :9000/check-mysql.php -H "Host: default.localhost" -s -w %{http_code} -o /dev/null
+@test "[$TEST_FILE] Check for (App) MariaDB Connection CheckUp response code 200" {
+  retry 12 5 curl_container php :9000/check-db.php -H "Host: localhost" -s -w %{http_code} -o /dev/null
   assert_output -l 0 $'200'
 }
 
-@test "[$TEST_FILE] Check for (Default) MySQL Connection CheckUp response message" {
-  retry 12 5 curl_container php :9000/check-mysql.php -H "Host: default.localhost" -s 
-  assert_output -l -r "Check MySQL Connection Done."
+@test "[$TEST_FILE] Check for (App) MariaDB Connection CheckUp response message" {
+  retry 12 5 curl_container php :9000/check-db.php -H "Host: localhost" -s 
+  assert_output -l -r "Check DB Connection Done."
 }
 
 @test "[$TEST_FILE] Check for (App) Index page response code 200" {

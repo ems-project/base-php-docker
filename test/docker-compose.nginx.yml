@@ -1,13 +1,13 @@
 services:
 
-  mysql:
-    image: docker.io/mysql/mysql-server:8.0
-    container_name: mysql
+  mariadb:
+    image: docker.io/mariadb:11.2.2
+    container_name: mariadb
     environment:
-      - MYSQL_ROOT_PASSWORD=${BATS_MYSQL_ROOT_DB_PASSWORD}
-      - MYSQL_USER=${BATS_MYSQL_DB_USER}
-      - MYSQL_PASSWORD=${BATS_MYSQL_DB_PASSWORD}
-      - MYSQL_DATABASE=${BATS_MYSQL_DB_NAME}
+      - MARIADB_ROOT_PASSWORD=${BATS_MARIADB_ROOT_DB_PASSWORD}
+      - MARIADB_USER=${BATS_MARIADB_DB_USER}
+      - MARIADB_PASSWORD=${BATS_MARIADB_DB_PASSWORD}
+      - MARIADB_DATABASE=${BATS_MARIADB_DB_NAME}
       - DEBUG=false
     networks:
       - default
@@ -16,7 +16,7 @@ services:
       interval: 5s
       timeout: 5s
       retries: 5
-      test: mysqladmin ping -h 127.0.0.1 -u $$MYSQL_USER --password=$$MYSQL_PASSWORD
+      test: mariadb-admin ping -h 127.0.0.1 -u $$MARIADB_USER --password=$$MARIADB_PASSWORD
 
   php:
     image: ${BATS_PHP_DOCKER_IMAGE_NAME}
@@ -28,12 +28,12 @@ services:
       - PHP_FPM_MAX_CHILDREN=${BATS_PHP_FPM_MAX_CHILDREN}
       - PHP_FPM_REQUEST_MAX_MEMORY_IN_MEGABYTES=${BATS_PHP_FPM_REQUEST_MAX_MEMORY_IN_MEGABYTES}
       - CONTAINER_HEAP_PERCENT=${BATS_CONTAINER_HEAP_PERCENT}
-      - DB_DRIVER=${BATS_MYSQL_DB_DRIVER}
-      - DB_HOST=${BATS_MYSQL_DB_HOST}
-      - DB_PORT=${BATS_MYSQL_DB_PORT}
-      - DB_USER=${BATS_MYSQL_DB_USER}
-      - DB_PASSWORD=${BATS_MYSQL_DB_PASSWORD}
-      - DB_NAME=${BATS_MYSQL_DB_NAME}
+      - DB_DRIVER=${BATS_MARIADB_DB_DRIVER}
+      - DB_HOST=${BATS_MARIADB_DB_HOST}
+      - DB_PORT=${BATS_MARIADB_DB_PORT}
+      - DB_USER=${BATS_MARIADB_DB_USER}
+      - DB_PASSWORD=${BATS_MARIADB_DB_PASSWORD}
+      - DB_NAME=${BATS_MARIADB_DB_NAME}
       - VARNISH_ENABLED=${BATS_VARNISH_ENABLED}
     command: ["/usr/bin/supervisord","-c","/etc/supervisord.conf"]
     volumes:

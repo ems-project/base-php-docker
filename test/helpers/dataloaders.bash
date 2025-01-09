@@ -36,16 +36,16 @@ function configure_mysql {
   local -r _DB_PASSWORD=${8}
   local -r _DB_NAME=${9}
 
-  run ${BATS_CONTAINER_ENGINE} exec ${_container_name} sh -c "mysql -u${_DB_ROOT_USER} -p${_DB_ROOT_PASSWORD} -vvv -e \"CREATE DATABASE ${_DB_NAME};\""
+  run ${BATS_CONTAINER_ENGINE} exec ${_container_name} sh -c "mariadb -u${_DB_ROOT_USER} -p${_DB_ROOT_PASSWORD} -vvv -e \"CREATE DATABASE ${_DB_NAME};\""
   assert_output -l -r "Query OK, .* affected \(.*\)"
 
-  run ${BATS_CONTAINER_ENGINE} exec ${_container_name} sh -c "mysql -u${_DB_ROOT_USER} -p${_DB_ROOT_PASSWORD} -vvv -e \"CREATE USER '${_DB_USER}'@'%' IDENTIFIED BY '${_DB_PASSWORD}';\""
+  run ${BATS_CONTAINER_ENGINE} exec ${_container_name} sh -c "mariadb -u${_DB_ROOT_USER} -p${_DB_ROOT_PASSWORD} -vvv -e \"CREATE USER '${_DB_USER}'@'%' IDENTIFIED BY '${_DB_PASSWORD}';\""
   assert_output -l -r "Query OK, .* affected \(.*\)"
 
-  run ${BATS_CONTAINER_ENGINE} exec ${_container_name} sh -c "mysql -u${_DB_ROOT_USER} -p${_DB_ROOT_PASSWORD} -vvv -e \"GRANT ALL PRIVILEGES ON ${_DB_NAME} . * TO '${_DB_USER}'@'%';\""
+  run ${BATS_CONTAINER_ENGINE} exec ${_container_name} sh -c "mariadb -u${_DB_ROOT_USER} -p${_DB_ROOT_PASSWORD} -vvv -e \"GRANT ALL PRIVILEGES ON ${_DB_NAME} . * TO '${_DB_USER}'@'%';\""
   assert_output -l -r "Query OK, .* affected \(.*\)"
 
-  run ${BATS_CONTAINER_ENGINE} exec ${_container_name} sh -c "mysql -u${_DB_ROOT_USER} -p${_DB_ROOT_PASSWORD} -vvv -e \"FLUSH PRIVILEGES;\""
+  run ${BATS_CONTAINER_ENGINE} exec ${_container_name} sh -c "mariadb -u${_DB_ROOT_USER} -p${_DB_ROOT_PASSWORD} -vvv -e \"FLUSH PRIVILEGES;\""
   assert_output -l -r "Query OK, .* affected \(.*\)"
   
 }
