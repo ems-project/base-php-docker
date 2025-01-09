@@ -25,9 +25,7 @@ docker_cleanup() {
 # $2 HTTP path to query
 # $@ additional options to pass to the curl command
 function curl_container {
-  #local -r curl_image_name="docker.io/appropriate/curl:latest"
-  #local -r curl_image_name="docker.io/curlimages/curl:7.88.1"
-  local -r curl_image_name="docker.io/curlimages/curl:8.1.2"
+  local -r curl_image_name="docker.io/curlimages/curl:latest"
 
   local -r container=$1
   local -r path=$2
