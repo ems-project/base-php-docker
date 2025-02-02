@@ -4,17 +4,17 @@ set -eo pipefail
 export DEBUG=${DEBUG:-false}
 [[ "${DEBUG}" == "true" ]] && set -x
 
-echo -e "\nConfigure Container ..."
-
 for FILE in $(find /usr/local/bin/container-entrypoint.d/entrypoint.d -iname \*.sh | sort); do
   source ${FILE}
 done
+
+log "INFO" "+---- Configure PHP Container -----"
 
 for FILE in $(find /usr/local/bin/container-entrypoint.d/base.d -iname \*.sh | sort); do
   source ${FILE}
 done
 
-echo -e "\nContainer configured succesfully ...\n"
+log "INFO" "+---- PHP Container configured succesfully -----"
 
 set -eu
 cmd="$1"; shift

@@ -1,14 +1,14 @@
 #!/usr/bin/env bash
 
-echo -e "  Setup PHP-FPM Pool Configuration File(s) ..."
+log "INFO" "Setup PHP-FPM Pool Configuration File(s) ..."
 
 if [[ "${PHP_FPM_MAX_CHILDREN_AUTO_RESIZING}" == "true" ]]; then
 
-  echo -e "    Running in Docker Container.  This script check memory settings against QoS."
-  echo -e "    Initial settings : "
-  echo -e "      pm.max_children=${PHP_FPM_MAX_CHILDREN}"
-  echo -e "      php_value[memory_limit]=${PHP_FPM_REQUEST_MAX_MEMORY_IN_MEGABYTES}M"
-  echo -e "      Ratio=${CONTAINER_HEAP_PERCENT}"
+  log "DEBUG" "Running in Docker Container.  This script check memory settings against QoS."
+  log "DEBUG" "Initial settings : "
+  log "DEBUG" "   pm.max_children=${PHP_FPM_MAX_CHILDREN}"
+  log "DEBUG" "   php_value[memory_limit]=${PHP_FPM_REQUEST_MAX_MEMORY_IN_MEGABYTES}M"
+  log "DEBUG" "   Ratio=${CONTAINER_HEAP_PERCENT}"
 
   # calculate and set max_clients
   . /usr/local/bin/dynamic_resources
@@ -20,16 +20,16 @@ if [[ "${PHP_FPM_MAX_CHILDREN_AUTO_RESIZING}" == "true" ]]; then
     fi
   fi
 
-  echo -e "    After calculation : "
-  echo -e "      pm.max_children=${PHP_FPM_MAX_CHILDREN}"
-  echo -e "      php_value[memory_limit]=${PHP_FPM_REQUEST_MAX_MEMORY_IN_MEGABYTES}M"
-  echo -e "      Ratio=${CONTAINER_HEAP_PERCENT}"
+  log "DEBUG" "After calculation : "
+  log "DEBUG" "  pm.max_children=${PHP_FPM_MAX_CHILDREN}"
+  log "DEBUG" "  php_value[memory_limit]=${PHP_FPM_REQUEST_MAX_MEMORY_IN_MEGABYTES}M"
+  log "DEBUG" "  Ratio=${CONTAINER_HEAP_PERCENT}"
 
 fi
 
-echo -e "    PHP-FPM Pool Memory Settings : "
-echo -e "      > pm.max_children=${PHP_FPM_MAX_CHILDREN}"
-echo -e "      > php_value[memory_limit]=${PHP_FPM_REQUEST_MAX_MEMORY_IN_MEGABYTES}M"
+log "INFO" "PHP-FPM Pool Memory Settings : "
+log "INFO" "   > pm.max_children=${PHP_FPM_MAX_CHILDREN}"
+log "INFO" "   > php_value[memory_limit]=${PHP_FPM_REQUEST_MAX_MEMORY_IN_MEGABYTES}M"
 
 OUTDIR="/app/etc/php/php-fpm.d /app/etc/supervisor.d /app/var/log /app/var/lock /app/var/run/php-fpm"
 mkdir -p $OUTDIR

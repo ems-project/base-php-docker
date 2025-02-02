@@ -1,6 +1,6 @@
 #!/usr/bin/env bash
 
-echo -e "  Setup PHP INI Configuration File(s) ..."
+log "INFO" "Setup PHP INI Configuration File(s) ..."
 
 OUTDIR="/app/etc/php/conf.d"
 mkdir -p $OUTDIR

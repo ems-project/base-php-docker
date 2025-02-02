@@ -1,10 +1,10 @@
 #!/usr/bin/env bash
 
-echo "  Setup Apache Configuration File(s) ..."
+log "INFO" "Configure Apache ..."
 
 if [[ "${APACHE_ENABLED}" == "true" ]]; then
 
-  echo -e "    Configure Apache ..."
+  log "INFO" "- Setup Apache Configuration File(s) ..."
 
   OUTDIR="/app/var/cache/apache2/mod_ssl /app/etc/apache2/conf.d /app/var/run/apache2"
   mkdir -p $OUTDIR
@@ -14,7 +14,7 @@ if [[ "${APACHE_ENABLED}" == "true" ]]; then
 
 else
 
-  echo -e "    > Apache is not enabled.  No configuration must be done."
+  log "INFO" "- Apache is not enabled.  No configuration must be done."
 
 fi
 

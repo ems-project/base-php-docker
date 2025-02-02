@@ -1,10 +1,10 @@
 #!/usr/bin/env bash
 
-echo "  Setup Nginx Configuration File(s) ..."
+log "INFO" "Configure Nginx ..."
 
 if [[ "${NGINX_ENABLED}" == "true" ]]; then
 
-  echo -e "    Configure Nginx ..."
+  log "INFO" "- Setup Nginx Configuration File(s) ..."
 
   OUTDIR="/app/etc/nginx/sites-enabled /app/var/run/nginx /app/var/cache/nginx/fcgi /app/var/tmp/client /app/var/tmp/scgi /app/var/tmp/fastcgi /app/var/tmp/uwsgi /app/var/tmp/scgi"
   mkdir -p $OUTDIR
@@ -13,7 +13,7 @@ if [[ "${NGINX_ENABLED}" == "true" ]]; then
 
 else
 
-  echo -e "    > Nginx is not enabled.  No configuration must be done."
+  log "INFO" "- Nginx is not enabled.  No configuration must be done."
 
 fi
 
