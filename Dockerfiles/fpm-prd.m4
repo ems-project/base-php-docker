@@ -49,6 +49,7 @@ RUN mkdir -p /home/default \
              /app/bin/container-entrypoint.d \
              /app/src \
              /app/tmp \
+             /app/sbin \
     && echo "include=/app/etc/php/php-fpm.d/*.conf" >> /usr/local/etc/php-fpm.conf \
     && chmod +x /usr/local/bin/apk-list \
                 /usr/local/bin/container-entrypoint \
