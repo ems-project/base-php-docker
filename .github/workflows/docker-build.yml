@@ -14,10 +14,25 @@ jobs:
       matrix:
         image-variant: [fpm-prd,apache-prd,nginx-prd,cli-prd,fpm-dev,apache-dev,nginx-dev,cli-dev]
 
-    runs-on: ubuntu-22.04
+    runs-on: ubuntu-latest
 
     steps:
       - uses: actions/checkout@v4
+
+      - name: Create Dockerfile
+        run: |
+          make Dockerfile
+
+      - name: Setup Bats and bats libs
+        id: setup-bats
+        uses: bats-core/bats-action@3.0.0
+        with:
+          bats-install: true
+          bats-version: 1.10.0
+          support-install: false
+          assert-install: false
+          detik-install: false
+          file-install: false
 
       - name: Fill GitHub Environment Variables
         uses: FranzDiebold/github-env-vars-action@v2
@@ -46,18 +61,6 @@ jobs:
         id: buildx
         uses: docker/setup-buildx-action@v3
 
-      - name: Cache Docker layers
-        uses: actions/cache@v4
-        with:
-          path: /tmp/.buildx-cache
-          key: ${{ runner.os }}-buildx-${{ github.sha }}
-          restore-keys: |
-            ${{ runner.os }}-buildx-
-
-      - name: Create Dockerfile
-        run: |
-          make Dockerfile
-
       - name: Build "${{ steps.prep.outputs.docker-image-name }}" Docker Image
         id: build
         uses: docker/build-push-action@v6
@@ -82,23 +85,14 @@ jobs:
           tags: ${{ steps.meta.outputs.tags }}
           labels: ${{ steps.meta.outputs.labels }}
           outputs: type=docker,dest=/tmp/image.tar
+          cache-from: type=gha
+          cache-to: type=gha,mode=max
 
-      - name: Install Docker Squash
-        id: install-squash
+      - name: Load Docker Image
         run: |
-          pip install docker-squash
+          docker load --input /tmp/image.tar
 
-      - name: Squash "${{ steps.prep.outputs.docker-image-name }}" Docker Images
-        id: squash
-        run: |
-          cat /tmp/image.tar | docker load
-          docker-squash --message "Build and Squashed in GitHub Action" \
-            --tag ${{ steps.prep.outputs.docker-image-name }}:rc-${{ matrix.image-variant }} \
-            --output-path /tmp/image.tar \
-            ${{ steps.prep.outputs.docker-image-name }}:rc-${{ matrix.image-variant }}
-          cat /tmp/image.tar | docker load
-
-      - name: Check Docker Images
+      - name: Check Docker Image
         run: |
           docker image inspect ${{ steps.prep.outputs.docker-image-name }}:rc-${{ matrix.image-variant }}
           docker history ${{ steps.prep.outputs.docker-image-name }}:rc-${{ matrix.image-variant }}
