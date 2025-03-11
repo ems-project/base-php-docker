@@ -6,14 +6,25 @@ load "helpers/dataloaders"
 load "lib/batslib"
 load "lib/output"
 
-export BATS_PHP_VERSION="${PHP_VERSION:-8.4.3}"
-export BATS_AWS_CLI_VERSION="${AWS_CLI_VERSION:-2.22.10}"
+source ${BATS_TEST_DIRNAME%/}/.env
 
 export BATS_PHP_DOCKER_IMAGE_NAME="${DOCKER_IMAGE_NAME:-docker.io/elasticms/base-php:8.4-cli}"
 
 export BATS_CONTAINER_ENGINE="${CONTAINER_ENGINE:-podman}"
 export BATS_CONTAINER_COMPOSE_ENGINE="${BATS_CONTAINER_ENGINE} compose"
-export BATS_CONTAINER_NETWORK_NAME="${CONTAINER_NETWORK_NAME:-docker_default}"
+
+@test "[$TEST_FILE] Check '${BATS_CONTAINER_NETWORK_NAME}' Docker external Network (local)" {
+
+  run ${BATS_CONTAINER_ENGINE} network inspect ${BATS_CONTAINER_NETWORK_NAME}
+
+  if [ "$status" -ne 0 ]; then
+
+    run ${BATS_CONTAINER_ENGINE} network create ${BATS_CONTAINER_NETWORK_NAME}
+    [ "$status" -eq 0 ]
+
+  fi
+
+}
 
 @test "[$TEST_FILE] Test PHP version" {
   run ${BATS_CONTAINER_ENGINE} run --rm ${BATS_PHP_DOCKER_IMAGE_NAME} -v

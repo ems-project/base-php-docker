@@ -70,5 +70,5 @@ volumes:
 
 networks:
   default:
-    external:
-      name: docker_default
+    name: ${BATS_CONTAINER_NETWORK_NAME}
+    external: true

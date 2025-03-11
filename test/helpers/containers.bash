@@ -10,7 +10,7 @@ function container_clean {
 
 # get the ip of container $1
 function container_ip {
-  CONTAINER_INSPECT_GO_TEMPLATE_FORMAT="{{ .NetworkSettings.Networks.${BATS_CONTAINER_NETWORK_NAME}.IPAddress }}"
+  CONTAINER_INSPECT_GO_TEMPLATE_FORMAT="{{(index .NetworkSettings.Networks \"${BATS_CONTAINER_NETWORK_NAME}\").IPAddress }}"
   echo $(container_inspect "${CONTAINER_INSPECT_GO_TEMPLATE_FORMAT}" $1)
 }
 

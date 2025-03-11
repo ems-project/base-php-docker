@@ -6,31 +6,49 @@ load "helpers/dataloaders"
 load "lib/batslib"
 load "lib/output"
 
-export BATS_PHP_FPM_MAX_CHILDREN="${BATS_PHP_FPM_MAX_CHILDREN:-4}"
-export BATS_PHP_FPM_REQUEST_MAX_MEMORY_IN_MEGABYTES="${BATS_PHP_FPM_REQUEST_MAX_MEMORY_IN_MEGABYTES:-128}"
-export BATS_CONTAINER_HEAP_PERCENT="${BATS_CONTAINER_HEAP_PERCENT:-0.80}"
-
-export BATS_APP_TMP_VOLUME_NAME=${BATS_APP_TMP_VOLUME_NAME:-app_tmp}
-export BATS_APP_VAR_VOLUME_NAME=${BATS_APP_VAR_VOLUME_NAME:-app_var}
-export BATS_APP_ETC_VOLUME_NAME=${BATS_APP_ETC_VOLUME_NAME:-app_etc}
-export BATS_APP_BIN_VOLUME_NAME=${BATS_APP_BIN_VOLUME_NAME:-app_bin}
+source ${BATS_TEST_DIRNAME%/}/.env
 
 export BATS_PHP_DOCKER_IMAGE_NAME="${DOCKER_IMAGE_NAME:-docker.io/elasticms/base-php:8.4-apache}"
 
-export BATS_VARNISH_ENABLED=${BATS_VARNISH_ENABLED:-"false"}
-export BATS_VARNISH_VCL_CONF_CUSTOM=${BATS_VARNISH_VCL_CONF_CUSTOM:-"/app/etc/varnish/bats.vcl"}
-
-export BATS_UID=$(id -u)
-
 export BATS_CONTAINER_ENGINE="${CONTAINER_ENGINE:-podman}"
 export BATS_CONTAINER_COMPOSE_ENGINE="${BATS_CONTAINER_ENGINE} compose"
-export BATS_CONTAINER_NETWORK_NAME="${CONTAINER_NETWORK_NAME:-docker_default}"
 
-@test "[$TEST_FILE] Create Docker external volumes (local)" {
-  command ${BATS_CONTAINER_ENGINE} volume create -d local ${BATS_APP_TMP_VOLUME_NAME}
-  command ${BATS_CONTAINER_ENGINE} volume create -d local ${BATS_APP_VAR_VOLUME_NAME}
-  command ${BATS_CONTAINER_ENGINE} volume create -d local ${BATS_APP_ETC_VOLUME_NAME}
-  command ${BATS_CONTAINER_ENGINE} volume create -d local ${BATS_APP_BIN_VOLUME_NAME}
+@test "[$TEST_FILE] Check '${BATS_CONTAINER_NETWORK_NAME}' Docker external Network (local)" {
+
+  run ${BATS_CONTAINER_ENGINE} network inspect ${BATS_CONTAINER_NETWORK_NAME}
+
+  if [ "$status" -ne 0 ]; then
+
+    run ${BATS_CONTAINER_ENGINE} network create ${BATS_CONTAINER_NETWORK_NAME}
+    [ "$status" -eq 0 ]
+
+  fi
+
+}
+
+@test "[$TEST_FILE] Check Docker external Volumes (local)" {
+
+  BATS_CONTAINER_VOLUME_NAMES=("$BATS_APP_TMP_VOLUME_NAME")
+  BATS_CONTAINER_VOLUME_NAMES+=("$BATS_APP_VAR_VOLUME_NAME")
+  BATS_CONTAINER_VOLUME_NAMES+=("$BATS_APP_ETC_VOLUME_NAME")
+  BATS_CONTAINER_VOLUME_NAMES+=("$BATS_APP_BIN_VOLUME_NAME")
+  BATS_CONTAINER_VOLUME_NAMES+=("$BATS_APP_CFG_VOLUME_NAME")
+  BATS_CONTAINER_VOLUME_NAMES+=("$BATS_APP_SRC_VOLUME_NAME")
+  BATS_CONTAINER_VOLUME_NAMES+=("$BATS_NGINX_CONFIG_VOLUME_NAME")
+
+  for BATS_CONTAINER_VOLUME_NAME in "${BATS_CONTAINER_VOLUME_NAMES[@]}"; do
+
+    run ${BATS_CONTAINER_ENGINE} volume inspect ${BATS_CONTAINER_VOLUME_NAME}
+  
+    if [ "$status" -ne 0 ]; then
+
+      run ${BATS_CONTAINER_ENGINE} volume create ${BATS_CONTAINER_VOLUME_NAME}
+      [ "$status" -eq 0 ]
+  
+    fi
+
+  done
+
 }
 
 @test "[$TEST_FILE] Loading container-entrypoint.d scripts in Docker Volume" {
@@ -121,10 +139,18 @@ export BATS_CONTAINER_NETWORK_NAME="${CONTAINER_NETWORK_NAME:-docker_default}"
   command ${BATS_CONTAINER_COMPOSE_ENGINE} -f ${BATS_TEST_DIRNAME%/}/docker-compose.apache.yml down -v
 }
 
-@test "[$TEST_FILE] Cleanup Docker external volumes (local)" {
-  command docker volume rm ${BATS_APP_TMP_VOLUME_NAME}
-  command docker volume rm ${BATS_APP_VAR_VOLUME_NAME}
-  command docker volume rm ${BATS_APP_ETC_VOLUME_NAME}
-  command docker volume rm ${BATS_APP_BIN_VOLUME_NAME}
-}
+@test "[$TEST_FILE] Cleanup Docker external Volumes (local)" {
 
+  BATS_CONTAINER_VOLUME_NAMES=("$BATS_APP_TMP_VOLUME_NAME")
+  BATS_CONTAINER_VOLUME_NAMES+=("$BATS_APP_VAR_VOLUME_NAME")
+  BATS_CONTAINER_VOLUME_NAMES+=("$BATS_APP_ETC_VOLUME_NAME")
+  BATS_CONTAINER_VOLUME_NAMES+=("$BATS_APP_BIN_VOLUME_NAME")
+  BATS_CONTAINER_VOLUME_NAMES+=("$BATS_APP_CFG_VOLUME_NAME")
+  BATS_CONTAINER_VOLUME_NAMES+=("$BATS_APP_SRC_VOLUME_NAME")
+  BATS_CONTAINER_VOLUME_NAMES+=("$BATS_NGINX_CONFIG_VOLUME_NAME")
+
+  for BATS_CONTAINER_VOLUME_NAME in "${BATS_CONTAINER_VOLUME_NAMES[@]}"; do
+    run ${BATS_CONTAINER_ENGINE} volume rm ${BATS_CONTAINER_VOLUME_NAME}
+  done
+
+}
