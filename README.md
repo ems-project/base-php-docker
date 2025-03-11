@@ -9,11 +9,11 @@ Use [Supervisor](http://supervisord.org/) as manager for Webserver **and** PHP-F
 Run read-only container in non-privileged mode. 
 Container Entrypoint hooks available.  
 
-- Installation of [Nginx](https://pkgs.alpinelinux.org/package/v3.20/main/x86_64/nginx) , 
-                  [nginx-mod-http-headers-more](https://pkgs.alpinelinux.org/package/v3.20/main/x86_64/nginx-mod-http-headers-more) , 
-                  [nginx-mod-http-vts](https://pkgs.alpinelinux.org/package/v3.20/main/x86_64/nginx-mod-http-vts).  
-- Installation of [Apache 2.4](https://pkgs.alpinelinux.org/package/v3.20/main/x86_64/apache2).  
-- Installation of [Varnish](https://pkgs.alpinelinux.org/package/v3.20/main/x86_64/varnish).  
+- Installation of [Nginx](https://pkgs.alpinelinux.org/package/v3.21/main/x86_64/nginx) , 
+                  [nginx-mod-http-headers-more](https://pkgs.alpinelinux.org/package/v3.21/main/x86_64/nginx-mod-http-headers-more) , 
+                  [nginx-mod-http-vts](https://pkgs.alpinelinux.org/package/v3.21/main/x86_64/nginx-mod-http-vts).  
+- Installation of [Apache 2.4](https://pkgs.alpinelinux.org/package/v3.21/main/x86_64/apache2).  
+- Installation of [Varnish](https://pkgs.alpinelinux.org/package/v3.21/main/x86_64/varnish).  
 
 # Build
 
@@ -45,49 +45,49 @@ Default value of Docker build arguments is grabbed from the [.build.env](.build.
 ## Example building __fpm__ variant __prd__ Docker image
 
 ```sh
-make build-fpm PHP_VERSION=8.4.3
+make build-fpm PHP_VERSION=8.4.4
 ```
 
-__Provide docker image__ : `docker.io/elasticms/base-php:8.4.3-fpm-prd`
+__Provide docker image__ : `docker.io/elasticms/base-php:8.4.4-fpm-prd`
 
 ```sh
-make build-fpm PHP_VERSION=8.4.3 DOCKER_IMAGE_NAME=docker.io/lambdauser/mybasephpimage
+make build-fpm PHP_VERSION=8.4.4 DOCKER_IMAGE_NAME=docker.io/lambdauser/mybasephpimage
 ```
 
-__Provide docker image__ : `docker.io/lambdauser/mybasephpimage:8.4.3-fpm-prd`
+__Provide docker image__ : `docker.io/lambdauser/mybasephpimage:8.4.4-fpm-prd`
 
 ## Example building __fpm__ variant __dev__ Docker image
 
 ```sh
-make build-fpm-dev PHP_VERSION=8.4.3
+make build-fpm-dev PHP_VERSION=8.4.4
 ```
 
-__Provide docker image__ : `docker.io/elasticms/base-php:8.4.3-fpm-dev`
+__Provide docker image__ : `docker.io/elasticms/base-php:8.4.4-fpm-dev`
 
 ## Example building __nginx__ variant __dev__ Docker image
 
 ```sh
-make build-nginx-dev PHP_VERSION=8.4.3
+make build-nginx-dev PHP_VERSION=8.4.4
 ```
 
-__Provide docker image__ : `docker.io/elasticms/base-php:8.4.3-nginx-dev`
+__Provide docker image__ : `docker.io/elasticms/base-php:8.4.4-nginx-dev`
 
 ## Example building __all__ variants Docker image
 
 ```sh
-make build-all PHP_VERSION=8.4.3
+make build-all PHP_VERSION=8.4.4
 ```
 
 __Provide docker images__ : 
 
-- `docker.io/elasticms/base-php:8.4.3-fpm-prd`
-- `docker.io/elasticms/base-php:8.4.3-fpm-dev`
-- `docker.io/elasticms/base-php:8.4.3-apache-prd`
-- `docker.io/elasticms/base-php:8.4.3-apache-dev`
-- `docker.io/elasticms/base-php:8.4.3-nginx-prd`
-- `docker.io/elasticms/base-php:8.4.3-nginx-dev`
-- `docker.io/elasticms/base-php:8.4.3-cli-prd`
-- `docker.io/elasticms/base-php:8.4.3-cli-dev`
+- `docker.io/elasticms/base-php:8.4.4-fpm-prd`
+- `docker.io/elasticms/base-php:8.4.4-fpm-dev`
+- `docker.io/elasticms/base-php:8.4.4-apache-prd`
+- `docker.io/elasticms/base-php:8.4.4-apache-dev`
+- `docker.io/elasticms/base-php:8.4.4-nginx-prd`
+- `docker.io/elasticms/base-php:8.4.4-nginx-dev`
+- `docker.io/elasticms/base-php:8.4.4-cli-prd`
+- `docker.io/elasticms/base-php:8.4.4-cli-dev`
 # Test
 
 ## Prerequisite
@@ -103,13 +103,13 @@ make test[-fpm|-apache|-nginx|-cli|-all][-dev] PHP_VERSION=<PHP Version you want
 ## Example testing of __prd__ builded docker image
 
 ```sh
-make test PHP_VERSION=8.4.3
+make test PHP_VERSION=8.4.4
 ```
 
 ## Example testing of __dev__ builded docker image
 
 ```sh
-make test-dev PHP_VERSION=8.4.3
+make test-dev PHP_VERSION=8.4.4
 ```
 
 # Releases
