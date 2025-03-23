@@ -43,49 +43,49 @@ Default value of Docker build arguments is grabbed from the [.build.env](.build.
 ## Example building __fpm__ variant __prd__ Docker image
 
 ```sh
-make build-fpm PHP_VERSION=8.2.27
+make build-fpm PHP_VERSION=8.2.28
 ```
 
-__Provide docker image__ : `docker.io/elasticms/base-php:8.2.27-fpm-prd`
+__Provide docker image__ : `docker.io/elasticms/base-php:8.2.28-fpm-prd`
 
 ```sh
-make build-fpm PHP_VERSION=8.2.27 DOCKER_IMAGE_NAME=docker.io/lambdauser/mybasephpimage
+make build-fpm PHP_VERSION=8.2.28 DOCKER_IMAGE_NAME=docker.io/lambdauser/mybasephpimage
 ```
 
-__Provide docker image__ : `docker.io/lambdauser/mybasephpimage:8.2.27-fpm-prd`
+__Provide docker image__ : `docker.io/lambdauser/mybasephpimage:8.2.28-fpm-prd`
 
 ## Example building __fpm__ variant __dev__ Docker image
 
 ```sh
-make build-fpm-dev PHP_VERSION=8.2.27
+make build-fpm-dev PHP_VERSION=8.2.28
 ```
 
-__Provide docker image__ : `docker.io/elasticms/base-php:8.2.27-fpm-dev`
+__Provide docker image__ : `docker.io/elasticms/base-php:8.2.28-fpm-dev`
 
 ## Example building __nginx__ variant __dev__ Docker image
 
 ```sh
-make build-nginx-dev PHP_VERSION=8.2.27
+make build-nginx-dev PHP_VERSION=8.2.28
 ```
 
-__Provide docker image__ : `docker.io/elasticms/base-php:8.2.27-nginx-dev`
+__Provide docker image__ : `docker.io/elasticms/base-php:8.2.28-nginx-dev`
 
 ## Example building __all__ variants Docker image
 
 ```sh
-make build-all PHP_VERSION=8.2.27
+make build-all PHP_VERSION=8.2.28
 ```
 
 __Provide docker images__ : 
 
-- `docker.io/elasticms/base-php:8.2.27-fpm-prd`
-- `docker.io/elasticms/base-php:8.2.27-fpm-dev`
-- `docker.io/elasticms/base-php:8.2.27-apache-prd`
-- `docker.io/elasticms/base-php:8.2.27-apache-dev`
-- `docker.io/elasticms/base-php:8.2.27-nginx-prd`
-- `docker.io/elasticms/base-php:8.2.27-nginx-dev`
-- `docker.io/elasticms/base-php:8.2.27-cli-prd`
-- `docker.io/elasticms/base-php:8.2.27-cli-dev`
+- `docker.io/elasticms/base-php:8.2.28-fpm-prd`
+- `docker.io/elasticms/base-php:8.2.28-fpm-dev`
+- `docker.io/elasticms/base-php:8.2.28-apache-prd`
+- `docker.io/elasticms/base-php:8.2.28-apache-dev`
+- `docker.io/elasticms/base-php:8.2.28-nginx-prd`
+- `docker.io/elasticms/base-php:8.2.28-nginx-dev`
+- `docker.io/elasticms/base-php:8.2.28-cli-prd`
+- `docker.io/elasticms/base-php:8.2.28-cli-dev`
 # Test
 
 ## Prerequisite
@@ -101,13 +101,13 @@ make test[-fpm|-apache|-nginx|-cli|-all][-dev] PHP_VERSION=<PHP Version you want
 ## Example testing of __prd__ builded docker image
 
 ```sh
-make test PHP_VERSION=8.2.27
+make test PHP_VERSION=8.2.28
 ```
 
 ## Example testing of __dev__ builded docker image
 
 ```sh
-make test-dev PHP_VERSION=8.2.27
+make test-dev PHP_VERSION=8.2.28
 ```
 
 # Releases
@@ -127,7 +127,7 @@ The `docker.io/elasticms/base-php` images come in many flavors, each designed fo
 
 ## `docker.io/elasticms/base-php:<version>-fpm[-prd]`  
 
-This image is based and use the official PHP Docker Hub image [`docker.io/php:8.2.x-fpm-alpine3.19`](https://hub.docker.com/_/php) as parent.  
+This image is based and use the official PHP Docker Hub image [`docker.io/php:8.2.x-fpm-alpine3.21`](https://hub.docker.com/_/php) as parent.  
 It is configured and configurable to support any PHP application.  
 It use the default php.ini-production configuration files and Supervisor to help automate the Docker image.  
 
