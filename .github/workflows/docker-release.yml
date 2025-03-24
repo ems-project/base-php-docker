@@ -313,9 +313,9 @@ jobs:
           docker push ${{ needs.init.outputs.docker-image-name }}:${{ needs.init.outputs.github-ci-sha-short }}-${{ matrix.image-variant }}
           docker push ${{ needs.init.outputs.docker-image-name }}:${{ needs.init.outputs.tag-patch }}-${{ matrix.image-variant }}
           docker push ${{ needs.init.outputs.docker-image-name }}:${{ needs.init.outputs.tag-minor }}-${{ matrix.image-variant }}
-          docker push ${{ needs.init.outputs.docker-image-name }}:${{ needs.init.outputs.github-ci-sha-short }}
-          docker push ${{ needs.init.outputs.docker-image-name }}:${{ needs.init.outputs.tag-patch }}
-          docker push ${{ needs.init.outputs.docker-image-name }}:${{ needs.init.outputs.tag-minor }}
+          docker push ${{ needs.init.outputs.docker-image-name }}:${{ needs.init.outputs.github-ci-sha-short }}-${{ steps.set-docker-tag.outputs.tag }}
+          docker push ${{ needs.init.outputs.docker-image-name }}:${{ needs.init.outputs.tag-patch }}-${{ steps.set-docker-tag.outputs.tag }}
+          docker push ${{ needs.init.outputs.docker-image-name }}:${{ needs.init.outputs.tag-minor }}-${{ steps.set-docker-tag.outputs.tag }}
 
   cleanup:
 
