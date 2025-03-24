@@ -302,10 +302,10 @@ jobs:
         run: |
           docker tag ${{ needs.init.outputs.docker-image-name }}:${{ needs.init.outputs.github-ci-sha-short }}-${{ matrix.image-variant }} \
                      ${{ needs.init.outputs.docker-image-name }}:${{ needs.init.outputs.github-ci-sha-short }}-${{ steps.set-docker-tag.outputs.tag }}
-          docker tag ${{ needs.init.outputs.docker-image-name }}:${{ needs.init.outputs.version-patch }}-${{ matrix.image-variant }} \
-                     ${{ needs.init.outputs.docker-image-name }}:${{ needs.init.outputs.version-patch }}-${{ steps.set-docker-tag.outputs.tag }}
-          docker tag ${{ needs.init.outputs.docker-image-name }}:${{ needs.init.outputs.version-minor }}-${{ matrix.image-variant }} \
-                     ${{ needs.init.outputs.docker-image-name }}:${{ needs.init.outputs.version-minor }}-${{ steps.set-docker-tag.outputs.tag }}
+          docker tag ${{ needs.init.outputs.docker-image-name }}:${{ needs.init.outputs.tag-patch }}-${{ matrix.image-variant }} \
+                     ${{ needs.init.outputs.docker-image-name }}:${{ needs.init.outputs.tag-patch }}-${{ steps.set-docker-tag.outputs.tag }}
+          docker tag ${{ needs.init.outputs.docker-image-name }}:${{ needs.init.outputs.tag-minor }}-${{ matrix.image-variant }} \
+                     ${{ needs.init.outputs.docker-image-name }}:${{ needs.init.outputs.tag-minor }}-${{ steps.set-docker-tag.outputs.tag }}
 
       - name: Push docker images"
         id: image-push
