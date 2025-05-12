@@ -6,7 +6,11 @@ ENV APACHE_ENABLED=true
 
 COPY --chmod=775 --chown=root:root etc/apache2/ /etc/apache2/
 COPY --chmod=664 --chown=root:root etc/supervisord.apache/supervisord.conf /etc/supervisord.conf
-COPY --chmod=664 --chown=1001:0 src/ /var/www/localhost/htdocs/
+
+# Bug : Improper permissions handling on directories using –chmod in COPY command 
+# https://github.com/moby/buildkit/issues/5943
+COPY --chmod=ugo=rX --chown=1001:0 src/ /var/www/localhost/htdocs/
+
 COPY --chmod=775 --chown=1001:0 config/apache2/ /app/config/apache2/
 
 RUN mkdir -p /app/var/cache/apache2/mod_ssl \
