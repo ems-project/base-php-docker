@@ -192,6 +192,17 @@ In addition to the parent layer, this variant include install :
 - [Composer](https://github.com/composer/composer)
 - PHP Extension : [xdebug](https://xdebug.org/)
 
+## PHP Configuration
+
+| Name | Default Value | Description |
+|-|-|-|
+| ```PHP_EXPOSE_PHP``` | ```false``` | Exposes to the world that PHP is installed on the server. ([doc](https://www.php.net/manual/en/ini.core.php#ini.expose-php)) | 
+| ```PHP_DATE_TIMEZONE``` | ```Europe/Brussels``` | The default timezone used by all date/time functions. ([doc](https://www.php.net/manual/en/datetime.configuration.php)) |
+| ```PHP_DISPLAY_ERRORS``` | ```false``` | This determines whether errors should be printed to the screen as part of the output or if they should be hidden from the user. ([doc](https://www.php.net/manual/en/errorfunc.configuration.php#ini.display-errors)) |
+| ```PHP_UPLOAD_MAX_FILESIZE``` | ```2``` | The maximum size in MB of an uploaded file. ([doc](https://www.php.net/manual/en/ini.core.php#ini.upload-max-filesize)) | 
+| ```PHP_POST_MAX_SIZE``` | ```8``` | Sets max size in MB of post data allowed. ([doc](https://www.php.net/manual/en/ini.core.php#ini.post-max-size)) |
+| ```PHP_MEMORY_LIMIT``` | ```128``` | Sets the maximum amount of memory in MB that a script is allowed to allocate. ([doc](https://www.php.net/manual/en/ini.core.php#ini.memory-limit)) |
+
 ## PHP-FPM Configuration
 
 You can change the amount of memory that PHP-FPM can use by changing / passing the environment variables ```PHP_FPM_MAX_CHILDREN``` and ```PHP_FPM_REQUEST_MAX_MEMORY_IN_MEGABYTES```.  
@@ -204,11 +215,6 @@ However, this value can be reduced to a percentage by the configuration of the e
 | ```PHP_FPM_MAX_CHILDREN``` | ```40``` | The maximum number of child processes to be created. ([doc](https://www.php.net/manual/en/install.fpm.configuration.php)) |
 | ```PHP_FPM_REQUEST_MAX_MEMORY_IN_MEGABYTES``` | ```16``` | The maximum amount of memory in MB that a script is allowed to allocate. ([doc](https://www.php.net/manual/fr/ini.core.php#ini.memory-limit)) |
 | ```CONTAINER_HEAP_PERCENT``` | ```0.80``` | Percentage of total memory allowed to use by PHP-FPM. |
-| ```PHP_FPM_EXPOSE_PHP``` | ```false``` | Exposes to the world that PHP is installed on the server. ([doc](https://www.php.net/manual/en/ini.core.php#ini.expose-php)) |
-| ```PHP_FPM_DATE_TIMEZONE``` | ```Europe/Brussels``` | The default timezone used by all date/time functions. ([doc](https://www.php.net/manual/en/datetime.configuration.php#ini.date.timezone)) |
-| ```PHP_FPM_DISPLAY_ERRORS``` | ```false``` | This determines whether errors should be printed to the screen as part of the output or if they should be hidden from the user. ([doc](https://www.php.net/manual/en/errorfunc.configuration.php#ini.display-errors)) |
-| ```PHP_FPM_UPLOAD_MAX_FILESIZE``` | ```2M``` | The maximum size of an uploaded file. ([doc](https://www.php.net/manual/en/ini.core.php#ini.upload-max-filesize)) |
-| ```PHP_FPM_POST_MAX_SIZE``` | ```8M``` | Sets max size of post data allowed. ([doc](https://www.php.net/manual/en/ini.core.php#ini.post-max-size)) |
 
 ## Varnish Configuration
 
