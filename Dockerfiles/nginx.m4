@@ -6,7 +6,11 @@ ENV NGINX_ENABLED=true
 
 COPY --chmod=775 --chown=root:root etc/nginx/ /etc/nginx/
 COPY --chmod=775 --chown=root:root etc/supervisord.nginx/supervisord.conf /etc/supervisord.conf
-COPY --chmod=664 --chown=1001:0 src/ /usr/share/nginx/html/
+
+# Bug : Improper permissions handling on directories using –chmod in COPY command 
+# https://github.com/moby/buildkit/issues/5943
+COPY --chmod=ugo=rX --chown=1001:0 src/ /usr/share/nginx/html/
+
 COPY --chmod=775 --chown=1001:0 config/nginx/ /app/config/nginx/
 
 RUN mkdir -p /app/etc/nginx/sites-enabled \
