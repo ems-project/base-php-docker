@@ -9,7 +9,7 @@ COPY --chmod=664 --chown=root:root etc/supervisord.apache/supervisord.conf /etc/
 
 # Bug : Improper permissions handling on directories using –chmod in COPY command 
 # https://github.com/moby/buildkit/issues/5943
-COPY --chmod=ugo=rX --chown=1001:0 src/ /var/www/localhost/htdocs/
+COPY --chmod=755 --chown=1001:0 src/ /var/www/localhost/htdocs/
 
 COPY --chmod=775 --chown=1001:0 config/apache2/ /app/config/apache2/
 

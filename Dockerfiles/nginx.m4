@@ -9,7 +9,7 @@ COPY --chmod=775 --chown=root:root etc/supervisord.nginx/supervisord.conf /etc/s
 
 # Bug : Improper permissions handling on directories using –chmod in COPY command 
 # https://github.com/moby/buildkit/issues/5943
-COPY --chmod=ugo=rX --chown=1001:0 src/ /usr/share/nginx/html/
+COPY --chmod=755 --chown=1001:0 src/ /usr/share/nginx/html/
 
 COPY --chmod=775 --chown=1001:0 config/nginx/ /app/config/nginx/
 
