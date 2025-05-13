@@ -1,4 +1,4 @@
-# syntax=docker/dockerfile:1.3
+# syntax=docker/dockerfile:1.15
 ARG VERSION_ARG
 ARG NODE_VERSION_ARG
 ARG COMPOSER_VERSION_ARG
