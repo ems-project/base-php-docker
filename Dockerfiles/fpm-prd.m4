@@ -30,7 +30,7 @@ ENV PHP_INI_SCAN_DIR="/usr/local/etc/php/conf.d:/app/etc/php/conf.d" \
     CONTAINER_HEAP_PERCENT=${CONTAINER_HEAP_PERCENT:-0.80} \
     HOME=/home/default \
     TMPDIR=/app/tmp \
-    PATH=/opt/bin:/usr/local/bin:/usr/bin:$PATH
+    PATH=/app/bin:/app/sbin:/usr/local/bin:/usr/bin:$PATH
 
 COPY --from=hairyhenderson/gomplate:stable /gomplate /usr/bin/gomplate
 COPY --chmod=664 --chown=1001:0 config/php/ /app/config/php/
