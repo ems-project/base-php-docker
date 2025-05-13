@@ -111,6 +111,6 @@ ENTRYPOINT ["container-entrypoint"]
 EXPOSE 6081/tcp 6082/tcp
 
 HEALTHCHECK --start-period=2s --interval=10s --timeout=5s --retries=5 \
-        CMD bash -c '[ -S /var/run/php-fpm/php-fpm.sock ]'
+        CMD bash -c '[ -S /app/var/run/php-fpm/php-fpm.sock ]'
 
 CMD ["php-fpm", "-F", "-R"]
