@@ -15,6 +15,12 @@ export BATS_CONTAINER_ENGINE="${CONTAINER_ENGINE:-podman}"
 export BATS_CONTAINER_COMPOSE_ENGINE="${BATS_CONTAINER_ENGINE} compose"
 export BATS_CONTAINER_NETWORK_NAME="${CONTAINER_NETWORK_NAME:-docker_default}"
 
+#
+# Containers configuration
+#
+export BATS_APP_TMP_VOLUME_NAME="app_tmp"
+export BATS_APP_ETC_VOLUME_NAME="app_etc"
+
 @test "[$TEST_FILE] Check Docker external Volumes (local)" {
 
   BATS_CONTAINER_VOLUME_NAMES=("$BATS_APP_TMP_VOLUME_NAME")
