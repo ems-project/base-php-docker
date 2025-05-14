@@ -23,11 +23,13 @@ LABEL be.fgov.elasticms.base.build-date=$BUILD_DATE_ARG \
 
 USER root
 
-ENV AWS_CLI_VERSION=${AWS_CLI_VERSION_ARG:-2.22.10} \
+ENV PHP_INI_SCAN_DIR="/usr/local/etc/php/conf.d:/app/etc/php/conf.d" \
+    AWS_CLI_VERSION=${AWS_CLI_VERSION_ARG:-2.22.10} \
     PHP_EXT_REDIS_VERSION=${PHP_EXT_REDIS_VERSION_ARG:-6.1.0} \
     PHP_EXT_APCU_VERSION=${PHP_EXT_APCU_VERSION_ARG:-5.1.24} \
     HOME=/home/default \
-    PATH=/opt/bin:/usr/local/bin:/usr/bin:$PATH
+    TMPDIR=/app/tmp \
+    PATH=/app/bin:/app/sbin:/usr/local/bin:/usr/bin:$PATH
 
 COPY --from=hairyhenderson/gomplate:stable /gomplate /usr/bin/gomplate
 
@@ -37,10 +39,16 @@ COPY --from=node /usr/local/lib /usr/local/lib
 COPY --from=node /usr/local/include /usr/local/include
 COPY --from=node /usr/local/bin /usr/local/bin
 
-COPY --chmod=775 --chown=1001:0 etc/php/ /usr/local/etc/
 COPY --chmod=775 --chown=1001:0 bin/ /usr/local/bin/
 
-RUN mkdir -p /home/default /app \
+COPY --chmod=664 --chown=1001:0 config/php/conf.d/ /app/config/php/conf.d/
+
+RUN mkdir -p /home/default \
+             /app/src \
+             /app/etc \
+             /app/tmp \
+             /app/bin \
+             /app/sbin \
     && chmod +x /usr/local/bin/apk-list \
                 /usr/local/bin/container-entrypoint-cli \
                 /usr/local/bin/wait-for-it \
