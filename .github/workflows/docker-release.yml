@@ -74,7 +74,7 @@ jobs:
 
       - name: Set up Docker Buildx
         id: buildx
-        uses: docker/setup-buildx-action@v3
+        uses: docker/setup-buildx-action@v4
 
       - name: Fill "${{ needs.init.outputs.docker-image-name }}" Docker Image metadata
         id: meta
