@@ -22,9 +22,9 @@ LABEL be.fgov.elasticms.base.build-date=$BUILD_DATE_ARG \
 USER root
 
 ENV PHP_INI_SCAN_DIR="/usr/local/etc/php/conf.d:/app/etc/php/conf.d" \
-    AWS_CLI_VERSION=${AWS_CLI_VERSION_ARG:-2.22.10} \
-    PHP_EXT_REDIS_VERSION=${PHP_EXT_REDIS_VERSION_ARG:-6.1.0} \
-    PHP_EXT_APCU_VERSION=${PHP_EXT_APCU_VERSION_ARG:-5.1.24} \
+    AWS_CLI_VERSION=${AWS_CLI_VERSION_ARG:-2.32.7} \
+    PHP_EXT_REDIS_VERSION=${PHP_EXT_REDIS_VERSION_ARG:-6.3.0} \
+    PHP_EXT_APCU_VERSION=${PHP_EXT_APCU_VERSION_ARG:-5.1.28} \
     HOME=/home/default \
     TMPDIR=/app/tmp \
     PATH=/app/bin:/app/sbin:/usr/local/bin:/usr/bin:$PATH
