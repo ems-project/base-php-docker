@@ -33,11 +33,10 @@ ENV PHP_INI_SCAN_DIR="/usr/local/etc/php/conf.d:/app/etc/php/conf.d" \
 
 COPY --from=hairyhenderson/gomplate:stable /gomplate /usr/bin/gomplate
 
-COPY --from=node /usr/lib /usr/lib
-COPY --from=node /usr/local/share /usr/local/share
-COPY --from=node /usr/local/lib /usr/local/lib
-COPY --from=node /usr/local/include /usr/local/include
-COPY --from=node /usr/local/bin /usr/local/bin
+COPY --from=node /usr/local/bin/node /usr/local/bin/node
+COPY --from=node /usr/local/lib/node_modules /usr/local/lib/node_modules
+COPY --from=node /usr/local/include/node /usr/local/include/node
+COPY --from=node /opt/ /opt/
 
 COPY --chmod=775 --chown=1001:0 bin/ /usr/local/bin/
 
@@ -54,6 +53,14 @@ RUN mkdir -p /home/default \
                 /usr/local/bin/wait-for-it \
     && echo "Upgrade all already installed packages ..." \
     && apk upgrade --available \
+    && echo "Install and Configure Node ..." \
+    && apk add --no-cache --virtual .php-dev-rundeps git patch libstdc++ libgcc \
+    && ln -sf ../lib/node_modules/npm/bin/npm-cli.js /usr/local/bin/npm \
+    && ln -sf ../lib/node_modules/npm/bin/npx-cli.js /usr/local/bin/npx \
+    && ln -sf ../lib/node_modules/corepack/dist/corepack.js /usr/local/bin/corepack \
+    && ln -sf /opt/yarn-v*/bin/yarn /usr/local/bin/yarn \
+    && ln -sf /opt/yarn-v*/bin/yarnpkg /usr/local/bin/yarnpkg \
+    && node --version && npm --version && yarn --version \
     && echo "Install and Configure required extra PHP packages ..." \
     && apk add --update --no-cache --virtual .build-deps $PHPIZE_DEPS autoconf freetype-dev icu-dev \
                                                 libjpeg-turbo-dev libpng-dev libwebp-dev libxpm-dev \
